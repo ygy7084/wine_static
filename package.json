@@ -1,0 +1,53 @@
+{
+  "name": "wine_static",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "color": "^2.0.0",
+    "express": "^4.15.4",
+    "ftp": "^0.3.10",
+    "history": "^4.7.2",
+    "promise-polyfill": "^6.0.2",
+    "radium": "^0.19.4",
+    "react": "^15.6.1",
+    "react-addons-update": "^15.6.0",
+    "react-bootstrap": "^0.31.3",
+    "react-dom": "^15.6.1",
+    "react-redux": "^5.0.6",
+    "react-router-dom": "^4.2.2",
+    "react-router-redux": "^5.0.0-alpha.6",
+    "react-scripts": "^1.0.13",
+    "react-transition-group": "^2.2.0",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0",
+    "whatwg-fetch": "^2.0.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "eslint": "^4.6.1",
+    "eslint-config-airbnb": "^15.1.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-react": "^7.3.0",
+    "prop-types": "^15.5.10",
+    "react-prop-types": "^0.4.0"
+  },
+  "description": "This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).",
+  "main": ".eslintrc.js",
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ygy7084/wine_static.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ygy7084/wine_static/issues"
+  },
+  "homepage": "https://github.com/ygy7084/wine_static#readme"
+}
