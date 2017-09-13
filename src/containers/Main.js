@@ -40,9 +40,6 @@ class Main extends React.Component{
   render() {
     return (
       <div>
-        <a onClick={()=>{this.props.changePage()}} block>
-          접속
-        </a>
         <Header
           {...this.props}
           toggleMenu={this.toggleMenu}

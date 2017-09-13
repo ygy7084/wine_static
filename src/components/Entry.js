@@ -70,8 +70,8 @@ class Entry extends React.Component {
   handleLogin() {
     // test
     if (
-      this.state.idInput === '' &&
-      this.state.passwordInput === ''
+      this.state.idInput === 'a' &&
+      this.state.passwordInput === 'a'
     ) {
       turnOnSimpleMessage.error('올바른 아이디와 비밀번호를 입력하십시요.');
     } else {
