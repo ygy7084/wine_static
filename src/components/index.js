@@ -10,6 +10,10 @@ import MemberWrapper from './MemberWrapper';
 import MemberModal from './MemberModal';
 import PointUsageModal from './PointUsageModal';
 import HistoryListModal from './HistoryListModal';
+import Header from './Header';
+import Contents from './Contents';
+import WineList from './WineList';
+import { turnOnSimpleMessage, SimpleMessage } from './SimpleMessage';
 
 export {
   Page404,
@@ -23,5 +27,10 @@ export {
   MemberWrapper,
   MemberModal,
   PointUsageModal,
-  HistoryListModal
+  HistoryListModal,
+  Header,
+  Contents,
+  WineList,
+  turnOnSimpleMessage,
+  SimpleMessage,
 };

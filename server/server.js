@@ -3,7 +3,7 @@ const path = require('path');
 
 // server setting
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 5000;
 
 // index 라우팅
 app.get('/', (req, res) => {

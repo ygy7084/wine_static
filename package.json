@@ -5,6 +5,7 @@
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "color": "^2.0.0",
+    "coreui.io-react": "^1.0.0-alpha.6",
     "express": "^4.15.4",
     "ftp": "^0.3.10",
     "history": "^4.7.2",
@@ -14,10 +15,12 @@
     "react-addons-update": "^15.6.0",
     "react-bootstrap": "^0.31.3",
     "react-dom": "^15.6.1",
+    "react-icons": "^2.2.5",
     "react-redux": "^5.0.6",
     "react-router-dom": "^4.2.2",
     "react-router-redux": "^5.0.0-alpha.6",
     "react-scripts": "^1.0.13",
+    "react-toastify": "^2.0.0-rc.3",
     "react-transition-group": "^2.2.0",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
@@ -48,6 +51,5 @@
   },
   "bugs": {
     "url": "https://github.com/ygy7084/wine_static/issues"
-  },
-  "homepage": "https://github.com/ygy7084/wine_static#readme"
+  }
 }

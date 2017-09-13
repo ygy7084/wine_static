@@ -1,34 +1,31 @@
 import React from 'react';
-import { loader } from '../modules';
-
 import {
   Route,
   Switch,
+  Redirect,
 } from 'react-router-dom';
 
+import { loader } from '../modules';
+
 import {
-  Customer,
-  Manager,
+  Main,
 } from './';
 
 import {
-  Page404,
   Entry,
 } from '../components';
 
 loader.off();
-const App = function () {
+const App = function app() {
   return (
     <div>
       <Switch>
         <Route exact path="/" component={Entry} />
-        <Route path="/customer" component={Customer} />
-        <Route path="/manager" component={Manager} />
-        <Route component={Page404} />
+        <Route path="/main" render={props => (<Main {...props} />)} />
+        <Redirect to="/" />
       </Switch>
     </div>
   );
 };
-
 
 export default App;

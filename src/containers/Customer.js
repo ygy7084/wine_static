@@ -94,26 +94,7 @@ class Customer extends React.Component {
   render() {
     return (
       <div>
-        <PointWrapper>
-          <PhoneInput
-            inputNumber={this.state.inputNumber}
-            buttonClick={this.buttonClick}
-          />
-          <PointButtons
-            pointSave={this.pointSave}
-            inputNumberReset={this.inputNumberReset}
-          />
-        </PointWrapper>
-        <PointSavingModal
-          show={this.state.PointSavingModal_show}
-          inputNumber={this.state.inputNumber}
-          member={this.state.PointSavingModal_member}
-        />
-        <ErrorModal
-          message={this.state.ErrorMessage}
-          close={() => { this.setState({ ErrorModal_show: false }); }}
-          show={this.state.ErrorModal_show}
-        />
+        Customer
       </div>
     );
   }
