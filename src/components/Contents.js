@@ -14,7 +14,6 @@ const style = {
   },
 };
 const Contents = (props) => {
-  console.log(props.menuClose);
   const contentsStyle = [style.Contents.base];
   if (props.menuClose) {
     contentsStyle.push(style.Contents.wide);

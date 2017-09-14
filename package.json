@@ -5,9 +5,7 @@
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "color": "^2.0.0",
-    "coreui.io-react": "^1.0.0-alpha.6",
     "express": "^4.15.4",
-    "ftp": "^0.3.10",
     "history": "^4.7.2",
     "promise-polyfill": "^6.0.2",
     "radium": "^0.19.4",

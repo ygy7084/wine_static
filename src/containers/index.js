@@ -5,7 +5,6 @@ import Customer from './Customer';
 import Store from './Store';
 import Main from './Main';
 
-
 export {
   App,
   Wine,

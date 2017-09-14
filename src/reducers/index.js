@@ -1,10 +1,8 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
-import member from './member';
-import history from './history';
+import original from './original';
 
 export default combineReducers({
   routing: routerReducer,
-  member,
-  history,
+  original,
 });
