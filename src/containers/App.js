@@ -9,6 +9,7 @@ import { loader } from '../modules';
 
 import {
   Main,
+  CustomerSide,
 } from './';
 
 import {
@@ -22,6 +23,7 @@ const App = function app() {
       <Switch>
         <Route exact path="/" component={Entry} />
         <Route path="/main" render={props => (<Main {...props} />)} />
+        <Route path="/test" component={CustomerSide} />
         <Redirect to="/" />
       </Switch>
     </div>

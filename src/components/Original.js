@@ -4,7 +4,7 @@ import {
   Table,
   Pagination,
   InputGroup,
-} from 'react-bootstrap';
+} from 'reactstrap';
 
 const styles = {
   table: {

@@ -42,7 +42,6 @@ class OriginalModal extends React.Component {
   handleRemove() {
   }
   render() {
-    console.log(this.props.original);
     if(!this.props.original)
       return null;
     return (

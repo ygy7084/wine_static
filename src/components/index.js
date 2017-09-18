@@ -4,6 +4,7 @@ import Header from './Header';
 import Contents from './Contents';
 import Original from './Original';
 import OriginalModal from './OriginalModal';
+import CustomerSideModal from './CustomerSideModal';
 import WineHeader from './WineHeader';
 import { turnOnSimpleMessage, SimpleMessage } from './SimpleMessage';
 
@@ -14,6 +15,7 @@ export {
   Contents,
   Original,
   OriginalModal,
+  CustomerSideModal,
   WineHeader,
   turnOnSimpleMessage,
   SimpleMessage,

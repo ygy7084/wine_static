@@ -1,0 +1,12 @@
+body {
+  transition-duration: 1s;
+}
+.react-swipeable-view-container > div {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+.ReactFlipCard,
+.ReactFlipCard__Front,
+.ReactFlipCard__Back {
+  width: 100%;
+}

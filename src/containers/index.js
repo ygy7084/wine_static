@@ -5,6 +5,8 @@ import Customer from './Customer';
 import Store from './Store';
 import Main from './Main';
 
+import CustomerSide from './CustomerSide';
+
 export {
   App,
   Wine,
@@ -12,4 +14,5 @@ export {
   Customer,
   Store,
   Main,
+  CustomerSide,
 };
