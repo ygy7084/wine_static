@@ -7,12 +7,10 @@ import {
 } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import { push } from 'react-router-redux';
 
-import { loader } from '../modules';
-
 import {
+  Account,
   Wine,
   Shop,
   Customer,
@@ -22,6 +20,7 @@ import {
 import {
   Header,
   Contents,
+  Page404,
 } from '../components';
 
 class Main extends React.Component{
@@ -31,40 +30,68 @@ class Main extends React.Component{
       menuClose: window.innerWidth < 768,
     };
     this.toggleMenu = this.toggleMenu.bind(this);
+    this.menuClick = this.menuClick.bind(this);
   }
   toggleMenu() {
     this.setState({
       menuClose: !this.state.menuClose,
     });
   }
+  menuClick(path) {
+    this.setState({
+      menuClose:
+        window.innerWidth < 768 ? true : this.state.menuClose });
+    this.props.changePage(`${path}`);
+  }
   render() {
     return (
       <div>
-        <Header
-          {...this.props}
-          toggleMenu={this.toggleMenu}
-          menuClose={this.state.menuClose}
+        <Route
+          path="/"
+          render={props => (
+            <Header
+              {...props}
+              toggleMenu={this.toggleMenu}
+              menuClick={this.menuClick}
+              menuClose={this.state.menuClose}
+              account={this.props.accountSession.account}
+              logout={this.props.logout}
+            />
+          )}
         />
         <Contents menuClose={this.state.menuClose} >
           <Switch>
-            <Redirect exact from="/main" to="/main/wine" />
-            <Route path="/main/wine" component={Wine} />
-            <Route path="/main/shop" component={Shop} />
-            <Route path="/main/customer" component={Customer} />
-            <Route path="/main/store" component={Store} />
-            <Redirect to="/main/wine" />
+            <Route
+              exact
+              path="/"
+              render={() => (
+                this.props.accountSession.account.level === '관리자' ?
+                  <Redirect to="/account" /> :
+                  <Redirect to="/store" />
+              )}
+            />
+            <Route path="/account" component={Account} />
+            <Route path="/wine" component={Wine} />
+            <Route path="/shop" component={Shop} />
+            <Route path="/customer" component={Customer} />
+            <Route path="/store" component={Store} />
+            <Route component={Page404} />
           </Switch>
         </Contents>
       </div>
     );
   }
 }
-
+const mapStateToProps = state => ({
+  accountSession: {
+    status: state.account.session.status,
+    account: state.account.session.account,
+  },
+});
 const mapDispatchToProps = dispatch => bindActionCreators({
-  changePage: () => push('abcde'),
+  changePage: path => push(path),
 }, dispatch);
-
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps,
 )(Main);

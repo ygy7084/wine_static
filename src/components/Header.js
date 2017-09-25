@@ -1,20 +1,19 @@
-
 import React from 'react';
 import Radium from 'radium';
+import IconAccount from 'react-icons/lib/ti/key';
 import IconWine from 'react-icons/lib/ti/wine';
 import IconShop from 'react-icons/lib/ti/home-outline';
 import IconCustomer from 'react-icons/lib/ti/user';
 import IconStore from 'react-icons/lib/ti/document-text';
 import IconMenu from 'react-icons/lib/ti/th-menu';
 import {
-  Link,
+  Route,
 } from 'react-router-dom';
 
 /*
 Link should be overridden to be styled by Radium
 https://github.com/FormidableLabs/radium/tree/master/docs/faq
  */
-const LinkRadium = Radium(Link);
 
 const style = {
   topBar: {
@@ -55,6 +54,7 @@ const style = {
       display: 'block',
       color: 'white',
       background: '#263238',
+      overflowY: 'auto',
     },
     close: {
       left: '-200px',
@@ -94,85 +94,114 @@ const style = {
     fontSize: '26px',
     marginRight: '16px',
   },
+  loginStatus: {
+    textAlign: 'center',
+    marginTop: '30px',
+  },
+  logout: {
+    ':hover': {
+      cursor: 'pointer',
+    },
+  },
 };
 const sideListItems = [
+  { name: '계정',
+    path: '/account',
+    icon: IconAccount,
+    authority: ['관리자'] },
   { name: '와인',
-    link: '/main/wine',
-    icon: IconWine },
+    path: '/wine',
+    icon: IconWine,
+    authority: ['관리자', '매장'] },
   { name: '매장',
-    link: '/main/shop',
-    icon: IconShop },
+    path: '/shop',
+    icon: IconShop,
+    authority: ['관리자', '매장'] },
   { name: '고객',
-    link: '/main/customer',
-    icon: IconCustomer },
+    path: '/customer',
+    icon: IconCustomer,
+    authority: ['관리자', '매장'] },
   { name: '입출고',
-    link: '/main/store',
-    icon: IconStore }];
-class Header extends React.Component {
-  constructor(props) {
-    super(props);
-
-    const selected = sideListItems.findIndex(item =>
-      props.location.pathname === item.link,
-    );
-    this.state = {
-      selected: selected < 0 ? 0 : selected,
-    };
-    this.handleItemClick = this.handleItemClick.bind(this);
+    path: '/store',
+    icon: IconStore,
+    authority: ['관리자', '매장'] }];
+const Header = function Header(props) {
+  const sideBarStyle = [style.sideBar.base];
+  if (props.menuClose) {
+    sideBarStyle.push(style.sideBar.close);
   }
-  handleItemClick(index) {
-    this.setState({
-      selected: index,
-    });
+  const loginStatus = {
+    username: '',
+    name: '',
+    level: '',
+  };
+  if (props.account) {
+    loginStatus.username = props.account.username;
+    loginStatus.name = props.account.name;
+    loginStatus.level = props.account.level;
   }
-  render() {
-    const sideBarStyle = [style.sideBar.base];
-    if (this.props.menuClose) {
-      sideBarStyle.push(style.sideBar.close);
-    }
-    return (
-      <div>
-        <div style={style.topBar}>
-          <div style={style.topBarMenuWrapper}>
-            <IconMenu
-              style={style.topBarMenu}
-              onClick={this.props.toggleMenu}
-            />
-          </div>
-          <div style={style.topBarImage}>
-            <img style={style.image} src="/img/wine.png" alt="WINE" />
-          </div>
+  return (
+    <div>
+      <div style={style.topBar}>
+        <div style={style.topBarMenuWrapper}>
+          <IconMenu
+            style={style.topBarMenu}
+            onClick={props.toggleMenu}
+          />
         </div>
-        <nav style={sideBarStyle}>
-          <ul style={style.sideList}>
-            {sideListItems.map((item, i) => {
-              const itemStyle = [style.sideListItem_li.base];
-              if (this.state.selected === i) {
-                itemStyle.push(style.sideListItem_li.selected);
-              }
-
-              return (
-                <li key={item.name} style={itemStyle}>
-                  <LinkRadium
-                    to={item.link}
-                    key={`${item.name}link`}
-                    style={style.sideListItem}
-                    onClick={() => { this.handleItemClick(i); }}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <item.icon style={style.sideListItemIcon} />
-                    {item.name}
-                  </LinkRadium>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
+        <div style={style.topBarImage}>
+          <img style={style.image} src="/img/wine.png" alt="WINE" />
+        </div>
       </div>
-    );
-  }
+      <nav style={sideBarStyle}>
+        <ul style={style.sideList}>
+          {sideListItems.map((item) => {
+            if (item.authority.find(obj => obj === loginStatus.level)) {
+              return (
+                <Route
+                  key={item.name}
+                  path={item.path}
+                  children={routeProps => (
+                    <li
+                      key={item.name + item.path}
+                      style={routeProps.match ?
+                        [style.sideListItem_li.base, style.sideListItem_li.selected]
+                        : style.sideListItem_li.base}
+                    >
+                      <a
+                        key={item.path}
+                        style={style.sideListItem}
+                        onClick={() => { props.menuClick(item.path); }}
+                        role="button"
+                        tabIndex={0}
+                      >
+                        <item.icon style={style.sideListItemIcon} />
+                        {item.name}
+                      </a>
+                    </li>
+                  )}
+                />
+              );
+            }
+            return null;
+          })}
+        </ul>
+        <div style={style.loginStatus}>
+          <h4>접속 정보</h4>
+          <p>{`ID : ${loginStatus.username}`}</p>
+          <p>{`이름 : ${loginStatus.name}`}</p>
+          <p>{`권한 : ${loginStatus.level}`}</p>
+          <a
+            key="logout"
+            style={style.logout}
+            onClick={props.logout}
+            role="button"
+            tabIndex={0}
+          ><b>로그아웃</b></a>
+        </div>
+      </nav>
+    </div>
+  );
 };
 
 export default Radium(Header);
-

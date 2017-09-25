@@ -7,6 +7,7 @@ const initialState = {
   getList: {
     status: 'INIT',
     list: [],
+    options: {},
   },
   insert: {
     status: 'INIT',
@@ -16,6 +17,9 @@ const initialState = {
     status: 'INIT',
   },
   remove: {
+    status: 'INIT',
+  },
+  removeAll: {
     status: 'INIT',
   },
 };
@@ -33,6 +37,7 @@ export default (state = initialState, action) => {
         getList: {
           status: { $set: 'SUCCESS' },
           list: { $set: action.list },
+          options: { $set: action.options },
         },
       });
     case actions.ORIGINAL_GETLIST_FAILURE:
@@ -40,6 +45,7 @@ export default (state = initialState, action) => {
         getList: {
           status: { $set: 'FAILURE' },
           list: { $set: [] },
+          options: { $set: {} },
         },
       });
     case actions.ORIGINAL_INSERT:
@@ -95,6 +101,24 @@ export default (state = initialState, action) => {
     case actions.ORIGINAL_REMOVE_FAILURE:
       return update(state, {
         remove: {
+          status: { $set: 'FAILURE' },
+        },
+      });
+    case actions.ORIGINAL_REMOVEALL:
+      return update(state, {
+        removeAll: {
+          status: { $set: 'WAITING' },
+        },
+      });
+    case actions.ORIGINAL_REMOVEALL_SUCCESS:
+      return update(state, {
+        removeAll: {
+          status: { $set: 'SUCCESS' },
+        },
+      });
+    case actions.ORIGINAL_REMOVEALL_FAILURE:
+      return update(state, {
+        removeAll: {
           status: { $set: 'FAILURE' },
         },
       });

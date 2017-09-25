@@ -6,18 +6,10 @@ import {
   ControlLabel,
   FormControl,
 } from 'react-bootstrap';
-import {
-  Link,
-} from 'react-router-dom';
-import {
-  turnOnSimpleMessage,
-  SimpleMessage,
-} from './';
 
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-
-import { push } from 'react-router-redux'
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { push } from 'react-router-redux';
 
 import './Entry.css';
 
@@ -49,16 +41,16 @@ class Entry extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      idInput: '',
+      usernameInput: '',
       passwordInput: '',
     };
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleLogin = this.handleLogin.bind(this);
+    this.loginRequest = this.loginRequest.bind(this);
   }
   handleInputChange(input, e) {
     switch (input) {
-      case 'id':
-        this.setState({ idInput: e.target.value });
+      case 'username':
+        this.setState({ usernameInput: e.target.value });
         break;
       case 'password':
         this.setState({ passwordInput: e.target.value });
@@ -67,16 +59,11 @@ class Entry extends React.Component {
         break;
     }
   }
-  handleLogin() {
-    // test
-    if (
-      this.state.idInput === 'a' &&
-      this.state.passwordInput === 'a'
-    ) {
-      turnOnSimpleMessage.error('올바른 아이디와 비밀번호를 입력하십시요.');
-    } else {
-      return this.props.changePage();
-    }
+  loginRequest() {
+    this.props.loginRequest({
+      username: this.state.usernameInput,
+      password: this.state.passwordInput,
+    });
   }
   render() {
     return (
@@ -84,13 +71,13 @@ class Entry extends React.Component {
         <div className="container" style={styles.horizontal_center}>
           <div className="wine" style={styles.wine} />
           <Form>
-            <FormGroup controlId="formControlsText">
+            <FormGroup>
               <ControlLabel>ID</ControlLabel>
               <FormControl
                 type="text"
-                value={this.state.idInput}
+                value={this.state.usernameInput}
                 style={styles.form}
-                onChange={e => this.handleInputChange('id', e)}
+                onChange={e => this.handleInputChange('username', e)}
               />
               <ControlLabel style={styles.formLabel}>Password</ControlLabel>
               <FormControl
@@ -101,24 +88,23 @@ class Entry extends React.Component {
               />
             </FormGroup>
           </Form>
-          <Button style={styles.button} onClick={this.handleLogin} block>
+          <Button style={styles.button} onClick={this.loginRequest} block>
             접속
           </Button>
           <hr />
           <b>문의</b>
           <p>abcde@gmail.com</p>
         </div>
-        <SimpleMessage />
       </div>
     );
   }
 }
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  changePage: () => push('/main')
-}, dispatch)
+  changePage: path => push(path),
+}, dispatch);
 
 export default connect(
   null,
-  mapDispatchToProps
-)(Entry)
+  mapDispatchToProps,
+)(Entry);

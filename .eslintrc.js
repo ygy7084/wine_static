@@ -5,6 +5,14 @@ module.exports = {
         "linebreak-style":["error", "windows"],
         "no-console":0,
         "jsx-a11y/href-no-hash": "off",
-        "jsx-a11y/anchor-is-valid": ["warn", { "aspects": ["invalidHref"] }]
+        "jsx-a11y/anchor-is-valid": ["warn", { "aspects": ["invalidHref"] }],
+        "react/prop-types": 0,
+        "react/no-children-prop": 0,
+        "no-confusing-arrow": 0,
+        "max-len":0,
+        "react/jsx-wrap-multilines":0,
+        "no-shadow":0,
+        "no-underscore-dangle":0,
+        "no-nested-ternary":0,
     },
 };

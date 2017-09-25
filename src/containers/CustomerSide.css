@@ -1,6 +1,9 @@
 body {
   transition-duration: 1s;
 }
+*:focus {
+  outline: 0 !important
+}
 .react-swipeable-view-container > div {
   padding-bottom: 10px;
   margin-bottom: 10px;

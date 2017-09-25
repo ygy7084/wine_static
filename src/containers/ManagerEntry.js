@@ -1,0 +1,136 @@
+import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { push } from 'react-router-redux';
+import {
+  Route,
+  Switch,
+  Redirect,
+} from 'react-router-dom';
+import { account } from '../actions';
+import {
+  Main,
+} from './';
+import {
+  Entry,
+  turnOnSimpleMessage,
+  SimpleMessage,
+} from '../components';
+import { loader, errorHandler } from '../modules';
+
+class ManagerEntry extends React.Component {
+  constructor(props) {
+    super(props);
+    this.loginRequest = this.loginRequest.bind(this);
+    this.logoutRequest = this.logoutRequest.bind(this);
+    this.sessionRequest = this.sessionRequest.bind(this);
+  }
+  componentWillMount() {
+    loader.off();
+    this.sessionRequest(`${this.props.location.pathname}`);
+  }
+  loginRequest(accountInput) {
+    loader.on();
+    return this.props.accountLoginRequest(accountInput)
+      .then(() => {
+        if (this.props.accountLogin.status === 'SUCCESS') {
+          this.sessionRequest('/');
+        } else if (this.props.accountLogin.status === 'FAILURE') {
+          loader.off();
+          errorHandler({ message: '로그인에 실패하였습니다.' });
+        }
+      })
+      .catch(() => {
+        loader.off();
+      });
+  }
+  logoutRequest() {
+    loader.on();
+    return this.props.accountLogoutRequest()
+      .then(() => {
+        if (this.props.accountLogout.status === 'SUCCESS') {
+          this.sessionRequest('/');
+        } else if (this.props.accountLogoutRequest === 'FAILURE') {
+          loader.off();
+        }
+      })
+      .catch(() => {
+        loader.off();
+      });
+  }
+  sessionRequest(url) {
+    return this.props.accountSessionRequest()
+      .then(() => {
+        if (this.props.accountLogout.status === 'SUCCESS') {
+          loader.off();
+          this.props.changePage(url);
+        } else if (this.props.accountLogoutRequest === 'FAILURE') {
+          loader.off();
+          errorHandler({ message: '다시 로그인하십시요.' });
+        }
+      })
+      .catch(() => {
+        loader.off();
+      });
+  }
+  render() {
+    let ManagerEntryPage = null;
+    if (this.props.accountSession.status === 'SUCCESS') {
+      ManagerEntryPage = (
+        <Switch>
+          <Route
+            path="/"
+            render={props =>
+              <Main logout={this.logoutRequest} {...props} />
+            }
+          />
+        </Switch>
+      );
+    } else if (this.props.accountSession.status === 'FAILURE') {
+      ManagerEntryPage = (
+        <Switch>
+          <Route
+            exact
+            path="/"
+            render={props => (
+              <Entry
+                loginRequest={this.loginRequest}
+                {...props}
+              />
+            )}
+          />
+          <Redirect to="/" />
+        </Switch>
+
+      );
+    }
+    return (
+      <div>
+        { ManagerEntryPage }
+        <SimpleMessage />
+      </div>
+    );
+  }
+}
+const mapStateToProps = state => ({
+  accountLogin: {
+    status: state.account.login.status,
+  },
+  accountSession: {
+    status: state.account.session.status,
+    account: state.account.session.account,
+  },
+  accountLogout: {
+    status: state.account.logout.status,
+  },
+});
+const mapDispatchToProps = dispatch => bindActionCreators({
+  accountLoginRequest: account.loginRequest,
+  accountSessionRequest: account.sessionRequest,
+  accountLogoutRequest: account.logoutRequest,
+  changePage: path => push(path),
+}, dispatch);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(ManagerEntry);

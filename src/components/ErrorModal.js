@@ -3,7 +3,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'react-bootst
 
 const ErrorModal = function ErrorModal(props) {
   return (
-    <Modal show={props.show}>
+    <Modal show={props.toggle}>
       <ModalHeader>
         <h1>ERROR</h1>
       </ModalHeader>
