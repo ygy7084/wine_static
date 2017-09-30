@@ -59,6 +59,7 @@ class AccountModal extends React.Component {
       <div>
         <Modal
           show
+          animation={false}
         >
           <ModalHeader style={styles.header}>
             <h1>계정 정보</h1>

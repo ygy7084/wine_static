@@ -15,6 +15,7 @@ import {
   Shop,
   Customer,
   Store,
+  SaleBulk,
 } from './';
 
 import {
@@ -72,6 +73,7 @@ class Main extends React.Component{
             />
             <Route path="/account" component={Account} />
             <Route path="/wine" component={Wine} />
+            <Route path="/sale" component={SaleBulk} />
             <Route path="/shop" component={Shop} />
             <Route path="/customer" component={Customer} />
             <Route path="/store" component={Store} />

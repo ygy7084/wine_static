@@ -12,10 +12,19 @@ const initialState = {
     status: 'INIT',
     sale: null,
   },
+  bulkInsert: {
+    status: 'INIT',
+  },
   modify: {
     status: 'INIT',
   },
+  bulkModify: {
+    status: 'INIT',
+  },
   remove: {
+    status: 'INIT',
+  },
+  bulkRemove: {
     status: 'INIT',
   },
   removeAll: {
@@ -65,6 +74,24 @@ export default (state = initialState, action) => {
           sale: { $set: null },
         },
       });
+    case actions.SALE_BULKINSERT:
+      return update(state, {
+        bulkInsert: {
+          status: { $set: 'WAITING' },
+        },
+      });
+    case actions.SALE_BULKINSERT_SUCCESS:
+      return update(state, {
+        bulkInsert: {
+          status: { $set: 'SUCCESS' },
+        },
+      });
+    case actions.SALE_BULKINSERT_FAILURE:
+      return update(state, {
+        bulkInsert: {
+          status: { $set: 'FAILURE' },
+        },
+      });
     case actions.SALE_MODIFY:
       return update(state, {
         modify: {
@@ -80,6 +107,24 @@ export default (state = initialState, action) => {
     case actions.SALE_MODIFY_FAILURE:
       return update(state, {
         modify: {
+          status: { $set: 'FAILURE' },
+        },
+      });
+    case actions.SALE_BULKMODIFY:
+      return update(state, {
+        bulkModify: {
+          status: { $set: 'WAITING' },
+        },
+      });
+    case actions.SALE_BULKMODIFY_SUCCESS:
+      return update(state, {
+        bulkModify: {
+          status: { $set: 'SUCCESS' },
+        },
+      });
+    case actions.SALE_BULKMODIFY_FAILURE:
+      return update(state, {
+        bulkModify: {
           status: { $set: 'FAILURE' },
         },
       });
@@ -116,6 +161,24 @@ export default (state = initialState, action) => {
     case actions.SALE_REMOVEALL_FAILURE:
       return update(state, {
         removeAll: {
+          status: { $set: 'FAILURE' },
+        },
+      });
+    case actions.SALE_BULKREMOVE:
+      return update(state, {
+        bulkRemove: {
+          status: { $set: 'WAITING' },
+        },
+      });
+    case actions.SALE_BULKREMOVE_SUCCESS:
+      return update(state, {
+        bulkRemove: {
+          status: { $set: 'SUCCESS' },
+        },
+      });
+    case actions.SALE_BULKREMOVE_FAILURE:
+      return update(state, {
+        bulkRemove: {
           status: { $set: 'FAILURE' },
         },
       });

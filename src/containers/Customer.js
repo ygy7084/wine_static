@@ -42,7 +42,9 @@ class Customer extends React.Component {
   }
   customerLoad() {
     loader.on();
-    this.props.customerGetListRequest()
+    this.props.customerGetListRequest(
+      this.props.accountSession.account.level === '매장' ?
+        this.props.accountSession.account.shop : null)
       .then((data) => {
         if (this.props.customerGetList.status === 'SUCCESS') {
           loader.off();
@@ -117,7 +119,9 @@ class Customer extends React.Component {
   }
   customerRemoveAll() {
     loader.on();
-    this.props.customerRemoveAllRequest()
+    this.props.customerRemoveAllRequest(
+      this.props.accountSession.account.level === '매장' ?
+        this.props.accountSession.account.shop : null)
       .then((data) => {
         if (this.props.customerRemoveAll.status === 'SUCCESS') {
           this.props.changePage('/customer');
@@ -136,6 +140,7 @@ class Customer extends React.Component {
     return (
       <div>
         <CustomerList
+          account={this.props.accountSession.account}
           customerClick={this.customerClick}
           customerInsertClick={this.customerInsertClick}
           list={this.props.customerGetList.list}
@@ -151,6 +156,7 @@ class Customer extends React.Component {
                 customer={this.state.customerModalItem}
                 customerModify={this.customerModify}
                 customerRemove={this.customerRemove}
+                account={this.props.accountSession.account}
                 {...props}
               /> : <Redirect to="/customer" />
           }
@@ -161,6 +167,7 @@ class Customer extends React.Component {
             (<CustomerInsertModal
               close={() => this.props.changePage('/customer')}
               customerInsert={this.customerInsert}
+              account={this.props.accountSession.account}
               {...props}
             />)
           }
@@ -183,6 +190,10 @@ class Customer extends React.Component {
 }
 
 const mapStateToProps = state => ({
+  accountSession: {
+    status: state.account.session.status,
+    account: state.account.session.account,
+  },
   customerGetList: {
     status: state.customer.getList.status,
     list: state.customer.getList.list,

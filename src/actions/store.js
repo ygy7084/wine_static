@@ -36,10 +36,12 @@ const getListFailure = function getListFailure(error) {
     error,
   };
 };
-const getListRequest = function getListRequest() {
+const getListRequest = function getListRequest(id) {
   return (dispatch) => {
     dispatch(getList());
-    return fetch(`${API}/api/store/all`, {
+    return fetch(id ?
+      `${API}/api/store/all/${id}` :
+      `${API}/api/store/all`, {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -55,6 +57,7 @@ const getListRequest = function getListRequest() {
       })
       .then((res) => {
         if (res.data) {
+          console.log(res);
           const data = res.data;
           for (const obj of data) {
             if (obj.datetime) {
@@ -69,9 +72,9 @@ const getListRequest = function getListRequest() {
           );
 
           const result = [];
-          let a={};
+          let a = {};
           for(const obj of data) {
-            if(a=result.find(o => o.customer._id == obj.customer._id && o.sale._id == obj.sale._id && o.shop._id == obj.shop._id)) {
+            if(a = result.find(o => o.customer._id == obj.customer._id && o.sale._id == obj.sale._id && o.shop._id == obj.shop._id)) {
               a.remain += obj.quantityChange || 0;
             } else {
               result.push({

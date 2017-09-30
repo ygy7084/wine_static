@@ -38,10 +38,12 @@ const getListFailure = function getListFailure(error) {
     error,
   };
 };
-const getListRequest = function getListRequest() {
+const getListRequest = function getListRequest(id) {
   return (dispatch) => {
     dispatch(getList());
-    return fetch(`${API}/api/customer/all`, {
+    return fetch(id ?
+      `${API}/api/customer/all/${id}` :
+      `${API}/api/customer/all`, {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -219,10 +221,12 @@ const removeAllFailure = function removeAllFailure(error) {
     error,
   };
 };
-const removeAllRequest = function removeAllRequest() {
+const removeAllRequest = function removeAllRequest(id) {
   return (dispatch) => {
     dispatch(removeAll());
-    return fetch(`${API}/api/customer/all`, {
+    return fetch(id ?
+      `${API}/api/customer/all/${id}` :
+      `${API}/api/customer/all`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

@@ -7,21 +7,25 @@ const styles = {
     textAlign: 'center',
   },
 };
-class ShopInsertModal extends React.Component {
+class CustomerInsertModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       name: '',
       phone: '',
-      memo: '',
+      email: '',
+      address: '',
+      grade: '',
     };
-    this.handleInsert = this.handleInsert.bind(this);
+    this.customerInsert = this.customerInsert.bind(this);
   }
-  handleInsert() {
-    this.props.shopInsert({
+  customerInsert() {
+    this.props.customerInsert({
       name: this.state.name,
       phone: this.state.phone,
-      memo: this.state.memo,
+      email: this.state.email,
+      address: this.state.address,
+      grade: this.state.grade,
     });
   }
   render() {
@@ -32,7 +36,7 @@ class ShopInsertModal extends React.Component {
           animation={false}
         >
           <ModalHeader style={styles.header}>
-            <h1>매장 추가</h1>
+            <h1>고객 추가</h1>
           </ModalHeader>
           <ModalBody>
             <Form>
@@ -45,19 +49,35 @@ class ShopInsertModal extends React.Component {
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
-                <ControlLabel>전화번호 (숫자만 입력하여 주십시요.)</ControlLabel>
+                <ControlLabel>전화번호</ControlLabel>
                 <FormControl
                   type="text"
                   value={this.state.phone}
-                  onChange={e => this.setState({ phone: e.target.value.replace(/\D/g, '') })}
+                  onChange={e => this.setState({ phone: e.target.value })}
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
-                <ControlLabel>메모</ControlLabel>
+                <ControlLabel>이메일</ControlLabel>
                 <FormControl
-                  type="textarea"
-                  value={this.state.memo}
-                  onChange={e => this.setState({ memo: e.target.value })}
+                  type="text"
+                  value={this.state.email}
+                  onChange={e => this.setState({ email: e.target.value })}
+                />
+              </FormGroup>
+              <FormGroup controlId="formControlsText">
+                <ControlLabel>주소</ControlLabel>
+                <FormControl
+                  type="text"
+                  value={this.state.address}
+                  onChange={e => this.setState({ address: e.target.value })}
+                />
+              </FormGroup>
+              <FormGroup controlId="formControlsText">
+                <ControlLabel>등급</ControlLabel>
+                <FormControl
+                  type="text"
+                  value={this.state.grade}
+                  onChange={e => this.setState({ grade: e.target.value })}
                 />
               </FormGroup>
             </Form>
@@ -66,13 +86,13 @@ class ShopInsertModal extends React.Component {
             <Button
               bsStyle="success"
               bsSize="large"
-              onClick={this.handleInsert}
+              onClick={this.customerInsert}
             >추가</Button>
             <Button
               bsSize="large"
-              onClick={() =>
-                this.props.close()
-              }
+              onClick={() => {
+                this.props.close();
+              }}
             >닫기</Button>
           </ModalFooter>
         </Modal>
@@ -82,4 +102,4 @@ class ShopInsertModal extends React.Component {
 }
 
 
-export default ShopInsertModal;
+export default CustomerInsertModal;

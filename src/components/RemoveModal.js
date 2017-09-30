@@ -14,6 +14,7 @@ const RemoveModal = function RemoveModal(props) {
   return (
     <div>
       <Modal
+        animation={false}
         show
       >
         <Alert bsStyle="danger" style={styles.alert}>

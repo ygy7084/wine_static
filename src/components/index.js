@@ -11,6 +11,9 @@ import AccountModal from './AccountModal';
 import CustomerSideModal from './CustomerSideModal';
 import CustomerSideModal2 from './CustomerSideModal2';
 
+import CompleteSaleModal from './CompleteSaleModal';
+import CompleteVintageModal from './CompleteVintageModal';
+import SaleOrVintage from './SaleOrVintage';
 import WineHeader from './WineHeader';
 import Page404 from './Page404';
 import { turnOnSimpleMessage, SimpleMessage } from './SimpleMessage';
@@ -32,6 +35,8 @@ import StoreList from './StoreList';
 import StoreModal from './StoreModal';
 import StoreInsertModal from './StoreInsertModal';
 import StoreOutModal from './StoreOutModal';
+import VintageListForSale from './VintageListForSale';
+import SaleListForSale from './SaleListForSale';
 
 export {
   Entry,
@@ -46,7 +51,9 @@ export {
   AccountModal,
   CustomerSideModal,
   CustomerSideModal2,
-
+  CompleteSaleModal,
+  CompleteVintageModal,
+  SaleOrVintage,
   WineHeader,
   Page404,
   turnOnSimpleMessage,
@@ -69,5 +76,7 @@ export {
   StoreModal,
   StoreInsertModal,
   StoreOutModal,
+  VintageListForSale,
+  SaleListForSale,
 };
 

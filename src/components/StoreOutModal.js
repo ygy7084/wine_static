@@ -236,6 +236,7 @@ class StoreOutModal extends React.Component {
       <StyleRoot>
         <div>
           <Modal
+            animation={false}
             show
             bsSize="lg"
           >

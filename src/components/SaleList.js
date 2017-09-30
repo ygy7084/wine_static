@@ -10,6 +10,9 @@ import {
   InputGroup,
   ButtonGroup,
 } from 'react-bootstrap';
+import {
+  listFinder,
+} from '../modules';
 
 const InputGroupRadium = Radium(InputGroup);
 const styles = {
@@ -42,8 +45,13 @@ const styles = {
     padding: '1rem',
   },
   table_tr: {
-    ':hover': {
-      cursor: 'pointer',
+    base: {
+      ':hover': {
+        cursor: 'pointer',
+      },
+    },
+    selected: {
+      background: 'lightblue',
     },
   },
   findForm: {
@@ -66,68 +74,51 @@ const styles = {
 const findModeList = [
   {
     name: '영문 줄임명',
-    doc: 'vintage',
-    subdoc: 'original',
-    property: 'eng_shortname',
+    key: ['vintage', 'original', 'eng_shortname'],
   },
   {
     name: '한글 줄임명',
-    doc: 'vintage',
-    subdoc: 'original',
-    property: 'kor_shortname',
+    key: ['vintage', 'original', 'kor_shortname'],
   },
   {
     name: '영문 풀네임',
-    doc: 'vintage',
-    subdoc: 'original',
-    property: 'eng_fullname',
+    key: ['vintage', 'original', 'eng_fullname'],
   },
   {
     name: '한글 풀네임',
-    doc: 'vintage',
-    subdoc: 'original',
-    property: 'kor_fullname',
+    key: ['vintage', 'original', 'kor_fullname'],
   },
   {
     name: '종류',
-    doc: 'vintage',
-    subdoc: 'original',
-    property: 'category',
+    key: ['vintage', 'original', 'category'],
   },
   {
     name: '원산지',
-    doc: 'vintage',
-    subdoc: 'original',
-    property: 'locationString',
+    key: ['vintage', 'original', 'locationString'],
   },
   {
     name: '품종',
-    doc: 'vintage',
-    subdoc: 'original',
-    property: 'grapeString',
+    key: ['vintage', 'original', 'grapeString'],
   },
   {
     name: '빈티지',
-    doc: 'vintage',
-    property: 'vintage',
+    key: ['vintage', 'vintage'],
   },
   {
     name: '도매가',
-    doc: 'vintage',
-    property: 'wholeSalePrice',
+    key: ['wholeSalePrice'],
   },
   {
     name: '매장명',
-    doc: 'shop',
-    property: 'name',
+    key: ['shop', 'name'],
   },
   {
     name: '판매가',
-    property: 'price',
+    key: ['price'],
   },
   {
     name: '최저가',
-    property: 'lowestPrice',
+    key: ['lowestPrice'],
   },
 ];
 class SaleList extends React.Component {
@@ -168,18 +159,13 @@ class SaleList extends React.Component {
       });
     } else {
       try {
-        const regex = new RegExp(input);
-        const found = [];
-        const mode = findModeList.find(item => item.name === this.state.findMode);
-        for (const obj of this.props.list) {
-          if(mode.subdoc && regex.exec(((obj[mode.doc])[mode.subdoc])[mode.property])) {
-            found.push(obj);
-          } else if (mode.doc && regex.exec((obj[mode.doc])[mode.property])) {
-            found.push(obj);
-          } else if (regex.exec(obj[mode.property])) {
-            found.push(obj);
-          }
-        }
+        const found =
+          listFinder(
+            this.props.list,
+            findModeList,
+            this.state.findMode,
+            input,
+          );
         this.setState({
           list: found,
           findInput: input,
@@ -229,6 +215,44 @@ class SaleList extends React.Component {
                     onClick={this.props.saleRemoveAllClick}
                   >전부 삭제</Button>
               }
+              {
+                this.props.fromSaleBulk ?
+                  <Button
+                    bsStyle="warning"
+                    onClick={this.props.removeSelectedSale}
+                  >선택 취소</Button>
+                  : null
+              }
+              {
+                this.props.fromSaleBulk ?
+                  <Button
+                    bsStyle="success"
+                    onClick={this.props.completeSelectedSale}
+                  >{`${this.props.selectedSale.length}개 선택 수정`}</Button>
+                  : null
+              }
+              {
+                this.props.fromSaleBulk ?
+                  <Button
+                    bsStyle="danger"
+                    onClick={this.props.selectRemove}
+                  >{`${this.props.selectedSale.length}개 선택 삭제`}</Button>
+                  : null
+              }
+              {
+                this.props.fromSaleBulk ?
+                  this.props.selectedSale.length ?
+                    <Button
+                      bsStyle="info"
+                      onClick={() => this.props.selectAll()}
+                    >선택 취소</Button>
+                    :
+                    <Button
+                      bsStyle="info"
+                      onClick={() => this.props.selectAll('sale')}
+                    >전부 선택</Button>
+                  :null
+              }
             </ButtonGroup>
           </div>
           <InputGroupRadium style={styles.rightButtons}>
@@ -274,11 +298,14 @@ class SaleList extends React.Component {
                 <th style={[styles.table_th.base]}>한글 줄임명</th>
                 <th style={[styles.table_th.base]}>종류</th>
                 <th style={[styles.table_th.base]}>빈티지</th>
-                <th style={[styles.table_th.base]}>도매가</th>
                 <th style={[styles.table_th.base]}>매장명</th>
-                <th style={[styles.table_th.base]}>판매가</th>
+                <th style={[styles.table_th.base]}>도매가</th>
                 <th style={[styles.table_th.base]}>최저가</th>
-
+                <th style={[styles.table_th.base]}>판매가</th>
+                { this.props.fromSaleBulk ?
+                  <th style={[styles.table_th.base]}>상세</th> :
+                  null
+                }
               </tr>
             </thead>
             <tbody>
@@ -287,29 +314,76 @@ class SaleList extends React.Component {
                   (
                     <tr
                       key={item._id}
-                      onClick={() =>
-                        this.props.saleClick(item)
+                      onClick={this.props.fromSaleBulk ? null :
+                        () => this.props.saleClick(item)
                       }
-                      style={styles.table_tr}
+                      style={[styles.table_tr.base,
+                        this.props.fromSaleBulk &&
+                        this.props.selectedSale.find(obj => obj._id === item._id) ?
+                          styles.table_tr.selected : null
+                      ]}
                     >
-                      <td>{((this.state.activePage - 1) * this.state.itemInList) + i + 1}</td>
-                      <td>{
-                        item.vintage ?
-                          item.vintage.original ?
-                            item.vintage.original.eng_shortname : '' : ''}</td>
-                      <td>{
-                        item.vintage ?
-                          item.vintage.original ?
-                            item.vintage.original.kor_shortname : '' : ''}</td>
-                      <td>{
-                        item.vintage ?
-                          item.vintage.original ?
-                            item.vintage.original.category : '' : ''}</td>
-                      <td>{item.vintage ? item.vintage.vintage : ''}</td>
-                      <td>{item.vintage ? item.vintage.wholeSalePrice : ''}</td>
-                      <td>{item.shop ? item.shop.name : ''}</td>
-                      <td>{item.price}</td>
-                      <td>{item.lowestPrice}</td>
+                      <td
+                        onClick={this.props.fromSaleBulk ?
+                          () => this.props.selectSale(item) : null}
+                      >
+                        {((this.state.activePage - 1) * this.state.itemInList) + i + 1}</td>
+                      <td
+                        onClick={this.props.fromSaleBulk ?
+                          () => this.props.selectSale(item) : null}
+                      >
+                        {
+                          item.vintage ?
+                            item.vintage.original ?
+                              item.vintage.original.eng_shortname : '' : ''}</td>
+                      <td
+                        onClick={this.props.fromSaleBulk ?
+                          () => this.props.selectSale(item) : null}
+                      >
+                        {
+                          item.vintage ?
+                            item.vintage.original ?
+                              item.vintage.original.kor_shortname : '' : ''}</td>
+                      <td
+                        onClick={this.props.fromSaleBulk ?
+                          () => this.props.selectSale(item) : null}
+                      >
+                        {
+                          item.vintage ?
+                            item.vintage.original ?
+                              item.vintage.original.category : '' : ''}</td>
+                      <td
+                        onClick={this.props.fromSaleBulk ?
+                          () => this.props.selectSale(item) : null}
+                      >
+                        {item.vintage ? item.vintage.vintage : ''}</td>
+                      <td
+                        onClick={this.props.fromSaleBulk ?
+                          () => this.props.selectSale(item) : null}
+                      >
+                        {item.shop ? item.shop.name : ''}</td>
+                      <td
+                        onClick={this.props.fromSaleBulk ?
+                          () => this.props.selectSale(item) : null}
+                      >
+                        {item.wholeSalePrice}</td>
+                      <td
+                        onClick={this.props.fromSaleBulk ?
+                          () => this.props.selectSale(item) : null}
+                      >
+                        {item.lowestPrice}</td>
+                      <td
+                        onClick={this.props.fromSaleBulk ?
+                          () => this.props.selectSale(item) : null}
+                      >
+                        {item.price}</td>
+                      { this.props.fromSaleBulk ?
+                        <td
+                          style={{ background: 'antiquewhite' }}
+                          onClick={() => this.props.showSaleDetail(item)}
+                        >상세</td> :
+                        null
+                      }
                     </tr>
                   ))
               }

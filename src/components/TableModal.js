@@ -1,6 +1,11 @@
 /* global FileReader */
 import React from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'react-bootstrap';
+import {
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter } from 'react-bootstrap';
 
 const styles = {
   header: {
@@ -12,7 +17,8 @@ const TableModal = function TableModal(props) {
     <div>
       <Modal
         show
-        bsSize="lg"
+        animation={false}
+        bsSize="large"
       >
         <ModalHeader style={styles.header}>
           <h1>{props.title}</h1>

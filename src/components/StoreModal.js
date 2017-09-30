@@ -75,6 +75,7 @@ class StoreModal extends React.Component {
     return (
       <div>
         <Modal
+          animation={false}
           show
         >
           <ModalHeader style={styles.header}>

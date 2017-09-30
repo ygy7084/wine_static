@@ -42,7 +42,10 @@ class Shop extends React.Component {
   }
   shopLoad() {
     loader.on();
-    this.props.shopGetListRequest()
+    this.props.shopGetListRequest(
+      this.props.accountSession.account.level === '매장' ?
+        this.props.accountSession.account.shop : null,
+    )
       .then((data) => {
         if (this.props.shopGetList.status === 'SUCCESS') {
           loader.off();
@@ -99,21 +102,25 @@ class Shop extends React.Component {
       });
   }
   shopRemove(shop) {
-    loader.on();
-    this.props.shopRemoveRequest(shop)
-      .then((data) => {
-        if (this.props.shopRemove.status === 'SUCCESS') {
-          this.props.changePage('/shop');
-          this.shopLoad();
-        } else if (this.props.shopRemove.status === 'FAILURE') {
+    if (this.props.accountSession.account.level === '매장') {
+      errorHandler({ message: '권한이 없습니다.' });
+    } else {
+      loader.on();
+      this.props.shopRemoveRequest(shop)
+        .then((data) => {
+          if (this.props.shopRemove.status === 'SUCCESS') {
+            this.props.changePage('/shop');
+            this.shopLoad();
+          } else if (this.props.shopRemove.status === 'FAILURE') {
+            loader.off();
+            throw data;
+          }
+        })
+        .catch((data) => {
           loader.off();
-          throw data;
-        }
-      })
-      .catch((data) => {
-        loader.off();
-        errorHandler(data);
-      });
+          errorHandler(data);
+        });
+    }
   }
   shopRemoveAll() {
     loader.on();
@@ -136,6 +143,10 @@ class Shop extends React.Component {
     return (
       <div>
         <ShopList
+          onlyView={
+            this.props.accountSession.account &&
+            this.props.accountSession.account.level === '매장'
+          }
           shopClick={this.shopClick}
           shopInsertClick={this.shopInsertClick}
           list={this.props.shopGetList.list}
@@ -183,6 +194,10 @@ class Shop extends React.Component {
 }
 
 const mapStateToProps = state => ({
+  accountSession: {
+    status: state.account.session.status,
+    account: state.account.session.account,
+  },
   shopGetList: {
     status: state.shop.getList.status,
     list: state.shop.getList.list,

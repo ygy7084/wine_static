@@ -17,11 +17,13 @@ class SaleModal extends React.Component {
       modifyMode: false,
       price: this.props.sale.price,
       lowestPrice: this.props.sale.lowestPrice,
+      wholeSalePrice: this.props.sale.wholeSalePrice,
       vintage: this.props.sale.vintage,
       shop: this.props.sale.shop,
     };
     this.handlePriceInput = this.handlePriceInput.bind(this);
     this.handleLowestPriceInput = this.handleLowestPriceInput.bind(this);
+    this.handleWholeSalePriceInput = this.handleWholeSalePriceInput.bind(this);
     this.saleModify = this.saleModify.bind(this);
     this.saleRemove = this.saleRemove.bind(this);
   }
@@ -46,6 +48,15 @@ class SaleModal extends React.Component {
       lowestPrice: value,
     });
   }
+  handleWholeSalePriceInput(e) {
+    let value = e.target.value;
+    if (parseInt(value, 10) < 0) {
+      value = '0';
+    }
+    this.setState({
+      wholeSalePrice: value,
+    });
+  }
   saleModify() {
     this.props.saleModify({
       _id: this.props.sale._id,
@@ -53,6 +64,7 @@ class SaleModal extends React.Component {
       shop: this.state.shop._id,
       price: this.state.price,
       lowestPrice: this.state.lowestPrice,
+      wholeSalePrice: this.state.wholeSalePrice,
     });
   }
   saleRemove() {
@@ -118,8 +130,9 @@ class SaleModal extends React.Component {
                 <ControlLabel>도매가</ControlLabel>
                 <FormControl
                   type="number"
-                  value={vintage.wholeSalePrice}
-                  disabled
+                  value={this.state.wholeSalePrice}
+                  onChange={e => this.setState({ wholeSalePrice: e.target.value })}
+                  disabled={!this.state.modifyMode}
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">

@@ -30,6 +30,10 @@ const findModeList = [
     name: '주소',
     property: 'address',
   },
+  {
+    name: '등급',
+    property: 'grade',
+  },
 ];
 const styles = {
   table: {
@@ -209,11 +213,7 @@ class CustomerList extends React.Component {
                 <th style={[styles.table_th.base]}>전화번호</th>
                 <th style={[styles.table_th.base]}>이메일</th>
                 <th style={[styles.table_th.base]}>주소</th>
-                {
-                  this.props.account ? this.props.account.level === '관리자' ?
-                    <th style={[styles.table_th.base]}>매장명</th>
-                    : null : null
-                }
+                <th style={[styles.table_th.base]}>등급</th>
               </tr>
             </thead>
             <tbody>
@@ -232,11 +232,7 @@ class CustomerList extends React.Component {
                       <td>{item.phone}</td>
                       <td>{item.email}</td>
                       <td>{item.address}</td>
-                      {
-                        this.props.account ? this.props.account.level === '관리자' ?
-                          <td>{item.shop ? item.shop.name : ''}</td>
-                          : null : null
-                      }
+                      <td>{item.grade}</td>
                     </tr>
                   ))
               }

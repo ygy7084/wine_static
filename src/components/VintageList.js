@@ -42,8 +42,13 @@ const styles = {
     padding: '1rem',
   },
   table_tr: {
-    ':hover': {
-      cursor: 'pointer',
+    base: {
+      ':hover': {
+        cursor: 'pointer',
+      },
+    },
+    selected: {
+      background: 'lightblue',
     },
   },
   findForm: {
@@ -102,11 +107,7 @@ const findModeList = [
   {
     name: '빈티지',
     property: 'vintage',
-  },
-  {
-    name: '도매가',
-    property: 'wholeSalePrice',
-  },
+  }
 ];
 class VintageList extends React.Component {
   constructor(props) {
@@ -205,6 +206,36 @@ class VintageList extends React.Component {
                     onClick={this.props.vintageRemoveAllClick}
                   >전부 삭제</Button>
               }
+              {
+                this.props.fromSaleBulk ?
+                  <Button
+                    bsStyle="warning"
+                    onClick={this.props.removeSelectedVintage}
+                  >선택 취소</Button>
+                  : null
+              }
+              {
+                this.props.fromSaleBulk ?
+                  <Button
+                    bsStyle="success"
+                    onClick={this.props.completeSelectedVintage}
+                  >{`${this.props.selectedVintage.length}개 선택 완료`}</Button>
+                  : null
+              }
+              {
+                this.props.fromSaleBulk ?
+                  this.props.selectedVintage.length ?
+                    <Button
+                      bsStyle="info"
+                      onClick={() => this.props.selectAll()}
+                    >선택 취소</Button>
+                    :
+                    <Button
+                      bsStyle="info"
+                      onClick={() => this.props.selectAll('vintage')}
+                    >전부 선택</Button>
+                  :null
+              }
             </ButtonGroup>
           </div>
           <InputGroupRadium style={styles.rightButtons}>
@@ -252,7 +283,10 @@ class VintageList extends React.Component {
                 <th style={[styles.table_th.base]}>원산지</th>
                 <th style={[styles.table_th.base]}>품종</th>
                 <th style={[styles.table_th.base]}>빈티지</th>
-                <th style={[styles.table_th.base]}>도매가</th>
+                { this.props.fromSaleBulk ?
+                  <th style={[styles.table_th.base]}>상세</th> :
+                  null
+                }
               </tr>
             </thead>
             <tbody>
@@ -261,19 +295,52 @@ class VintageList extends React.Component {
                   (
                     <tr
                       key={item._id}
-                      onClick={() =>
-                        this.props.vintageClick(item)
+                      onClick={this.props.fromSaleBulk ? null :
+                        () => this.props.vintageClick(item)
                       }
-                      style={styles.table_tr}
+                      style={[styles.table_tr.base,
+                        this.props.fromSaleBulk &&
+                        this.props.selectedVintage.find(obj => obj._id === item._id) ?
+                          styles.table_tr.selected : null
+                      ]}
                     >
-                      <td>{((this.state.activePage - 1) * this.state.itemInList) + i + 1}</td>
-                      <td>{item.original ? item.original.eng_shortname : ''}</td>
-                      <td>{item.original ? item.original.kor_shortname : ''}</td>
-                      <td>{item.original ? item.original.category : ''}</td>
-                      <td>{item.original ? item.original.locationString : ''}</td>
-                      <td>{item.original ? item.original.grapeString : ''}</td>
-                      <td>{item.vintage}</td>
-                      <td>{item.wholeSalePrice}</td>
+                      <td
+                        onClick={this.props.fromSaleBulk ?
+                          () => this.props.selectVintage(item) : null}
+                      >
+                        {((this.state.activePage - 1) * this.state.itemInList) + i + 1}</td>
+                      <td
+                        onClick={this.props.fromSaleBulk ?
+                          () => this.props.selectVintage(item) : null}
+                      >{item.original ? item.original.eng_shortname : ''}</td>
+                      <td
+                        onClick={this.props.fromSaleBulk ?
+                          () => this.props.selectVintage(item) : null}
+                      >
+                        {item.original ? item.original.kor_shortname : ''}</td>
+                      <td
+                        onClick={this.props.fromSaleBulk ?
+                          () => this.props.selectVintage(item) : null}
+                      >{item.original ? item.original.category : ''}</td>
+                      <td
+                        onClick={this.props.fromSaleBulk ?
+                          () => this.props.selectVintage(item) : null}
+                      >{item.original ? item.original.locationString : ''}</td>
+                      <td
+                        onClick={this.props.fromSaleBulk ?
+                          () => this.props.selectVintage(item) : null}
+                      >{item.original ? item.original.grapeString : ''}</td>
+                      <td
+                        onClick={this.props.fromSaleBulk ?
+                          () => this.props.selectVintage(item) : null}
+                      >{item.vintage}</td>
+                      { this.props.fromSaleBulk ?
+                        <td
+                          style={{ background: 'antiquewhite' }}
+                          onClick={() => this.props.showVintageDetail(item)}
+                        >상세</td> :
+                        null
+                      }
                     </tr>
                   ))
               }

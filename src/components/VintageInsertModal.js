@@ -11,10 +11,8 @@ class VintageInsertModal extends React.Component {
     super(props);
     this.state = {
       vintage: '',
-      wholeSalePrice: '',
     };
     this.handleVintageInput = this.handleVintageInput.bind(this);
-    this.handleWholeSalePriceInput = this.handleWholeSalePriceInput.bind(this);
     this.vintageInsert = this.vintageInsert.bind(this);
   }
   handleVintageInput(e) {
@@ -26,20 +24,10 @@ class VintageInsertModal extends React.Component {
       vintage: value,
     });
   }
-  handleWholeSalePriceInput(e) {
-    let value = e.target.value;
-    if (parseInt(value, 10) < 0) {
-      value = '0';
-    }
-    this.setState({
-      wholeSalePrice: value,
-    });
-  }
   vintageInsert() {
     this.props.vintageInsert({
       original: this.props.original._id,
       vintage: this.state.vintage,
-      wholeSalePrice: this.state.wholeSalePrice,
     });
   }
   render() {
@@ -104,14 +92,6 @@ class VintageInsertModal extends React.Component {
                   type="number"
                   value={this.state.vintage}
                   onChange={e => this.setState({ vintage: e.target.value })}
-                />
-              </FormGroup>
-              <FormGroup controlId="formControlsText">
-                <ControlLabel>도매가</ControlLabel>
-                <FormControl
-                  type="number"
-                  value={this.state.wholeSalePrice}
-                  onChange={e => this.setState({ wholeSalePrice: e.target.value })}
                 />
               </FormGroup>
             </Form>

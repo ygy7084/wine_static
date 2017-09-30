@@ -108,23 +108,33 @@ class CustomerEntry extends React.Component {
   }
 
   render() {
-    console.log(this.props.customerGetList.list);
     return (
       <div>
         {this.props.customerGetList.list.length ?
           <Route
             path="/customerid/:id"
             render={(routeProps) => {
-              console.log(routeProps.match.params.id)
-              if(routeProps.match.params.id==='test') {
+              if (routeProps.match.params.id === 'test') {
                 return <CustomerSide />;
               }
-              else if (this.props.customerGetList.list.find(obj => obj._id === routeProps.match.params.id)) {
-                const storeList = this.props.storeGetList.list.filter(obj => obj.customer._id === routeProps.match.params.id);
-                const result =  this.props.storeGetList.result.filter(obj => obj.customer._id === routeProps.match.params.id);
+              else if (this.props.customerGetList.list.find(obj => obj.webAddress === routeProps.match.params.id)) {
+                const storeList = this.props.storeGetList.list.filter(obj => obj.customer.webAddress === routeProps.match.params.id);
+                const result =  this.props.storeGetList.result.filter(obj => obj.customer.webAddress === routeProps.match.params.id);
+                const summedResult = [];
+                for (let i = 0; i < result.length; i += 1) {
+                  const obj = summedResult.find(o =>
+                    o.sale._id === result[i].sale._id &&
+                    o.shop._id === result[i].shop._id
+                  );
+                  if (!obj) {
+                    summedResult.push(result[i]);
+                  } else {
+                    obj.remain += result[i].remain;
+                  }
+                }
                 const uniqueShop = this.props.storeGetList.result.map(obj => obj.shop.name)
                   .filter((v, i, s) => s.indexOf(v) === i);
-                return <CustomerSide2 list={storeList} result={result} uniqueShop={uniqueShop} />;
+                return <CustomerSide2 list={storeList} result={summedResult} uniqueShop={uniqueShop} />;
               }
               // return null;
               return <Page404 {...routeProps} />;

@@ -15,7 +15,6 @@ class CustomerInsertModal extends React.Component {
       phone: '',
       email: '',
       address: '',
-      grade: '',
     };
     this.customerInsert = this.customerInsert.bind(this);
   }
@@ -25,7 +24,7 @@ class CustomerInsertModal extends React.Component {
       phone: this.state.phone,
       email: this.state.email,
       address: this.state.address,
-      grade: this.state.grade,
+      shop: this.props.account.shop ? this.props.account.shop : null,
     });
   }
   render() {
@@ -49,11 +48,11 @@ class CustomerInsertModal extends React.Component {
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
-                <ControlLabel>전화번호</ControlLabel>
+                <ControlLabel>전화번호 (숫자만 입력하여 주십시요.)</ControlLabel>
                 <FormControl
                   type="text"
                   value={this.state.phone}
-                  onChange={e => this.setState({ phone: e.target.value })}
+                  onChange={e => this.setState({ phone: e.target.value.replace(/\D/g, '') })}
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
@@ -70,14 +69,6 @@ class CustomerInsertModal extends React.Component {
                   type="text"
                   value={this.state.address}
                   onChange={e => this.setState({ address: e.target.value })}
-                />
-              </FormGroup>
-              <FormGroup controlId="formControlsText">
-                <ControlLabel>등급</ControlLabel>
-                <FormControl
-                  type="text"
-                  value={this.state.grade}
-                  onChange={e => this.setState({ grade: e.target.value })}
                 />
               </FormGroup>
             </Form>

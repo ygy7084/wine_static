@@ -13,9 +13,11 @@ class SaleInsertModal extends React.Component {
     this.state = {
       price: '',
       lowestPrice: '',
+      wholeSalePrice: '',
       shop: null,
     };
     this.handlePriceInput = this.handlePriceInput.bind(this);
+    this.handleWholeSalePriceInput = this.handleWholeSalePriceInput.bind(this);
     this.handleLowestPriceInput = this.handleLowestPriceInput.bind(this);
     this.saleInsert = this.saleInsert.bind(this);
   }
@@ -40,6 +42,15 @@ class SaleInsertModal extends React.Component {
       lowestPrice: value,
     });
   }
+  handleWholeSalePriceInput(e) {
+    let value = e.target.value;
+    if (parseInt(value, 10) < 0) {
+      value = '0';
+    }
+    this.setState({
+      wholeSalePrice: value,
+    });
+  }
   saleInsert() {
     if (!this.state.shop || !this.state.shop._id) {
       errorHandler({ message: '매장 선택이 잘못되었습니다. ' });
@@ -49,6 +60,7 @@ class SaleInsertModal extends React.Component {
         shop: this.state.shop._id,
         price: this.state.price,
         lowestPrice: this.state.lowestPrice,
+        wholeSalePrice: this.state.wholeSalePrice,
       });
     }
   }
@@ -108,8 +120,8 @@ class SaleInsertModal extends React.Component {
                 <ControlLabel>도매가</ControlLabel>
                 <FormControl
                   type="number"
-                  value={vintage.wholeSalePrice}
-                  disabled
+                  value={this.state.wholeSalePrice}
+                  onChange={e => this.setState({ wholeSalePrice: e.target.value })}
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">

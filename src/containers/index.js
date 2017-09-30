@@ -11,6 +11,7 @@ import CustomerSide2 from './CustomerSide2';
 import Account from './Account';
 import Original from './Original';
 import Vintage from './Vintage';
+import SaleBulk from './SaleBulk';
 import Sale from './Sale';
 
 export {
@@ -22,9 +23,11 @@ export {
   Customer,
   Store,
   Main,
-  CustomerSide,  CustomerSide2,
+  CustomerSide,
+  CustomerSide2,
   Account,
   Original,
   Vintage,
+  SaleBulk,
   Sale,
 };

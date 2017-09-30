@@ -54,11 +54,11 @@ class ShopModal extends React.Component {
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
-                <ControlLabel>전화번호</ControlLabel>
+                <ControlLabel>전화번호 (숫자만 입력하여 주십시요.)</ControlLabel>
                 <FormControl
                   type="text"
                   value={this.state.phone}
-                  onChange={e => this.setState({ phone: e.target.value })}
+                  onChange={e => this.setState({ phone: e.target.value.replace(/\D/g, '') })}
                   disabled={!this.state.modifyMode}
                 />
               </FormGroup>

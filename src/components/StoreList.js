@@ -248,10 +248,13 @@ class StoreList extends React.Component {
                 bsStyle="primary"
                 onClick={this.props.refresh}
               >새로 고침</Button>
-              <Button
-                bsStyle="danger"
-                onClick={this.props.storeRemoveAllClick}
-              >전부 삭제</Button>
+              {
+                this.props.onlyView ? null :
+                  <Button
+                    bsStyle="danger"
+                    onClick={this.props.storeRemoveAllClick}
+                  >전부 삭제</Button>
+              }
             </ButtonGroup>
           </div>
           <InputGroupRadium style={styles.rightButtons}>

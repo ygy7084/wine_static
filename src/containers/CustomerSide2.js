@@ -2,6 +2,8 @@ import React from 'react';
 import SwipeableViews from 'react-swipeable-views';
 import BodyBackgroundColor from 'react-body-backgroundcolor';
 import FlipCard from 'react-flipcard';
+import IconPhone from 'react-icons/lib/ti/phone';
+
 import { Pagination } from 'react-bootstrap';
 import './CustomerSide.css';
 
@@ -50,13 +52,10 @@ const styles = {
     msFilter: 'FlipH',
   },
   contact: {
-    border: '1px #e7776c solid',
     color: '#e7776c',
     cursor: 'pointer',
     textDecoration: 'none',
-    padding: '10px 50px',
     fontSize: '2rem',
-    borderRadius: '20px',
   },
   contact_div: {
     marginTop: '30px',
@@ -79,18 +78,15 @@ class CustomerSide extends React.Component {
     super(props);
     this.state = {
       customerSideModal2Toggle: false,
-      isFlipped: false,
       list: this.props.list,
       result: this.props.result,
       activePage: 1,
       itemInList: 5,
       cardIndex: 0,
-      rearCardDisplay: 'none',
       mode: '입고 와인 조회',
       shop: '전체',
     };
     this.handleSelect = this.handleSelect.bind(this);
-    this.toggleFlip = this.toggleFlip.bind(this);
     this.selectMode = this.selectMode.bind(this);
     this.selectShop = this.selectShop.bind(this);
   }
@@ -103,34 +99,9 @@ class CustomerSide extends React.Component {
   handleSelect(value) {
     this.setState({ activePage: value });
   }
-  toggleFlip() {
-    if (flipOK) {
-      flipOK = !flipOK;
-      if (this.state.isFlipped) {
-        this.setState({
-          isFlipped: !this.state.isFlipped,
-        });
-        setTimeout(() => {
-          this.setState({
-            rearCardDisplay: 'none',
-          });
-        }, 500);
-      } else {
-        this.setState({
-          isFlipped: !this.state.isFlipped,
-          rearCardDisplay: 'inherit',
-        });
-      }
-      setTimeout(() => {
-        flipOK = true;
-      }, 1500);
-    }
-  }
   selectMode(mode) {
       this.setState({
       customerSideModal2Toggle: false,
-      isFlipped: false,
-      rearCardDisplay: 'none',
       mode: mode,
     });
   }
@@ -141,8 +112,6 @@ class CustomerSide extends React.Component {
         customerSideModal2Toggle: false,
         isFlipped: false,
         cardIndex: 0,
-        rearCardDisplay: 'none',
-        rearCardDisplay: 'none',
         list: this.props.list,
         result: this.props.result,
         shop: shop,
@@ -151,10 +120,7 @@ class CustomerSide extends React.Component {
 
       this.setState({
         customerSideModal2Toggle: false,
-        isFlipped: false,
         cardIndex: 0,
-        rearCardDisplay: 'none',
-        rearCardDisplay: 'none',
         list: this.props.list.filter(obj => obj.shop.name === shop),
         result: this.props.result.filter(obj => obj.shop.name === shop),
         shop: shop,
@@ -196,9 +162,9 @@ class CustomerSide extends React.Component {
 
     const list = this.state.list;
     const result = this.state.result;
-    console.log(list);
-    console.log(result);
-    console.log(result[0] ? result[0].sale.vintage.original.photo_url : '')
+    // console.log(list);
+    // console.log(result);
+    // console.log(result[0] ? result[0].sale.vintage.original.photo_url : '')
     return (
       <BodyBackgroundColor backgroundColor={backgroundColor}>
         <div>
@@ -212,74 +178,46 @@ class CustomerSide extends React.Component {
                   >
                     Menu
                   </h4>
-                  <FlipCard
-                    disabled
-                    flipped={this.state.isFlipped}
+                  <SwipeableViews
+                    style={styles.swipeableViews}
+                    onChangeIndex={i => this.setState({ cardIndex: i })}
+                    enableMouseEvents
                   >
-                    <SwipeableViews
-                      style={styles.swipeableViews}
-                      onChangeIndex={i => this.setState({ cardIndex: i })}
-                      enableMouseEvents
-                    >
-                      {
-                        result.map((item, i) => (
-                          <div key={item.sale._id} style={Object.assign({}, styles.slide)}>
-                            <Card style={styles.card}>
-                              <CardHeader>
-                                <CardTitle><h2>{item.sale.vintage.original.kor_shortname}</h2></CardTitle>
-                                <CardSubtitle>{item.sale.vintage.original.eng_shortname}</CardSubtitle>
-                                <CardSubtitle>{item.sale.vintage.vintage}</CardSubtitle>
-                              </CardHeader>
-                              <CardImg
-                                onClick={this.toggleFlip}
-                                top
-                                style={styles.image}
-                                src={`${configure.imagePath}${item.sale.vintage.original.photo_url}`}
-                                alt="Card image cap"
-                              />
-                              <CardBlock>
-                                <CardText><p>{`${item.remain}개 보유`}</p></CardText>
-                                <CardText><h4>{item.shop.name}</h4></CardText>
-                                <div style={styles.contact_div}>
-                                  <hr />
-                                  <a
-                                    href={`tel:${item.shop.phone}`}
-                                    style={styles.contact}>전화걸기</a>
-                                </div>
-                              </CardBlock>
-                              <CardFooter>
-                                <p style={styles.cardFooter}>{`${i + 1}/${result.length}`}</p>
-                              </CardFooter>
-                            </Card>
-                          </div>
-                        ))
-                      }
-                    </SwipeableViews>
-                    <div style={Object.assign({}, styles.slide, { display: this.state.rearCardDisplay })}>
-                      <Card style={styles.card}>
-                        <CardImg
-                          onClick={this.toggleFlip}
-                          top
-                          style={styles.image2}
-                          alt="Card image cap"
-                          src={result[this.state.cardIndex] ? `${configure.imagePath}${result[this.state.cardIndex].sale.vintage.original.photo_url}` : ''}
-                        />
-                        <CardBlock>
-                          <CardTitle><h4>{result[this.state.cardIndex] ? result[this.state.cardIndex].sale.vintage.original.kor_fullname : ''}</h4></CardTitle>
-                          <CardSubtitle><h4>{result[this.state.cardIndex] ? result[this.state.cardIndex].sale.vintage.original.eng_fullname: ''}</h4></CardSubtitle>
-                          <CardSubtitle>{result[this.state.cardIndex] ? result[this.state.cardIndex].sale.vintage.vintage : ''}</CardSubtitle>
-                        </CardBlock>
-                        <CardBlock>
-                          <CardText><p>원산지: {result[this.state.cardIndex] ? result[this.state.cardIndex].sale.vintage.original.locationString : ''}</p></CardText>
-                          <CardText><p>종류: {result[this.state.cardIndex] ? result[this.state.cardIndex].sale.vintage.original.category : ''}</p></CardText>
-                          <div style={styles.contact_div}>
-                            <hr />
-                            <p>{result[this.state.cardIndex] ? result[this.state.cardIndex].sale.vintage.original.desc : ''}</p>
-                          </div>
-                        </CardBlock>
-                      </Card>
-                    </div>
-                  </FlipCard>
+                    {
+                      result.map((item, i) => (
+                        <div key={`${item._id}${Math.random()*10000}`} style={Object.assign({}, styles.slide)}>
+                          <Card style={styles.card}>
+                            <CardHeader>
+                              <CardTitle><h2>{item.sale.vintage.original.kor_shortname}</h2></CardTitle>
+                              <CardSubtitle>{item.sale.vintage.original.eng_shortname}</CardSubtitle>
+                              <CardSubtitle>{item.sale.vintage.vintage}</CardSubtitle>
+                            </CardHeader>
+                            <CardImg
+                              onClick={this.toggleFlip}
+                              top
+                              style={styles.image}
+                              src={`${configure.imagePath}${item.sale.vintage.original.photo_url}`}
+                              alt="Card image cap"
+                            />
+                            <CardBlock>
+                              <CardText><p>{`${item.remain}개 보유`}</p></CardText>
+                              <CardText>
+                                <h4>{item.shop.name}</h4>
+                                <a
+                                  href={`tel:${item.shop.phone}`}
+                                  style={styles.contact}>
+                                  <IconPhone />
+                                </a>
+                              </CardText>
+                            </CardBlock>
+                            <CardFooter>
+                              <p style={styles.cardFooter}>{`${i + 1}/${result.length}`}</p>
+                            </CardFooter>
+                          </Card>
+                        </div>
+                      ))
+                    }
+                  </SwipeableViews>
                 </div>
               ) : (
                 <div>
@@ -295,16 +233,18 @@ class CustomerSide extends React.Component {
                         <CardTitle><h4>입출고 내역</h4></CardTitle>
                       </CardHeader>
                       {
-                        this.state.list.map(item => (
-                          <div key={Math.random()*10000}>
-                            <hr />
-                            <CardBlock>
-                            <CardText><p>{item.datetimeString}</p></CardText>
-                            <CardText><p>{item.sale.vintage.original.kor_shortname}/{item.sale.vintage.vintage}년</p></CardText>
-                            <CardText><p>{item.shop.name}<strong>{item.quantityChange > 0 ? '입고' : '출고'} {item.quantityChange}</strong></p></CardText>
-                            </CardBlock>
-                          </div>
-                        ))
+                        this.state.list.map(item => {
+                          return (
+                            <div key={`${item._id}inandout`}>
+                              <hr />
+                              <CardBlock>
+                                <CardText><p>{item.datetimeString}</p></CardText>
+                                <CardText><p>{item.sale.vintage.original.kor_shortname}/{item.sale.vintage.vintage}년</p></CardText>
+                                <CardText><p>{item.shop.name}<strong>{item.quantityChange > 0 ? '입고' : '출고'} {item.quantityChange}</strong></p></CardText>
+                              </CardBlock>
+                            </div>
+                          )
+                        })
                       }
                       <CardFooter>
                         <Pagination

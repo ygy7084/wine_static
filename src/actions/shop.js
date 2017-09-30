@@ -38,10 +38,12 @@ const getListFailure = function getListFailure(error) {
     error,
   };
 };
-const getListRequest = function getListRequest() {
+const getListRequest = function getListRequest(id) {
   return (dispatch) => {
     dispatch(getList());
-    return fetch(`${API}/api/shop/all`, {
+    return fetch(id ?
+      `${API}/api/shop/all/${id}` :
+      `${API}/api/shop/all`, {
       method: 'GET',
       credentials: 'include',
       headers: {

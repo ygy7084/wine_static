@@ -11,6 +11,7 @@ const CustomerSideModal = function CustomerSideModal(props) {
   return (
     <div>
       <Modal
+        animation={false}
         show={props.toggle}
       >
         <ModalBody>

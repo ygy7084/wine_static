@@ -6,6 +6,7 @@ import IconShop from 'react-icons/lib/ti/home-outline';
 import IconCustomer from 'react-icons/lib/ti/user';
 import IconStore from 'react-icons/lib/ti/document-text';
 import IconMenu from 'react-icons/lib/ti/th-menu';
+import IconSale from 'react-icons/lib/md/list';
 import {
   Route,
 } from 'react-router-dom';
@@ -112,7 +113,11 @@ const sideListItems = [
   { name: '와인',
     path: '/wine',
     icon: IconWine,
-    authority: ['관리자', '매장'] },
+    authority: ['관리자'] },
+  { name: '상품',
+    path: '/sale',
+    icon: IconSale,
+    authority: ['매장'] },
   { name: '매장',
     path: '/shop',
     icon: IconShop,

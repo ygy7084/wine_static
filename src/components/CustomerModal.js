@@ -19,7 +19,8 @@ class CustomerModal extends React.Component {
       phone: this.props.customer.phone,
       email: this.props.customer.email,
       address: this.props.customer.address,
-      grade: this.props.customer.grade,
+      webAddress: this.props.customer.webAddress,
+      shop: this.props.account.shop ? this.props.account.shop : null,
     };
     this.customerModify = this.customerModify.bind(this);
     this.customerRemove = this.customerRemove.bind(this);
@@ -31,7 +32,7 @@ class CustomerModal extends React.Component {
       phone: this.state.phone,
       email: this.state.email,
       address: this.state.address,
-      grade: this.state.grade,
+      shop: this.props.account.shop ? this.props.account.shop : null,
     });
   }
   customerRemove() {
@@ -41,6 +42,7 @@ class CustomerModal extends React.Component {
     return (
       <div>
         <Modal
+          animation={false}
           show
         >
           <ModalHeader style={styles.header}>
@@ -58,11 +60,11 @@ class CustomerModal extends React.Component {
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
-                <ControlLabel>전화번호</ControlLabel>
+                <ControlLabel>전화번호 (숫자만 입력하여 주십시요.)</ControlLabel>
                 <FormControl
                   type="text"
                   value={this.state.phone}
-                  onChange={e => this.setState({ phone: e.target.value })}
+                  onChange={e => this.setState({ phone: e.target.value.replace(/\D/g, '') })}
                   disabled={!this.state.modifyMode}
                 />
               </FormGroup>
@@ -85,20 +87,11 @@ class CustomerModal extends React.Component {
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
-                <ControlLabel>등급</ControlLabel>
+                <ControlLabel>웹주소</ControlLabel>
                 <FormControl
                   type="text"
-                  value={this.state.grade}
-                  onChange={e => this.setState({ grade: e.target.value })}
-                  disabled={!this.state.modifyMode}
-                />
-              </FormGroup>
-              <FormGroup controlId="formControlsText">
-                <ControlLabel>DB ID</ControlLabel>
-                <FormControl
-                  type="text"
-                  value={this.props.customer._id}
-                  disabled={!this.state.modifyMode}
+                  value={this.state.webAddress}
+                  disabled
                 />
               </FormGroup>
             </Form>

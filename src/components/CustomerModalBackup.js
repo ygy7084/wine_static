@@ -10,40 +10,34 @@ const styles = {
     marginRight: '10px',
   },
 };
-class VintageModal extends React.Component {
+class CustomerModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      vintage: this.props.vintage.vintage,
       modifyMode: false,
+      name: this.props.customer.name,
+      phone: this.props.customer.phone,
+      email: this.props.customer.email,
+      address: this.props.customer.address,
+      grade: this.props.customer.grade,
     };
-    this.handleVintageInput = this.handleVintageInput.bind(this);
-    this.vintageModify = this.vintageModify.bind(this);
-    this.vintageRemove = this.vintageRemove.bind(this);
+    this.customerModify = this.customerModify.bind(this);
+    this.customerRemove = this.customerRemove.bind(this);
   }
-  handleVintageInput(e) {
-    let value = e.target.value;
-    if (parseInt(value, 10) < 1) {
-      value = '1';
-    }
-    this.setState({
-      vintage: value,
+  customerModify() {
+    this.props.customerModify({
+      _id: this.props.customer._id,
+      name: this.state.name,
+      phone: this.state.phone,
+      email: this.state.email,
+      address: this.state.address,
+      grade: this.state.grade,
     });
   }
-  vintageModify() {
-    this.props.vintageModify({
-      _id: this.props.vintage._id,
-      vintage: this.state.vintage,
-    });
-  }
-  vintageRemove() {
-    this.props.vintageRemove({ _id: this.props.vintage._id });
+  customerRemove() {
+    this.props.customerRemove({ _id: this.props.customer._id });
   }
   render() {
-    if (!this.props.vintage) {
-      return null;
-    }
-    const { original } = this.props.vintage;
     return (
       <div>
         <Modal
@@ -51,56 +45,60 @@ class VintageModal extends React.Component {
           show
         >
           <ModalHeader style={styles.header}>
-            <h1>빈티지 정보</h1>
+            <h1>고객 정보</h1>
           </ModalHeader>
           <ModalBody>
             <Form>
               <FormGroup controlId="formControlsText">
-                <ControlLabel>영문 줄임명</ControlLabel>
+                <ControlLabel>이름</ControlLabel>
                 <FormControl
                   type="text"
-                  value={original ? original.eng_shortname : ''}
-                  disabled
+                  value={this.state.name}
+                  onChange={e => this.setState({ name: e.target.value })}
+                  disabled={!this.state.modifyMode}
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
-                <ControlLabel>한글 줄임명</ControlLabel>
+                <ControlLabel>전화번호</ControlLabel>
                 <FormControl
                   type="text"
-                  value={original ? original.kor_shortname : ''}
-                  disabled
+                  value={this.state.phone}
+                  onChange={e => this.setState({ phone: e.target.value })}
+                  disabled={!this.state.modifyMode}
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
-                <ControlLabel>종류</ControlLabel>
+                <ControlLabel>이메일</ControlLabel>
                 <FormControl
                   type="text"
-                  value={original ? original.category : ''}
-                  disabled
+                  value={this.state.email}
+                  onChange={e => this.setState({ email: e.target.value })}
+                  disabled={!this.state.modifyMode}
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
-                <ControlLabel>원산지</ControlLabel>
+                <ControlLabel>주소</ControlLabel>
                 <FormControl
                   type="text"
-                  value={original ? original.locationString : ''}
-                  disabled
+                  value={this.state.address}
+                  onChange={e => this.setState({ address: e.target.value })}
+                  disabled={!this.state.modifyMode}
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
-                <ControlLabel>품종</ControlLabel>
+                <ControlLabel>등급</ControlLabel>
                 <FormControl
                   type="text"
-                  value={original ? original.grapeString : ''}
-                  disabled
+                  value={this.state.grade}
+                  onChange={e => this.setState({ grade: e.target.value })}
+                  disabled={!this.state.modifyMode}
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
-                <ControlLabel>빈티지</ControlLabel>
+                <ControlLabel>DB ID</ControlLabel>
                 <FormControl
-                  type="number"
-                  value={this.state.vintage}
-                  onChange={e => this.setState({ vintage: e.target.value })}
+                  type="text"
+                  value={this.props.customer._id}
                   disabled={!this.state.modifyMode}
                 />
               </FormGroup>
@@ -118,12 +116,12 @@ class VintageModal extends React.Component {
                   <Button
                     bsStyle="info"
                     bsSize="large"
-                    onClick={this.vintageModify}
+                    onClick={this.customerModify}
                   >수정</Button>
                   <Button
                     bsStyle="warning"
                     bsSize="large"
-                    onClick={this.vintageRemove}
+                    onClick={this.customerRemove}
                   >삭제</Button>
                 </div>
             }
@@ -136,4 +134,4 @@ class VintageModal extends React.Component {
 }
 
 
-export default VintageModal;
+export default CustomerModal;

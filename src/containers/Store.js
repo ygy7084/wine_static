@@ -66,7 +66,10 @@ class Store extends React.Component {
   }
   shopLoad() {
     loader.on();
-    this.props.shopGetListRequest()
+    this.props.shopGetListRequest(
+      this.props.accountSession.account.level === '매장' ?
+        this.props.accountSession.account.shop : null
+      )
       .then((data) => {
         if (this.props.shopGetList.status === 'SUCCESS') {
           loader.off();
@@ -81,7 +84,10 @@ class Store extends React.Component {
   }
   customerLoad() {
     loader.on();
-    this.props.customerGetListRequest()
+    this.props.customerGetListRequest(
+      this.props.accountSession.account.level === '매장' ?
+        this.props.accountSession.account.shop : null
+    )
       .then((data) => {
         if (this.props.customerGetList.status === 'SUCCESS') {
           loader.off();
@@ -96,7 +102,10 @@ class Store extends React.Component {
   }
   saleLoad() {
     loader.on();
-    this.props.saleGetListRequest()
+    this.props.saleGetListRequest(
+      this.props.accountSession.account.level === '매장' ?
+        this.props.accountSession.account.shop : null
+    )
       .then((data) => {
         if (this.props.saleGetList.status === 'SUCCESS') {
           loader.off();
@@ -111,7 +120,10 @@ class Store extends React.Component {
   }
   storeLoad() {
     loader.on();
-    this.props.storeGetListRequest()
+    this.props.storeGetListRequest(
+      this.props.accountSession.account.level === '매장' ?
+        this.props.accountSession.account.shop : null
+    )
       .then((data) => {
         if (this.props.storeGetList.status === 'SUCCESS') {
           loader.off();
@@ -189,7 +201,7 @@ class Store extends React.Component {
           this.props.changePage('/store');
           this.storeLoad();
           loader.off();
-        } else if (this.props.storeInsert.status === 'FAILURE') {
+        } else if (this.props.storeBulkInsert.status === 'FAILURE') {
           loader.off();
           throw data;
         }
@@ -254,10 +266,12 @@ class Store extends React.Component {
 
   }
   render() {
-    console.log(this.props.storeGetList);
+    console.log(this.state);
     return (
       <div>
         <StoreList
+          onlyView={this.props.accountSession.account&&
+          this.props.accountSession.account.level==='매장'}
           storeClick={this.storeClick}
           storeRemoveAllClick={() => this.props.changePage('/store/removeallmodal')}
           storeInClick={() => this.props.changePage('/store/in')}
@@ -332,8 +346,13 @@ class Store extends React.Component {
               >
                 <CustomerList
                   onlyView
+                  account={this.props.accountSession.account}
                   customerClick={sale => this.customerClick(sale, '/store/in/insertmodal')}
-                  list={this.props.customerGetList.list}
+                  list={
+                    this.state.shopItem ?
+                    this.props.customerGetList.list.filter(v => v.shop._id === this.state.shopItem._id) :
+                    this.props.customerGetList.list
+                  }
                   refresh={this.shopLoad}
                   {...props}
                 />
@@ -348,21 +367,19 @@ class Store extends React.Component {
           path="/store/out"
           render={props =>
             (
-                <StoreOutModal
-                  title="출고"
-                  subtitle="출고를 진행합니다."
-                  close={() => this.props.changePage('/store')}
-                  list={this.props.storeGetList.result}
-                  storeBulkInsert={this.storeBulkInsert}
-                  changeStoreBulk={this.changeStoreBulk}
-                  refresh={this.storeLoad}
-                  {...props}
-                />
+              <StoreOutModal
+                title="출고"
+                subtitle="출고를 진행합니다."
+                close={() => this.props.changePage('/store')}
+                list={this.props.storeGetList.result}
+                storeBulkInsert={this.storeBulkInsert}
+                changeStoreBulk={this.changeStoreBulk}
+                refresh={this.storeLoad}
+                {...props}
+              />
             )
           }
         />
-
-
         <Route
           path="/store/sale"
           render={props => (
@@ -432,6 +449,10 @@ class Store extends React.Component {
   }
 }
 const mapStateToProps = state => ({
+  accountSession: {
+    status: state.account.session.status,
+    account: state.account.session.account,
+  },
   customerGetList: {
     status: state.customer.getList.status,
     list: state.customer.getList.list,
