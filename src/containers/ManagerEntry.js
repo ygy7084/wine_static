@@ -101,7 +101,6 @@ class ManagerEntry extends React.Component {
           />
           <Redirect to="/" />
         </Switch>
-
       );
     }
     return (

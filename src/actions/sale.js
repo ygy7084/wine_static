@@ -187,7 +187,6 @@ const modifyFailure = function modifyFailure(error) {
   };
 };
 const modifyRequest = function modifyRequest(sale) {
-  console.log(sale);
   return (dispatch) => {
     dispatch(modify());
     return fetch(`${API}/api/sale`, {

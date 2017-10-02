@@ -186,7 +186,6 @@ class SaleListForSale extends React.Component {
     const list = this.state.list.slice();
     const input = [];
     for (const obj of list) {
-      console.log(obj);
       input.push({
         _id: obj._id,
         price: obj.price,

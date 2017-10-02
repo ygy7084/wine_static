@@ -4,6 +4,7 @@ import IconAccount from 'react-icons/lib/ti/key';
 import IconWine from 'react-icons/lib/ti/wine';
 import IconShop from 'react-icons/lib/ti/home-outline';
 import IconCustomer from 'react-icons/lib/ti/user';
+import IconCustomerBase from 'react-icons/lib/go/key';
 import IconStore from 'react-icons/lib/ti/document-text';
 import IconMenu from 'react-icons/lib/ti/th-menu';
 import IconSale from 'react-icons/lib/md/list';
@@ -126,6 +127,10 @@ const sideListItems = [
     path: '/customer',
     icon: IconCustomer,
     authority: ['관리자', '매장'] },
+  { name: '고객 계정',
+    path: '/customerbase',
+    icon: IconCustomerBase,
+    authority: ['관리자'] },
   { name: '입출고',
     path: '/store',
     icon: IconStore,

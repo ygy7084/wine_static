@@ -57,7 +57,6 @@ const getListRequest = function getListRequest(id) {
       })
       .then((res) => {
         if (res.data) {
-          console.log(res);
           const data = res.data;
           for (const obj of data) {
             if (obj.datetime) {

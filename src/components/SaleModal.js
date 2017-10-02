@@ -71,7 +71,6 @@ class SaleModal extends React.Component {
     this.props.saleRemove({ _id: this.props.sale._id });
   }
   render() {
-    console.log(this.props);
     const { sale } = this.props;
     if (!sale) {
       return null;

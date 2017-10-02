@@ -33,10 +33,10 @@ class AccountModal extends React.Component {
     if (this.state.password === this.state.passwordCheck) {
       this.props.accountModify({
         _id: this.props.account._id,
-        username: this.state.username,
-        password: this.state.password,
-        name: this.state.name,
-        level: this.state.level,
+        username: this.state.username.trim(),
+        password: this.state.password.trim(),
+        name: this.state.name.trim(),
+        level: this.state.level.trim(),
         shop: this.state.shop ? this.state.shop._id : null,
       });
     } else {

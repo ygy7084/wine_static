@@ -19,8 +19,6 @@ class CustomerModal extends React.Component {
       phone: this.props.customer.phone,
       email: this.props.customer.email,
       address: this.props.customer.address,
-      webAddress: this.props.customer.webAddress,
-      shop: this.props.account.shop ? this.props.account.shop : null,
     };
     this.customerModify = this.customerModify.bind(this);
     this.customerRemove = this.customerRemove.bind(this);
@@ -28,11 +26,10 @@ class CustomerModal extends React.Component {
   customerModify() {
     this.props.customerModify({
       _id: this.props.customer._id,
-      name: this.state.name,
-      phone: this.state.phone,
-      email: this.state.email,
-      address: this.state.address,
-      shop: this.props.account.shop ? this.props.account.shop : null,
+      name: this.state.name.trim(),
+      phone: this.state.phone.trim(),
+      email: this.state.email.trim(),
+      address: this.state.address.trim(),
     });
   }
   customerRemove() {
@@ -84,14 +81,6 @@ class CustomerModal extends React.Component {
                   value={this.state.address}
                   onChange={e => this.setState({ address: e.target.value })}
                   disabled={!this.state.modifyMode}
-                />
-              </FormGroup>
-              <FormGroup controlId="formControlsText">
-                <ControlLabel>웹주소</ControlLabel>
-                <FormControl
-                  type="text"
-                  value={this.state.webAddress}
-                  disabled
                 />
               </FormGroup>
             </Form>

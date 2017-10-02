@@ -14,6 +14,7 @@ import {
   Wine,
   Shop,
   Customer,
+  CustomerBase,
   Store,
   SaleBulk,
 } from './';
@@ -45,6 +46,19 @@ class Main extends React.Component{
     this.props.changePage(`${path}`);
   }
   render() {
+    console.log(this.props.accountSession.account, );
+    if (
+      this.props.accountSession.account && (
+      !this.props.accountSession.account.level === '관리자' ||
+      !this.props.accountSession.account.level === '매장')
+    ) {
+      console.log('hi');
+      return <Redirect to='/cside'/>
+    } else if (
+      !this.props.accountSession.account
+    ) {
+      return <Redirect to='/'/>
+    }
     return (
       <div>
         <Route
@@ -60,26 +74,29 @@ class Main extends React.Component{
             />
           )}
         />
-        <Contents menuClose={this.state.menuClose} >
-          <Switch>
-            <Route
-              exact
-              path="/"
-              render={() => (
-                this.props.accountSession.account.level === '관리자' ?
-                  <Redirect to="/account" /> :
-                  <Redirect to="/store" />
-              )}
-            />
-            <Route path="/account" component={Account} />
-            <Route path="/wine" component={Wine} />
-            <Route path="/sale" component={SaleBulk} />
-            <Route path="/shop" component={Shop} />
-            <Route path="/customer" component={Customer} />
-            <Route path="/store" component={Store} />
-            <Route component={Page404} />
-          </Switch>
-        </Contents>
+        {
+            <Contents menuClose={this.state.menuClose} >
+              <Switch>
+                <Route
+                  exact
+                  path="/"
+                  render={() => (
+                    this.props.accountSession.account.level === '관리자' ?
+                      <Redirect to="/account" /> :
+                      <Redirect to="/store" />
+                  )}
+                />
+                <Route path="/account" component={Account} />
+                <Route path="/wine" component={Wine} />
+                <Route path="/sale" component={SaleBulk} />
+                <Route path="/shop" component={Shop} />
+                <Route path="/customer" component={Customer} />
+                <Route path="/customerbase" component={CustomerBase} />
+                <Route path="/store" component={Store} />
+                <Route component={Page404} />
+              </Switch>
+            </Contents>
+        }
       </div>
     );
   }

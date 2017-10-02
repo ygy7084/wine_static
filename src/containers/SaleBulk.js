@@ -108,7 +108,6 @@ class SaleBulk extends React.Component {
       });
   }
   saleClick(sale) {
-    console.log(sale);
     this.setState({
       completeSaleModalItem: sale,
     });

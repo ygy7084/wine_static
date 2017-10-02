@@ -162,8 +162,7 @@ class SaleList extends React.Component {
         const found =
           listFinder(
             this.props.list,
-            findModeList,
-            this.state.findMode,
+            findModeList.find(obj => obj.name === this.state.findMode).key,
             input,
           );
         this.setState({
@@ -228,7 +227,7 @@ class SaleList extends React.Component {
                   <Button
                     bsStyle="success"
                     onClick={this.props.completeSelectedSale}
-                  >{`${this.props.selectedSale.length}개 선택 수정`}</Button>
+                  >선택한 상품 수정</Button>
                   : null
               }
               {
@@ -236,7 +235,7 @@ class SaleList extends React.Component {
                   <Button
                     bsStyle="danger"
                     onClick={this.props.selectRemove}
-                  >{`${this.props.selectedSale.length}개 선택 삭제`}</Button>
+                  >선택한 상품 삭제</Button>
                   : null
               }
               {
@@ -245,13 +244,13 @@ class SaleList extends React.Component {
                     <Button
                       bsStyle="info"
                       onClick={() => this.props.selectAll()}
-                    >선택 취소</Button>
+                    >{`${this.props.selectedSale.length}개 선택 취소`}</Button>
                     :
                     <Button
                       bsStyle="info"
                       onClick={() => this.props.selectAll('sale')}
                     >전부 선택</Button>
-                  :null
+                  : null
               }
             </ButtonGroup>
           </div>

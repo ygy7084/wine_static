@@ -2,10 +2,16 @@
 const loader = document.querySelector('#loader');
 
 function on() {
-  loader.style.display = 'block';
+  if (loader.style.display !== 'block') {
+    loader.style.display = 'block';
+  }
+  return null;
 }
 function off() {
-  loader.style.display = 'none';
+  if (loader.style.display !== 'none') {
+    loader.style.display = 'none';
+  }
+  return null;
 }
 
 export default {

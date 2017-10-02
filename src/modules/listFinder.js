@@ -1,18 +1,14 @@
-export default function listFinder(list, option, key, input) {
-  console.log('function called');
-  const regex = new RegExp(input);
-  const found = [];
-  const mode = option.find(item => item.name === key);
-  if (!mode) return undefined;
-  list.forEach((obj) => {
+export default function listFinder(list, key, input) {
+  if (!key || !list) return undefined;
+  if (input === '') {
+    return list;
+  }
+  return list.filter((obj) => {
     let temp = obj;
-    for (let i = 0; i < mode.key.length; i += 1) {
+    for (let i = 0; i < key.length; i += 1) {
       if (!temp) break;
-      temp = temp[mode.key[i]];
-    }
-    if (temp && regex.exec(temp)) {
-      found.push(obj);
-    }
-  });
-  return found;
+      temp = temp[key[i]];
+}
+return temp && String(temp) && String(temp).indexOf(input.trim()) > -1;
+});
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Route,
   Redirect,
+  Switch,
 } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -11,179 +12,134 @@ import {
   store,
   customer,
   shop,
+  customerBase,
+  customerAccount,
 } from '../actions';
 import {
   CustomerSide,
-  CustomerSide2,
+  CustomerMain,
 } from './';
 
 import {
+  CustomerSideEntry,
   Page404,
+  SimpleMessage,
 } from '../components';
 import {
   loader,
-  errorHandler
+  errorHandler,
 } from '../modules';
 
 class CustomerEntry extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      storeModalItem: null,
-      saleItem: null,
-      shopItem: null,
-      customerItem: null,
-      bulk: [],
-    };
-    this.shopLoad = this.shopLoad.bind(this);
-    this.customerLoad = this.customerLoad.bind(this);
-    this.saleLoad = this.saleLoad.bind(this);
-    this.storeLoad = this.storeLoad.bind(this);
+    this.loginRequest = this.loginRequest.bind(this);
+    this.logoutRequest = this.logoutRequest.bind(this);
+    this.sessionRequest = this.sessionRequest.bind(this);
   }
   componentWillMount() {
-    this.storeLoad();
-    this.customerLoad();
-    this.saleLoad();
-    this.shopLoad();
+    loader.off();
+    this.sessionRequest(`${this.props.location.pathname}`);
   }
-  shopLoad() {
+  loginRequest(customerAccountInput) {
     loader.on();
-    this.props.shopGetListRequest()
-      .then((data) => {
-        if (this.props.shopGetList.status === 'SUCCESS') {
+    return this.props.customerAccountLoginRequest(customerAccountInput)
+      .then(() => {
+        if (this.props.customerAccountLogin.status === 'SUCCESS') {
+          this.sessionRequest('/');
+        } else if (this.props.customerAccountLogin.status === 'FAILURE') {
           loader.off();
-        } else if (this.props.shopGetList.status === 'FAILURE') {
-          throw data;
+          errorHandler({ message: '로그인에 실패하였습니다.' });
         }
       })
-      .catch((data) => {
+      .catch(() => {
         loader.off();
-        errorHandler(data);
       });
   }
-  customerLoad() {
+  logoutRequest() {
     loader.on();
-    this.props.customerGetListRequest()
-      .then((data) => {
-        if (this.props.customerGetList.status === 'SUCCESS') {
+    return this.props.customerAccountLogoutRequest()
+      .then(() => {
+        if (this.props.customerAccountLogout.status === 'SUCCESS') {
+          this.sessionRequest('/');
+        } else if (this.props.customerAccountLogoutRequest === 'FAILURE') {
           loader.off();
-        } else if (this.props.customerGetList.status === 'FAILURE') {
-          throw data;
         }
       })
-      .catch((data) => {
+      .catch(() => {
         loader.off();
-        errorHandler(data);
       });
   }
-  saleLoad() {
-    loader.on();
-    this.props.saleGetListRequest()
-      .then((data) => {
-        if (this.props.saleGetList.status === 'SUCCESS') {
+  sessionRequest(url) {
+    return this.props.customerAccountSessionRequest()
+      .then(() => {
+        if (this.props.customerAccountLogout.status === 'SUCCESS') {
           loader.off();
-        } else if (this.props.saleGetList.status === 'FAILURE') {
-          throw data;
+          this.props.changePage(url);
+        } else if (this.props.customerAccountLogoutRequest === 'FAILURE') {
+          loader.off();
+          errorHandler({ message: '다시 로그인하십시요.' });
         }
       })
-      .catch((data) => {
+      .catch((e) => {
+        console.log(e);
         loader.off();
-        errorHandler(data);
       });
   }
-  storeLoad() {
-    loader.on();
-    this.props.storeGetListRequest()
-      .then((data) => {
-        if (this.props.storeGetList.status === 'SUCCESS') {
-          loader.off();
-        } else if (this.props.storeGetList.status === 'FAILURE') {
-          throw data;
-        }
-      })
-      .catch((data) => {
-        loader.off();
-        errorHandler(data);
-      });
-  }
-
   render() {
+    let CustomerEntryPage = null;
+    if (this.props.customerAccountSession.status === 'SUCCESS') {
+      CustomerEntryPage = (
+        <Switch>
+          <Route
+            path="/cside"
+            render={props =>
+              <CustomerMain logout={this.logoutRequest} {...props} />
+            }
+          />
+        </Switch>
+      );
+    } else if (this.props.customerAccountSession.status === 'FAILURE') {
+      CustomerEntryPage = (
+        <Switch>
+          <Route
+            exact
+            path="/cside"
+            render={props => (
+              <CustomerSideEntry
+                loginRequest={this.loginRequest}
+                {...props}
+              />
+            )}
+          />
+        </Switch>
+      );
+    }
     return (
       <div>
-        {this.props.customerGetList.list.length ?
-          <Route
-            path="/customerid/:id"
-            render={(routeProps) => {
-              if (routeProps.match.params.id === 'test') {
-                return <CustomerSide />;
-              }
-              else if (this.props.customerGetList.list.find(obj => obj.webAddress === routeProps.match.params.id)) {
-                const storeList = this.props.storeGetList.list.filter(obj => obj.customer.webAddress === routeProps.match.params.id);
-                const result =  this.props.storeGetList.result.filter(obj => obj.customer.webAddress === routeProps.match.params.id);
-                const summedResult = [];
-                for (let i = 0; i < result.length; i += 1) {
-                  const obj = summedResult.find(o =>
-                    o.sale._id === result[i].sale._id &&
-                    o.shop._id === result[i].shop._id
-                  );
-                  if (!obj) {
-                    summedResult.push(result[i]);
-                  } else {
-                    obj.remain += result[i].remain;
-                  }
-                }
-                const uniqueShop = this.props.storeGetList.result.map(obj => obj.shop.name)
-                  .filter((v, i, s) => s.indexOf(v) === i);
-                return <CustomerSide2 list={storeList} result={summedResult} uniqueShop={uniqueShop} />;
-              }
-              // return null;
-              return <Page404 {...routeProps} />;
-            }}
-          />
-          : null
-        }
-        <Route exact path="/customer" component={Page404}/>
-
+        { CustomerEntryPage }
+        <SimpleMessage />
       </div>
     );
   }
-};
+}
+
 const mapStateToProps = state => ({
-  customerGetList: {
-    status: state.customer.getList.status,
-    list: state.customer.getList.list,
+  customerAccountLogin: {
+    status: state.customerAccount.login.status,
   },
-  shopGetList: {
-    status: state.shop.getList.status,
-    list: state.shop.getList.list,
+  customerAccountSession: {
+    status: state.customerAccount.session.status,
+    customerAccount: state.customerAccount.session.customerAccount,
   },
-  saleGetList: {
-    status: state.sale.getList.status,
-    list: state.sale.getList.list,
-  },
-  storeGetList: {
-    status: state.store.getList.status,
-    list: state.store.getList.list,
-    result: state.store.getList.result,
-  },
-  storeInsert: {
-    status: state.store.insert.status,
-  },
-  storeBulkInsert: {
-    status: state.store.bulkInsert.status,
-  },
-  storeRemoveAll: {
-    status: state.store.removeAll.status,
+  customerAccountLogout: {
+    status: state.customerAccount.logout.status,
   },
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
-  customerGetListRequest: customer.getListRequest,
-  shopGetListRequest: shop.getListRequest,
-  saleGetListRequest: sale.getListRequest,
-  storeGetListRequest: store.getListRequest,
-  storeInsertRequest: store.insertRequest,
-  storeBulkInsertRequest: store.bulkInsertRequest,
-  storeRemoveAllRequest: store.removeAllRequest,
+  customerAccountLoginRequest: customerAccount.loginRequest,
+  customerAccountSessionRequest: customerAccount.sessionRequest,
+  customerAccountLogoutRequest: customerAccount.logoutRequest,
   changePage: path => push(path),
 }, dispatch);
 export default connect(

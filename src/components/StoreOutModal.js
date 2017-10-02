@@ -166,7 +166,7 @@ class StoreOutModal extends React.Component {
     this.state = {
       activePage: 1,
       itemInList: 10,
-      findMode: findModeList[0].name,
+      findMode: '고객이름',
       findInput: '',
       list: this.props.list,
       bulkArr: [],
@@ -181,6 +181,9 @@ class StoreOutModal extends React.Component {
         (value - 1) * this.state.itemInList,
         value * this.state.itemInList)
     })
+  }
+  componentDidMount() {
+    this.findInput.focus();
   }
   handleBulkChange() {
     const arr = [];
@@ -245,132 +248,133 @@ class StoreOutModal extends React.Component {
               <h4>{this.props.subtitle}</h4>
             </ModalHeader>
             <ModalBody>
-            <div>
-              <div style={styles.leftButtons}>
-                <ButtonGroup>
+              <div>
+                <div style={styles.leftButtons}>
+                  <ButtonGroup>
+                    <DropdownButton
+                      id="dropDownWine1"
+                      title={`${this.state.itemInList}개씩 보기`}
+                      onSelect={value => this.setState({ itemInList: value, activePage: 1 })}
+                    >
+                      <MenuItem active={this.state.itemInList === 10} eventKey={10}>10개씩 보기</MenuItem>
+                      <MenuItem active={this.state.itemInList === 20} eventKey={20}>20개씩 보기</MenuItem>
+                      <MenuItem active={this.state.itemInList === 50} eventKey={50}>50개씩 보기</MenuItem>
+                    </DropdownButton>
+                    <Button
+                      bsStyle="primary"
+                      onClick={this.props.refresh}
+                    >새로 고침</Button>
+                  </ButtonGroup>
+                </div>
+                <InputGroupRadium style={styles.rightButtons}>
                   <DropdownButton
-                    id="dropDownWine1"
-                    title={`${this.state.itemInList}개씩 보기`}
-                    onSelect={value => this.setState({ itemInList: value, activePage: 1 })}
+                    id="dropDownWine2"
+                    componentClass={InputGroup.Button}
+                    onSelect={value => this.setState({
+                      findMode: value,
+                      findInput: '',
+                      list: this.props.list,
+                      activePage: 1,
+                    })}
+                    title={this.state.findMode}
                   >
-                    <MenuItem active={this.state.itemInList === 10} eventKey={10}>10개씩 보기</MenuItem>
-                    <MenuItem active={this.state.itemInList === 20} eventKey={20}>20개씩 보기</MenuItem>
-                    <MenuItem active={this.state.itemInList === 50} eventKey={50}>50개씩 보기</MenuItem>
-                  </DropdownButton>
-                  <Button
-                    bsStyle="primary"
-                    onClick={this.props.refresh}
-                  >새로 고침</Button>
-                </ButtonGroup>
-              </div>
-              <InputGroupRadium style={styles.rightButtons}>
-                <DropdownButton
-                  id="dropDownWine2"
-                  componentClass={InputGroup.Button}
-                  onSelect={value => this.setState({
-                    findMode: value,
-                    findInput: '',
-                    list: this.props.list,
-                    activePage: 1,
-                  })}
-                  title={this.state.findMode}
-                >
-                  {
-                    findModeList.map(findMode => (
-                      <MenuItem
-                        key={findMode.name}
-                        active={this.state.findMode === findMode.name}
-                        eventKey={findMode.name}
-                      >
-                        {findMode.name}
-                      </MenuItem>
-                    ))
-                  }
-                </DropdownButton>
-                <FormControl
-                  type="text"
-                  value={this.state.findInput}
-                  onChange={this.handleFind}
-                />
-              </InputGroupRadium>
-              <Table
-                style={styles.table}
-                striped
-                bordered
-                hover
-              >
-                <thead>
-                  <tr>
-                    <th style={[styles.table_th.base]}>번호</th>
-                    <th style={[styles.table_th.base]}>매장</th>
-                    <th style={[styles.table_th.base]}>고객</th>
-                    <th style={[styles.table_th.base]}>영문줄임명</th>
-                    <th style={[styles.table_th.base]}>한글줄임명</th>
-                    <th style={[styles.table_th.base]}>빈티지</th>
-                    <th style={[styles.table_th.base]}>현재수량</th>
-                    <th style={[styles.table_th.base]}>출고</th>
-                    <th style={[styles.table_th.base]}>잔여</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {
-                    this.state.list.map((item, i) =>
                     {
-                      return (
-                        <tr
-                          key={item._id}
-                          style={styles.table_tr}
+                      findModeList.map(findMode => (
+                        <MenuItem
+                          key={findMode.name}
+                          active={this.state.findMode === findMode.name}
+                          eventKey={findMode.name}
                         >
-                          <td>{((this.state.activePage - 1) * this.state.itemInList) + i + 1}</td>
-                          <td>{item.shop ? item.shop.name : ''}</td>
-                          <td>{item.customer ? item.customer.name : ''}</td>
-                          <td>{
-                            item.sale ?
-                              item.sale.vintage ?
-                                item.sale.vintage.original ?
-                                  item.sale.vintage.original.eng_shortname : '' : '' :''}</td>
-                          <td>{
-                            item.sale ?
-                              item.sale.vintage ?
-                                item.sale.vintage.original ?
-                                  item.sale.vintage.original.kor_shortname : '' : '' :''}</td>
-                          <td>{item.sale ? item.sale.vintage ? item.sale. vintage.vintage : '' : ''}</td>
-                          <td>{item.remain}</td>
-                          <td>{
-                            <FormControl
-                              type="number"
-                              value={item.minus ? item.minus : 0}
-                              onChange={(e) => {
-                                let list = JSON.parse(JSON.stringify(this.state.list));
-                                let obj = list.find(o => o._id === item._id);
-                                obj.minus = e.target.value;
-                                if(obj.minus > obj.remain || obj.minus<0)
-                                  obj.minus = obj.reamin
-                                this.setState({list:list});
-                              }}
-                            />
-                          }</td>
-                          <td>{item.minus ? item.remain-item.minus : item.remain}</td>
-                        </tr>
-                      )
-                  })
-                  }
-                </tbody>
-              </Table>
-              <div style={styles.pagination}>
-                <Pagination
-                  bsSize="medium"
-                  items={Math.ceil(this.state.list.length / this.state.itemInList)}
-                  maxButtons={10}
-                  activePage={this.state.activePage}
-                  onSelect={this.handleSelect}
-                  prev
-                  next
-                  first
-                  last
-                />
+                          {findMode.name}
+                        </MenuItem>
+                      ))
+                    }
+                  </DropdownButton>
+                  <FormControl
+                    type="text"
+                    inputRef={ref => this.findInput = ref}
+                    value={this.state.findInput}
+                    onChange={this.handleFind}
+                  />
+                </InputGroupRadium>
+                <Table
+                  style={styles.table}
+                  striped
+                  bordered
+                  hover
+                >
+                  <thead>
+                    <tr>
+                      <th style={[styles.table_th.base]}>번호</th>
+                      <th style={[styles.table_th.base]}>매장</th>
+                      <th style={[styles.table_th.base]}>고객</th>
+                      <th style={[styles.table_th.base]}>영문줄임명</th>
+                      <th style={[styles.table_th.base]}>한글줄임명</th>
+                      <th style={[styles.table_th.base]}>빈티지</th>
+                      <th style={[styles.table_th.base]}>현재수량</th>
+                      <th style={[styles.table_th.base]}>출고</th>
+                      <th style={[styles.table_th.base]}>잔여</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {
+                      this.state.list.map((item, i) =>
+                      {
+                        return (
+                          <tr
+                            key={item._id}
+                            style={styles.table_tr}
+                          >
+                            <td>{((this.state.activePage - 1) * this.state.itemInList) + i + 1}</td>
+                            <td>{item.shop ? item.shop.name : ''}</td>
+                            <td>{item.customer ? item.customer.name : ''}</td>
+                            <td>{
+                              item.sale ?
+                                item.sale.vintage ?
+                                  item.sale.vintage.original ?
+                                    item.sale.vintage.original.eng_shortname : '' : '' :''}</td>
+                            <td>{
+                              item.sale ?
+                                item.sale.vintage ?
+                                  item.sale.vintage.original ?
+                                    item.sale.vintage.original.kor_shortname : '' : '' :''}</td>
+                            <td>{item.sale ? item.sale.vintage ? item.sale. vintage.vintage : '' : ''}</td>
+                            <td>{item.remain}</td>
+                            <td>{
+                              <FormControl
+                                type="number"
+                                value={item.minus ? item.minus : 0}
+                                onChange={(e) => {
+                                  let list = JSON.parse(JSON.stringify(this.state.list));
+                                  let obj = list.find(o => o._id === item._id);
+                                  obj.minus = e.target.value;
+                                  if(obj.minus > obj.remain || obj.minus<0)
+                                    obj.minus = obj.reamin
+                                  this.setState({list:list});
+                                }}
+                              />
+                            }</td>
+                            <td>{item.minus ? item.remain-item.minus : item.remain}</td>
+                          </tr>
+                        )
+                      })
+                    }
+                  </tbody>
+                </Table>
+                <div style={styles.pagination}>
+                  <Pagination
+                    bsSize="medium"
+                    items={Math.ceil(this.state.list.length / this.state.itemInList)}
+                    maxButtons={10}
+                    activePage={this.state.activePage}
+                    onSelect={this.handleSelect}
+                    prev
+                    next
+                    first
+                    last
+                  />
+                </div>
               </div>
-            </div>
             </ModalBody>
             <ModalFooter>
               <Button
@@ -378,7 +382,7 @@ class StoreOutModal extends React.Component {
                 bsSize="large"
                 onClick={
                   () =>
-                  this.handleBulkChange()
+                    this.handleBulkChange()
                 }
               >출고</Button>
               <Button

@@ -161,7 +161,7 @@ class StoreList extends React.Component {
     this.state = {
       activePage: 1,
       itemInList: 10,
-      findMode: findModeList[0].name,
+      findMode: '고객이름',
       findInput: '',
       list: this.props.list,
     };
@@ -179,6 +179,9 @@ class StoreList extends React.Component {
             this.state.activePage - 1 : this.state.activePage,
       });
     }
+  }
+  componentDidMount() {
+    this.findInput.focus();
   }
   handleSelect(value) {
     this.setState({ activePage: value });
@@ -283,6 +286,7 @@ class StoreList extends React.Component {
             </DropdownButton>
             <FormControl
               type="text"
+              inputRef={ref => this.findInput = ref}
               value={this.state.findInput}
               onChange={this.handleFind}
             />

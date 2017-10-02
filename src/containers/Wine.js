@@ -12,6 +12,8 @@ import {
   Original,
   Vintage,
   Sale,
+  Grape,
+  Location,
 } from './';
 
 import {
@@ -36,6 +38,12 @@ class Wine extends React.Component {
       case '상품' :
         this.props.changePage('/wine/sale');
         break;
+      case '품종 관리' :
+        this.props.changePage('/wine/grape');
+        break;
+      case '원산지 관리' :
+        this.props.changePage('/wine/location');
+        break;
       default:
     }
   }
@@ -55,6 +63,8 @@ class Wine extends React.Component {
           <Route path="/wine/original" component={Original} />
           <Route path="/wine/vintage" component={Vintage} />
           <Route path="/wine/sale" component={Sale} />
+          <Route path="/wine/grape" component={Grape} />
+          <Route path="/wine/location" component={Location} />
           <Route component={Page404} />
         </Switch>
       </div>

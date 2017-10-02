@@ -59,7 +59,6 @@ class StoreModal extends React.Component {
     this.props.storeRemove({ _id: this.props.store._id });
   }
   render() {
-    console.log(this.props);
     const { store } = this.props;
     if (!store) {
       return null;

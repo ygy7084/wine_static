@@ -186,7 +186,6 @@ class VintageListForSale extends React.Component {
     const list = this.state.list.slice();
     const input = [];
     for (const obj of list) {
-      console.log(obj);
       input.push({
         vintage: obj._id,
         shop: this.props.account.shop,

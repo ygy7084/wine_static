@@ -219,7 +219,7 @@ class VintageList extends React.Component {
                   <Button
                     bsStyle="success"
                     onClick={this.props.completeSelectedVintage}
-                  >{`${this.props.selectedVintage.length}개 선택 완료`}</Button>
+                  >선택한 빈티지 상품 생성</Button>
                   : null
               }
               {
@@ -228,7 +228,7 @@ class VintageList extends React.Component {
                     <Button
                       bsStyle="info"
                       onClick={() => this.props.selectAll()}
-                    >선택 취소</Button>
+                    >{`${this.props.selectedVintage.length}개 선택 취소`}</Button>
                     :
                     <Button
                       bsStyle="info"

@@ -146,7 +146,7 @@ class CustomerList extends React.Component {
                 <MenuItem active={this.state.itemInList === 50} eventKey={50}>50개씩 보기</MenuItem>
               </DropdownButton>
               {
-                this.props.onlyView ?
+                this.props.onlyView || this.props.account.level === '관리자' ?
                   null :
                   <Button
                     bsStyle="success"

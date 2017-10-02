@@ -20,11 +20,11 @@ class CustomerInsertModal extends React.Component {
   }
   customerInsert() {
     this.props.customerInsert({
-      name: this.state.name,
-      phone: this.state.phone,
-      email: this.state.email,
-      address: this.state.address,
-      shop: this.props.account.shop ? this.props.account.shop : null,
+      shop: this.props.account.shop,
+      name: this.state.name.trim(),
+      phone: this.state.phone.trim(),
+      email: this.state.email.trim(),
+      address: this.state.address.trim(),
     });
   }
   render() {

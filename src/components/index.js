@@ -9,8 +9,8 @@ import AccountList from './AccountList';
 import AccountInsertModal from './AccountInsertModal';
 import AccountModal from './AccountModal';
 import CustomerSideModal from './CustomerSideModal';
-import CustomerSideModal2 from './CustomerSideModal2';
-
+import CustomerSideEntry from './CustomerSideEntry';
+import CustomerSideStore from './CustomerSideStore';
 import CompleteSaleModal from './CompleteSaleModal';
 import CompleteVintageModal from './CompleteVintageModal';
 import SaleOrVintage from './SaleOrVintage';
@@ -37,6 +37,12 @@ import StoreInsertModal from './StoreInsertModal';
 import StoreOutModal from './StoreOutModal';
 import VintageListForSale from './VintageListForSale';
 import SaleListForSale from './SaleListForSale';
+import ListA from './ListA';
+import CustomerBaseList from './CustomerBaseList';
+import CustomerBaseModal from './CustomerBaseModal';
+import CustomerBaseInsertModal from './CustomerBaseInsertModal';
+import CustomerSideCard from './CustomerSideCard';
+import CustomerSideMenu from './CustomerSideMenu';
 
 export {
   Entry,
@@ -50,12 +56,13 @@ export {
   AccountInsertModal,
   AccountModal,
   CustomerSideModal,
-  CustomerSideModal2,
+  CustomerSideEntry,
   CompleteSaleModal,
   CompleteVintageModal,
   SaleOrVintage,
   WineHeader,
   Page404,
+  CustomerSideStore,
   turnOnSimpleMessage,
   SimpleMessage,
   RemoveModal,
@@ -78,5 +85,11 @@ export {
   StoreOutModal,
   VintageListForSale,
   SaleListForSale,
+  ListA,
+  CustomerBaseList,
+  CustomerBaseModal,
+  CustomerBaseInsertModal,
+  CustomerSideCard,
+  CustomerSideMenu,
 };
 

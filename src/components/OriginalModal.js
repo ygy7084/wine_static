@@ -27,22 +27,22 @@ class OriginalModal extends React.Component {
       photo_url: this.props.original.photo_url && this.props.original.photo_url !== '' ?
         `${configure.imagePath}${this.props.original.photo_url}?${new Date().getTime()}` : '',
       photo_changed: false,
-      categoryOptions: this.props.options.category,
-      grapeOptions: this.props.options.grape,
-      countryOptions: this.props.options.country,
+      categoryOptions: ['레드', '화이트', '스파클링'],
+      grapeOptions: this.props.grapes,
+      countryOptions: this.props.locations.country,
       regionOptions:
         Object.prototype.hasOwnProperty.call(
-          this.props.options.region,
+          this.props.locations.region,
           this.props.original.country,
         ) ?
-          this.props.options.region[this.props.original.country] :
+          this.props.locations.region[this.props.original.country] :
           [],
       subregionOptions:
         Object.prototype.hasOwnProperty.call(
-          this.props.options.region,
-          this.props.original.region,
+          this.props.locations.subregion,
+          `${this.props.original.country}${this.props.original.region}`,
         ) ?
-          this.props.options.region[this.props.original.region] :
+          this.props.locations.subregion[`${this.props.original.country}${this.props.original.region}`] :
           [],
       eng_fullname: this.props.original.eng_fullname,
       eng_shortname: this.props.original.eng_shortname,
@@ -57,30 +57,46 @@ class OriginalModal extends React.Component {
     };
     this.handleCountryInputChange = this.handleCountryInputChange.bind(this);
     this.handleRegionInputChange = this.handleRegionInputChange.bind(this);
+    this.handleGrapeInputChange = this.handleGrapeInputChange.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
     this.originalModify = this.originalModify.bind(this);
     this.originalRemove = this.originalRemove.bind(this);
   }
-  handleCountryInputChange(input) {
-    this.setState({
+  handleCountryInputChange(e) {
+    const input = e.target.value;
+    this.setState({//
       country: input,
+      region: '',
+      subregion: '',
       regionOptions:
-        Object.prototype.hasOwnProperty.call(this.props.options.region, input) ?
-          this.props.options.region[input] :
+        Object.prototype.hasOwnProperty.call(this.props.locations.region, input) ?
+          this.props.locations.region[input] :
           [],
     });
-    this.regionInput.getInstance().clear();
-    this.subregionInput.getInstance().clear();
   }
-  handleRegionInputChange(input) {
+  handleRegionInputChange(e) {
+    const input = e.target.value;
     this.setState({
       region: input,
+      subregion: '',
       subregionOptions:
-        Object.prototype.hasOwnProperty.call(this.props.options.subregion, `${this.state.country}${input}`) ?
-          this.props.options.subregion[`${this.state.country}${input}`] :
+        Object.prototype.hasOwnProperty.call(
+          this.props.locations.subregion,
+          `${this.state.country}${input}`) ?
+          this.props.locations.subregion[`${this.state.country}${input}`] :
           [],
     });
-    this.subregionInput.getInstance().clear();
+  }
+  handleGrapeInputChange(e) {
+    const index = this.state.grape_race.findIndex(obj => obj === e.target.value);
+    const grape_race = this.state.grape_race.slice();
+    if (index < 0) {
+      grape_race.push(e.target.value);
+    } else {
+      grape_race.splice(index, 1);
+    }
+    grape_race.sort();
+    this.setState({ grape_race });
   }
   handleImageChange(e) {
     e.preventDefault();
@@ -114,9 +130,21 @@ class OriginalModal extends React.Component {
     this.props.originalRemove(this.props.original);
   }
   render() {
+    let grapeString = '';
+    for (let i = 0; i < this.state.grape_race.length; i += 1) {
+      grapeString += this.state.grape_race[i];
+      if (i < this.state.grape_race.length - 1) {
+        grapeString += '/';
+      }
+    }
+    console.log(this.props);
+    console.log(this.state);
     return (
       <div>
-        <Modal show>
+        <Modal
+          show
+          animation={false}
+        >
           <ModalHeader style={styles.header}>
             <h1>오리지날 정보</h1>
           </ModalHeader>
@@ -170,59 +198,113 @@ class OriginalModal extends React.Component {
               </FormGroup>
               <FormGroup controlId="formControlsText">
                 <ControlLabel>종류</ControlLabel>
-                <Typeahead
-                  labelKey="category"
-                  options={this.state.categoryOptions}
-                  selected={[this.state.category]}
-                  onInputChange={e => this.setState({ category: e })}
+                <FormControl
+                  componentClass="select"
+                  placeholder="선택"
+                  value={this.state.category}
+                  onChange={e => this.setState({ category: e.target.value })}
                   disabled={!this.state.modifyMode}
-                />
+                >
+                  <option value="">선택</option>
+                  {
+                    this.state.categoryOptions.map(obj =>
+                      <option
+                        key={obj}
+                        value={obj}
+                      >{obj}</option>,
+                    )
+                  }
+                </FormControl>
               </FormGroup>
               <FormGroup controlId="formControlsText">
                 <ControlLabel>국가</ControlLabel>
-                <Typeahead
-                  labelKey="country"
-                  options={this.state.countryOptions}
-                  selected={[this.state.country]}
-                  onInputChange={this.handleCountryInputChange}
+                <FormControl
+                  componentClass="select"
+                  value={this.state.country}
+                  onChange={this.handleCountryInputChange}
                   disabled={!this.state.modifyMode}
-                />
+                >
+                  <option value="">
+                    선택
+                  </option>
+                  {
+                    this.state.countryOptions.map(obj =>
+                      <option
+                        key={obj}
+                        value={obj}
+                      >{obj}</option>,
+                    )
+                  }
+                </FormControl>
               </FormGroup>
               <FormGroup controlId="formControlsText">
                 <ControlLabel>지역</ControlLabel>
-                <Typeahead
-                  labelKey="region"
-                  ref={(ref) => { this.regionInput = ref; }}
-                  options={this.state.regionOptions}
-                  selected={[this.state.region]}
-                  onInputChange={this.handleRegionInputChange}
+                <FormControl
+                  componentClass="select"
+                  value={this.state.region}
+                  onChange={this.handleRegionInputChange}
                   disabled={!this.state.modifyMode}
-                />
+                >
+                  <option value="">
+                    선택
+                  </option>
+                  {
+                    this.state.regionOptions.map(obj =>
+                      <option
+                        key={obj}
+                        value={obj}
+                      >{obj}</option>,
+                    )
+                  }
+                </FormControl>
               </FormGroup>
               <FormGroup controlId="formControlsText">
                 <ControlLabel>세부지역</ControlLabel>
-                <Typeahead
-                  labelKey="subregion"
-                  ref={(ref) => { this.subregionInput = ref; }}
-                  options={this.state.subregionOptions}
-                  selected={[this.state.subregion]}
-                  onInputChange={e => this.setState({ subregion: e })}
+                <FormControl
+                  componentClass="select"
+                  value={this.state.subregion}
+                  onChange={e => this.setState({ subregion: e.target.value })}
                   disabled={!this.state.modifyMode}
-                />
+                >
+                  <option value="">
+                    선택
+                  </option>
+                  {
+                    this.state.subregionOptions.map(obj =>
+                      <option
+                        key={obj}
+                        value={obj}
+                      >{obj}</option>,
+                    )
+                  }
+                </FormControl>
               </FormGroup>
               <FormGroup controlId="formControlsText">
                 <ControlLabel>품종</ControlLabel>
-                <Typeahead
-                  allowNew
-                  multiple
-                  newSelectionPrefix="신규 추가 : "
-                  options={this.state.grapeOptions}
-                  selected={this.state.grape_race}
-                  onChange={items =>
-                    this.setState({
-                      grape_race: items.map(item => item.label ? item.label : item) })}
-                  disabled={!this.state.modifyMode}
+                <FormControl
+                  type="text"
+                  value={grapeString}
+                  disabled
                 />
+                <FormControl
+                  componentClass="select"
+                  placeholder="선택"
+                  value=""
+                  onChange={this.handleGrapeInputChange}
+                  disabled={!this.state.modifyMode}
+                >
+                  <option value="">
+                    선택
+                  </option>
+                  {
+                    this.state.grapeOptions.map(obj =>
+                      <option
+                        key={obj.name}
+                        value={obj.name}
+                      >{obj.name}</option>,
+                    )
+                  }
+                </FormControl>
               </FormGroup>
               <FormGroup controlId="formControlsTextarea">
                 <ControlLabel>설명</ControlLabel>

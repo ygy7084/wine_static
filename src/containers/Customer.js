@@ -67,21 +67,25 @@ class Customer extends React.Component {
     this.props.changePage('/customer/insertmodal');
   }
   customerInsert(customer) {
-    loader.on();
-    this.props.customerInsertRequest(customer)
-      .then((data) => {
-        if (this.props.customerInsert.status === 'SUCCESS') {
-          this.props.changePage('/customer');
-          this.customerLoad();
-        } else if (this.props.customerInsert.status === 'FAILURE') {
+    if (!customer.shop) {
+      errorHandler({ message: '매장 정보가 없습니다.' });
+    } else {
+      loader.on();
+      this.props.customerInsertRequest(customer)
+        .then((data) => {
+          if (this.props.customerInsert.status === 'SUCCESS') {
+            this.props.changePage('/customer');
+            this.customerLoad();
+          } else if (this.props.customerInsert.status === 'FAILURE') {
+            loader.off();
+            throw data;
+          }
+        })
+        .catch((data) => {
           loader.off();
-          throw data;
-        }
-      })
-      .catch((data) => {
-        loader.off();
-        errorHandler(data);
-      });
+          errorHandler(data);
+        });
+    }
   }
   customerModify(customer) {
     loader.on();

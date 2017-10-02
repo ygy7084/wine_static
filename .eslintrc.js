@@ -14,5 +14,7 @@ module.exports = {
         "no-shadow":0,
         "no-underscore-dangle":0,
         "no-nested-ternary":0,
+        "no-return-assign":0,
+        "no-undef-init":0
     },
 };

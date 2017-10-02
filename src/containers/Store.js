@@ -56,7 +56,6 @@ class Store extends React.Component {
     this.storeModify = this.storeModify.bind(this);
     this.storeRemove = this.storeRemove.bind(this);
     this.storeRemoveAll = this.storeRemoveAll.bind(this);
-    this.changeStoreBulk = this.changeStoreBulk.bind(this);
   }
   componentWillMount() {
     this.storeLoad();
@@ -68,8 +67,7 @@ class Store extends React.Component {
     loader.on();
     this.props.shopGetListRequest(
       this.props.accountSession.account.level === '매장' ?
-        this.props.accountSession.account.shop : null
-      )
+        this.props.accountSession.account.shop : null)
       .then((data) => {
         if (this.props.shopGetList.status === 'SUCCESS') {
           loader.off();
@@ -86,8 +84,7 @@ class Store extends React.Component {
     loader.on();
     this.props.customerGetListRequest(
       this.props.accountSession.account.level === '매장' ?
-        this.props.accountSession.account.shop : null
-    )
+        this.props.accountSession.account.shop : null)
       .then((data) => {
         if (this.props.customerGetList.status === 'SUCCESS') {
           loader.off();
@@ -104,8 +101,7 @@ class Store extends React.Component {
     loader.on();
     this.props.saleGetListRequest(
       this.props.accountSession.account.level === '매장' ?
-        this.props.accountSession.account.shop : null
-    )
+        this.props.accountSession.account.shop : null)
       .then((data) => {
         if (this.props.saleGetList.status === 'SUCCESS') {
           loader.off();
@@ -122,8 +118,7 @@ class Store extends React.Component {
     loader.on();
     this.props.storeGetListRequest(
       this.props.accountSession.account.level === '매장' ?
-        this.props.accountSession.account.shop : null
-    )
+        this.props.accountSession.account.shop : null)
       .then((data) => {
         if (this.props.storeGetList.status === 'SUCCESS') {
           loader.off();
@@ -164,7 +159,6 @@ class Store extends React.Component {
     this.props.changePage(url);
   }
   saleClick(sale, url) {
-    console.log(sale);
     this.setState({
       saleItem: sale,
       shopItem: sale.shop,
@@ -262,16 +256,12 @@ class Store extends React.Component {
         errorHandler(data);
       });
   }
-  changeStoreBulk(bulk) {
-
-  }
   render() {
-    console.log(this.state);
     return (
       <div>
         <StoreList
-          onlyView={this.props.accountSession.account&&
-          this.props.accountSession.account.level==='매장'}
+          onlyView={this.props.accountSession.account &&
+          this.props.accountSession.account.level === '매장'}
           storeClick={this.storeClick}
           storeRemoveAllClick={() => this.props.changePage('/store/removeallmodal')}
           storeInClick={() => this.props.changePage('/store/in')}
@@ -348,9 +338,8 @@ class Store extends React.Component {
                   onlyView
                   account={this.props.accountSession.account}
                   customerClick={sale => this.customerClick(sale, '/store/in/insertmodal')}
-                  list={
-                    this.state.shopItem ?
-                    this.props.customerGetList.list.filter(v => v.shop._id === this.state.shopItem._id) :
+                  list={this.state.shopItem ?
+                    this.props.customerGetList.list.filter(v => v.shop && v.shop._id === this.state.shopItem._id) :
                     this.props.customerGetList.list
                   }
                   refresh={this.shopLoad}

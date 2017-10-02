@@ -2,6 +2,8 @@ import React from 'react';
 import SwipeableViews from 'react-swipeable-views';
 import BodyBackgroundColor from 'react-body-backgroundcolor';
 import FlipCard from 'react-flipcard';
+import IconPhone from 'react-icons/lib/ti/phone';
+
 import { Pagination } from 'react-bootstrap';
 import './CustomerSide.css';
 
@@ -12,6 +14,7 @@ import { Card, CardHeader, CardFooter, CardImg, CardText, CardBlock,
 import {
   CustomerSideModal,
 } from '../components';
+import { configure } from '../modules';
 
 const styles = {
   swipeableViews: {
@@ -49,13 +52,10 @@ const styles = {
     msFilter: 'FlipH',
   },
   contact: {
-    border: '1px #e7776c solid',
     color: '#e7776c',
     cursor: 'pointer',
     textDecoration: 'none',
-    padding: '10px 50px',
     fontSize: '2rem',
-    borderRadius: '20px',
   },
   contact_div: {
     marginTop: '30px',
@@ -77,56 +77,55 @@ class CustomerSide extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      customerSideModalToggle: false,
-      isFlipped: false,
+      customerSideModal2Toggle: false,
+      list: this.props.list,
+      result: this.props.result,
+      activePage: 1,
+      itemInList: 5,
       cardIndex: 0,
-      rearCardDisplay: 'none',
       mode: '입고 와인 조회',
       shop: '전체',
     };
-    this.toggleFlip = this.toggleFlip.bind(this);
+    this.handleSelect = this.handleSelect.bind(this);
     this.selectMode = this.selectMode.bind(this);
     this.selectShop = this.selectShop.bind(this);
   }
-  toggleFlip() {
-    if (flipOK) {
-      flipOK = !flipOK;
-      if (this.state.isFlipped) {
-        this.setState({
-          isFlipped: !this.state.isFlipped,
-        });
-        setTimeout(() => {
-          this.setState({
-            rearCardDisplay: 'none',
-          });
-        }, 500);
-      } else {
-        this.setState({
-          isFlipped: !this.state.isFlipped,
-          rearCardDisplay: 'inherit',
-        });
-      }
-      setTimeout(() => {
-        flipOK = true;
-      }, 1500);
-    }
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      list:nextProps.list,
+      result:nextProps.result,
+    })
+  }
+  handleSelect(value) {
+    this.setState({ activePage: value });
   }
   selectMode(mode) {
-    this.setState({
-      customerSideModalToggle: false,
-      isFlipped: false,
-      rearCardDisplay: 'none',
+      this.setState({
+      customerSideModal2Toggle: false,
       mode: mode,
     });
   }
   selectShop(shop) {
-    this.setState({
-      customerSideModalToggle: false,
-      isFlipped: false,
-      cardIndex: 0,
-      rearCardDisplay: 'none',
-      shop: shop,
-    });
+
+    if(shop==='전체') {
+      this.setState({
+        customerSideModal2Toggle: false,
+        isFlipped: false,
+        cardIndex: 0,
+        list: this.props.list,
+        result: this.props.result,
+        shop: shop,
+      });
+    } else {
+
+      this.setState({
+        customerSideModal2Toggle: false,
+        cardIndex: 0,
+        list: this.props.list.filter(obj => obj.shop.name === shop),
+        result: this.props.result.filter(obj => obj.shop.name === shop),
+        shop: shop,
+      });
+    }
   }
   render() {
     const cards = [
@@ -160,6 +159,9 @@ class CustomerSide extends React.Component {
       backgroundColor = '#f2c486';
     if (this.state.mode === '입출고 내역 조회')
       backgroundColor = '#9ccee4';
+
+    const list = this.state.list;
+    const result = this.state.result;
     return (
       <BodyBackgroundColor backgroundColor={backgroundColor}>
         <div>
@@ -169,145 +171,71 @@ class CustomerSide extends React.Component {
                 <div>
                   <h4
                     style={styles.menu}
-                    onClick={() => this.setState({ customerSideModalToggle: true })}
+                    onClick={() => this.setState({ customerSideModal2Toggle: true })}
                   >
                     Menu
                   </h4>
-                  <FlipCard
-                    disabled
-                    flipped={this.state.isFlipped}
+                  <SwipeableViews
+                    style={styles.swipeableViews}
+                    onChangeIndex={i => this.setState({ cardIndex: i })}
+                    enableMouseEvents
                   >
-                    <SwipeableViews
-                      style={styles.swipeableViews}
-                      onChangeIndex={i => this.setState({ cardIndex: i })}
-                      enableMouseEvents
-                    >
-                      {
-                        cards.map((item, i) => (
-                          <div key={item.image} style={Object.assign({}, styles.slide)}>
-                            <Card style={styles.card}>
-                              <CardHeader>
-                                <CardTitle><h2>{item.title}</h2></CardTitle>
-                                <CardSubtitle>{item.subtitle}</CardSubtitle>
-                                <CardSubtitle>{item.year}</CardSubtitle>
-                              </CardHeader>
-                              <CardImg
-                                onClick={this.toggleFlip}
-                                top
-                                style={styles.image}
-                                src={item.image}
-                                alt="Card image cap"
-                              />
-                              <CardBlock>
-                                <CardText><p>{`${item.number}개 보유`}</p></CardText>
-                                <CardText><h4>{item.shop}</h4></CardText>
-                                <div style={styles.contact_div}>
-                                  <hr />
-                                  <a
-                                    href="tel:01044280501"
-                                    style={styles.contact}>전화걸기</a>
-                                </div>
-                              </CardBlock>
-                              <CardFooter>
-                                <p style={styles.cardFooter}>{`${i + 1}/${cards.length}`}</p>
-                              </CardFooter>
-                            </Card>
-                          </div>
-                        ))
-                      }
-                    </SwipeableViews>
-                    <div style={Object.assign({}, styles.slide, { display: this.state.rearCardDisplay })}>
-                      <Card style={styles.card}>
-                        <CardImg
-                          onClick={this.toggleFlip}
-                          top
-                          style={styles.image2}
-                          alt="Card image cap"
-                          src={cards[this.state.cardIndex].image}
-                        />
-                        <CardBlock>
-                          <CardTitle><h4>한글 풀네임</h4></CardTitle>
-                          <CardSubtitle><h4>English Fullname</h4></CardSubtitle>
-                          <CardSubtitle>2000</CardSubtitle>
-                        </CardBlock>
-                        <CardBlock>
-                          <CardText><p>원산지: 프랑스/보르도</p></CardText>
-                          <CardText><p>종류: 레드</p></CardText>
-                          <div style={styles.contact_div}>
-                            <hr />
-                            <p>설명이 들어갑니다. 설명이 들어갑니다. 설명이 들어갑니다. 설명이 들어갑니다. 설명이 들어갑니다. 설명이 들어갑니다. 설명이 들어갑니다. </p>
-                            <p>설명이 들어갑니다. 설명이 들어갑니다. 설명이 들어갑니다. 설명이 들어갑니다. 설명이 들어갑니다. 설명이 들어갑니다. 설명이 들어갑니다. </p>
-                          </div>
-                        </CardBlock>
-                      </Card>
-                    </div>
-                  </FlipCard>
+                    {
+                      result.map((item, i) => (
+                        <div key={`${item._id}${Math.random()*10000}`} style={Object.assign({}, styles.slide)}>
+                          <Card style={styles.card}>
+                            <CardHeader>
+                              <CardTitle><h2>{item.sale.vintage.original.kor_shortname}</h2></CardTitle>
+                              <CardSubtitle>{item.sale.vintage.original.eng_shortname}</CardSubtitle>
+                              <CardSubtitle>{item.sale.vintage.vintage}</CardSubtitle>
+                            </CardHeader>
+                            <CardImg
+                              onClick={this.toggleFlip}
+                              top
+                              style={styles.image}
+                              src={`${configure.imagePath}${item.sale.vintage.original.photo_url}`}
+                              alt="Card image cap"
+                            />
+                            <CardBlock>
+                              <CardText><p>{`${item.remain}개 보유`}</p></CardText>
+                              <CardText>
+                                <h4>{item.shop.name}</h4>
+                                <a
+                                  href={`tel:${item.shop.phone}`}
+                                  style={styles.contact}>
+                                  <IconPhone />
+                                </a>
+                              </CardText>
+                            </CardBlock>
+                            <CardFooter>
+                              <p style={styles.cardFooter}>{`${i + 1}/${result.length}`}</p>
+                            </CardFooter>
+                          </Card>
+                        </div>
+                      ))
+                    }
+                  </SwipeableViews>
                 </div>
               ) : (
                 <div>
                   <h4
                     style={styles.menu}
-                    onClick={() => this.setState({ customerSideModalToggle: true })}
+                    onClick={() => this.setState({ customerSideModal2Toggle: true })}
                   >
                     Menu
                   </h4>
-                  <div style={Object.assign({}, styles.slide)}>
-                    <Card style={styles.card}>
-                      <CardHeader>
-                        <CardTitle><h4>입출고 내역</h4></CardTitle>
-                      </CardHeader>
-                      <hr />
-                      <CardBlock>
-                        <CardText><p>2017/6/20 20:00</p></CardText>
-                        <CardText><p>샤토 팔머/2000년</p></CardText>
-                        <CardText><p>키비스트 <strong>입고 2</strong></p></CardText>
-                      </CardBlock>
-                      <hr />
-                      <CardBlock>
-                        <CardText><p>2017/6/20 20:00</p></CardText>
-                        <CardText><p>샤토 팔머/2000년</p></CardText>
-                        <CardText><p>키비스트 <strong>출고 2</strong></p></CardText>
-                      </CardBlock>
-                      <hr />
-                      <CardBlock>
-                        <CardText><p>2017/6/20 20:00</p></CardText>
-                        <CardText><p>샤토 팔머/2000년</p></CardText>
-                        <CardText><p>키비스트 <strong>출고 2</strong></p></CardText>
-                      </CardBlock>
-                      <hr />
-                      <CardBlock>
-                        <CardText><p>2017/6/20 20:00</p></CardText>
-                        <CardText><p>샤토 팔머/2000년</p></CardText>
-                        <CardText><p>키비스트 <strong>출고 2</strong></p></CardText>
-                      </CardBlock>
-                      <hr />
-                      <CardBlock>
-                        <CardText><p>2017/6/20 20:00</p></CardText>
-                        <CardText><p>샤토 팔머/2000년</p></CardText>
-                        <CardText><p>키비스트 <strong>출고 2</strong></p></CardText>
-                      </CardBlock>
-                      <hr />
-                      <CardFooter>
-                        <Pagination
-                          bsSize="medium"
-                          items={5}
-                          activePage={1}
-                          prev
-                          next
-                        />
-                      </CardFooter>
-                    </Card>
-                  </div>
+
                 </div>
               )
           }
           <CustomerSideModal
-            toggle={this.state.customerSideModalToggle}
+            toggle={this.state.customerSideModal2Toggle}
             selectMode={this.selectMode}
             selectShop={this.selectShop}
             mode={this.state.mode}
             shop={this.state.shop}
-            close={() => this.setState({ customerSideModalToggle: false })}
+            shopList={this.state.result ? ['전체'].concat(this.props.uniqueShop) : ['전체']}
+            close={() => this.setState({ customerSideModal2Toggle: false })}
           />
         </div>
       </BodyBackgroundColor>

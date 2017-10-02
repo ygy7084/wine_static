@@ -6,7 +6,11 @@ import account from './account';
 import shop from './shop';
 import sale from './sale';
 import customer from './customer';
+import customerBase from './customerBase';
 import store from './store';
+import grape from './grape';
+import location from './location';
+import customerAccount from './customerAccount';
 
 export default combineReducers({
   routing: routerReducer,
@@ -16,5 +20,9 @@ export default combineReducers({
   shop,
   sale,
   customer,
+  customerBase,
   store,
+  grape,
+  location,
+  customerAccount,
 });

@@ -36,14 +36,18 @@ const CustomerSideModal = function CustomerSideModal(props) {
                 onChange={e => props.selectShop(e.target.value)}
                 value={props.shop}
               >
-                <option value="전체">전체</option>
-                <option value="A 매장">A 매장</option>
+                {
+                  props.shopList.map(obj =>
+                    <option key={obj} value={obj}>{obj}</option>
+                  )
+                }
               </FormControl>
             </FormGroup>
           </Form>
         </ModalBody>
         <ModalFooter>
-          <Button bsSize="large" onClick={props.close}>닫기</Button>
+          <Button bsSize="large" onClick={props.logout}>로그아웃</Button>
+          <Button bsStyle="primary" bsSize="large" onClick={props.close}>닫기</Button>
         </ModalFooter>
       </Modal>
     </div>

@@ -8,8 +8,8 @@ import {
 } from '../components';
 
 export default function (data) {
-  console.log(data);
   const error = data.error || data;
+  console.log(error);
   if (error.message && error.message !== '') {
     if (error.message === 'Failed to fetch') {
       turnOnSimpleMessage.error('서버에 연결할 수 없습니다.');

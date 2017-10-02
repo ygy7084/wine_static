@@ -27,49 +27,9 @@ const getList = function getList() {
   };
 };
 const getListSuccess = function getListSuccess(list) {
-  const options = {
-    category: list.map(
-      item => item.category).filter(
-      (v, i, a) => v !== '' && a.indexOf(v) === i),
-    country: list.map(
-      item => item.country).filter(
-      (v, i, a) => v !== '' && a.indexOf(v) === i),
-    grape: [],
-    region: {},
-    subregion: {},
-  };
-  for (const item of list) {
-    for (const grape of item.grape_race) {
-      if (grape && grape !== '' && options.grape.indexOf(grape) < 0) {
-        options.grape.push(grape);
-      }
-    }
-    if (item.country &&
-        item.country !== '') {
-      if (item.region &&
-          item.region !== '') {
-        if (!Object.prototype.hasOwnProperty.call(options.region, item.country)) {
-          options.region[item.country] = [];
-        }
-        if (options.region[item.country].indexOf(item.region) < 0) {
-          options.region[item.country].push(item.region);
-        }
-        if (item.subregion &&
-            item.subregion !== '') {
-          if (!Object.prototype.hasOwnProperty.call(options.subregion, `${item.country}${item.region}`)) {
-            options.subregion[`${item.country}${item.region}`] = [];
-          }
-          if (options.subregion[`${item.country}${item.region}`].indexOf(item.subregion) < 0) {
-            options.subregion[`${item.country}${item.region}`].push(item.subregion);
-          }
-        }
-      }
-    }
-  }
   return {
     type: ORIGINAL_GETLIST_SUCCESS,
     list,
-    options,
   };
 };
 const getListFailure = function getListFailure(error) {

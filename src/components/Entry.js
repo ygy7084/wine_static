@@ -70,7 +70,7 @@ class Entry extends React.Component {
       <div>
         <div className="container" style={styles.horizontal_center}>
           <div className="wine" style={styles.wine} />
-          <Form>
+          <Form onSubmit={(e) => { e.preventDefault(); this.loginRequest(); }}>
             <FormGroup>
               <ControlLabel>ID</ControlLabel>
               <FormControl
@@ -87,10 +87,10 @@ class Entry extends React.Component {
                 onChange={e => this.handleInputChange('password', e)}
               />
             </FormGroup>
+            <Button type="submit" style={styles.button} block>
+              접속
+            </Button>
           </Form>
-          <Button style={styles.button} onClick={this.loginRequest} block>
-            접속
-          </Button>
           <hr />
           <b>문의</b>
           <p>abcde@gmail.com</p>
