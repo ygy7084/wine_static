@@ -18,7 +18,6 @@ if (!window.Promise) {
 } // Promise explorer 호환
 
 const target = document.querySelector('#root');
-
 render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
