@@ -18,20 +18,32 @@ class StoreInModal extends React.Component {
       customerListModalOn: true,
       customerInsertModalOn: false,
     };
+    this.handleNumberInput = this.handleNumberInput.bind(this);
     this.handleInput = this.handleInput.bind(this);
     this.handleInsert = this.handleInsert.bind(this);
     this.customerInsertClick = this.customerInsertClick.bind(this);
     this.customerInsert = this.customerInsert.bind(this);
     this.customerSelect = this.customerSelect.bind(this);
   }
+  handleNumberInput(value) {
+    let v = parseInt(value.replace(/\D/g, ''), 10);
+    if (!v || value < 0) {
+      v = 0;
+    }
+    return v;
+  }
   handleInput(item, value, name) {
     const list = JSON.parse(JSON.stringify(this.state.list));
     // 구조에 의해 index 0, 기존수량, 결과수량 위한 변경
     const key = this.props.structure.find(o => o.name === name).key[0];
     const obj = list.find(obj => obj._id === item._id);
-    obj[key] = value;
+    let v = value;
     if (name === '변경수량') {
-      obj.next = obj.before + parseInt(value, 10);
+      v = this.handleNumberInput(value);
+    }
+    obj[key] = v;
+    if (name === '변경수량') {
+      obj.next = obj.before + parseInt(v, 10);
     }
     this.setState({ list });
   }

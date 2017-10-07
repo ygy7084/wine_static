@@ -174,7 +174,7 @@ class StoreOut extends React.Component {
       });
   }
   selectAll() {
-    this.setState({ selectedStores: this.props.saleGetList.list });
+    this.setState({ selectedStores: this.props.storeGetList.result });
   }
   render() {
     console.log('STOREOUT');

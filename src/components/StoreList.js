@@ -28,22 +28,16 @@ class StoreList extends React.Component {
           '고객명',
           '고객전화번호',
           '날짜',
+          '변경수량',
         ]}
       >
-        <KYButton
-          bsStyle="success"
-          onClick={this.props.storeInClick}
-        >입고</KYButton>
-        <KYButton
-          bsStyle="info"
-          onClick={this.props.storeOutClick}
-        >출고</KYButton>
         <KYButton
           bsStyle="primary"
           onClick={this.props.refresh}
         >새로 고침</KYButton>
         {
-          this.props.deleteLock ? null :
+          this.props.deleteLock ?
+            null :
             <KYButton
               bsStyle="danger"
               onClick={this.props.removeAllClick}

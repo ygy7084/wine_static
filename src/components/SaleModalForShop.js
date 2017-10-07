@@ -27,15 +27,27 @@ class SaleModalForShop extends React.Component {
         list: this.props.list,
       };
     }
+    this.handleNumberInput = this.handleNumberInput.bind(this);
     this.handleInput = this.handleInput.bind(this);
     this.handleInsert = this.handleInsert.bind(this);
     this.handleModify = this.handleModify.bind(this);
+  }
+  handleNumberInput(value) {
+    let v = parseInt(value.replace(/\D/g, ''), 10);
+    if (!v || value < 0) {
+      v = 0;
+    }
+    return v;
   }
   handleInput(item, value, name) {
     const list = JSON.parse(JSON.stringify(this.state.list));
     // 구조에 의해 index 0
     const key = this.props.structure.find(o => o.name === name).key[0];
-    list.find(obj => obj._id === item._id)[key] = value;
+    let v = value;
+    if (name === '도매가' || name === '판매가' || name === '최저가') {
+      v = this.handleNumberInput(value);
+    }
+    list.find(obj => obj._id === item._id)[key] = v;
     this.setState({ list });
   }
   handleInsert() {

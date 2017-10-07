@@ -55,39 +55,19 @@ class SaleModal extends React.Component {
         shopModalOn: false,
       };
     }
-    this.handlePriceInput = this.handlePriceInput.bind(this);
-    this.handleLowestPriceInput = this.handleLowestPriceInput.bind(this);
-    this.handleWholeSalePriceInput = this.handleWholeSalePriceInput.bind(this);
+    this.handleNumberInput = this.handleNumberInput.bind(this);
     this.handleInsert = this.handleInsert.bind(this);
     this.handleModify = this.handleModify.bind(this);
     this.handleRemove = this.handleRemove.bind(this);
   }
-  handlePriceInput(e) {
-    let value = e.target.value;
-    if (parseInt(value, 10) < 0) {
-      value = '0';
+  handleNumberInput(e, prop) {
+    let value = parseInt(e.target.value.replace(/\D/g, ''), 10);
+    if (!value || value < 0) {
+      value = 0;
     }
-    this.setState({
-      price: value,
-    });
-  }
-  handleLowestPriceInput(e) {
-    let value = e.target.value;
-    if (parseInt(value, 10) < 0) {
-      value = '0';
-    }
-    this.setState({
-      lowestPrice: value,
-    });
-  }
-  handleWholeSalePriceInput(e) {
-    let value = e.target.value;
-    if (parseInt(value, 10) < 0) {
-      value = '0';
-    }
-    this.setState({
-      wholeSalePrice: value,
-    });
+    const state = {};
+    state[prop] = value;
+    this.setState(state);
   }
   handleInsert() {
     if (!this.state.shop || !this.state.shop._id) {
@@ -138,6 +118,7 @@ class SaleModal extends React.Component {
       <div>
         <Modal
           show={this.props.show}
+          onHide={this.props.close}
         >
           <Modal.Header style={styles.header}>
             <h1>{this.props.title}</h1>
@@ -187,9 +168,9 @@ class SaleModal extends React.Component {
               <FormGroup controlId="formControlsText">
                 <ControlLabel>도매가</ControlLabel>
                 <FormControl
-                  type="number"
+                  type="text"
                   value={this.state.wholeSalePrice}
-                  onChange={e => this.setState({ wholeSalePrice: e.target.value })}
+                  onChange={e => this.handleNumberInput(e, 'wholeSalePrice')}
                   disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 />
               </FormGroup>
@@ -198,7 +179,7 @@ class SaleModal extends React.Component {
                 <FormControl
                   type="number"
                   value={this.state.price}
-                  onChange={this.handlePriceInput}
+                  onChange={e => this.handleNumberInput(e, 'price')}
                   disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 />
               </FormGroup>
@@ -207,7 +188,7 @@ class SaleModal extends React.Component {
                 <FormControl
                   type="number"
                   value={this.state.lowestPrice}
-                  onChange={this.handleLowestPriceInput}
+                  onChange={e => this.handleNumberInput(e, 'lowestPrice')}
                   disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 />
               </FormGroup>
