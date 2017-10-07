@@ -8,7 +8,7 @@ export default function listFinder(list, key, input) {
     for (let i = 0; i < key.length; i += 1) {
       if (!temp) break;
       temp = temp[key[i]];
-}
-return temp && String(temp) && String(temp).indexOf(input.trim()) > -1;
-});
+    }
+    return temp && String(temp) && String(temp).indexOf(input.trim()) > -1;
+  });
 }

@@ -28,7 +28,7 @@ import {
   Customer,
   CustomerBase,
   Store,
-  SaleBulk,
+  SaleForShop,
 } from './';
 
 import {
@@ -78,12 +78,12 @@ class CustomerMain extends React.Component{
               errorHandler(data);
             });
         } else if (this.props.customerBaseGetStore.status === 'FAILURE') {
+          loader.off();
           throw data;
         }
       })
       .catch((data) => {
         errorHandler(data);
-        console.log(data);
       });
   }
   selectMode(mode) {
@@ -113,7 +113,6 @@ class CustomerMain extends React.Component{
     ) {
       return <BodyBackgroundColor backgroundColor={backgroundColor} />;
     }
-    console.log(this.props);
     return (
       <BodyBackgroundColor backgroundColor={backgroundColor}>
         <div>

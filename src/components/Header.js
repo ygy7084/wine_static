@@ -5,9 +5,11 @@ import IconWine from 'react-icons/lib/ti/wine';
 import IconShop from 'react-icons/lib/ti/home-outline';
 import IconCustomer from 'react-icons/lib/ti/user';
 import IconCustomerBase from 'react-icons/lib/go/key';
-import IconStore from 'react-icons/lib/ti/document-text';
+import IconStore from 'react-icons/lib/ti/arrow-repeat-outline';
 import IconMenu from 'react-icons/lib/ti/th-menu';
 import IconSale from 'react-icons/lib/md/list';
+import IconStoreIn from 'react-icons/lib/ti/arrow-left-outline';
+import IconStoreOut from 'react-icons/lib/ti/arrow-right-outline';
 import {
   Route,
 } from 'react-router-dom';
@@ -131,7 +133,15 @@ const sideListItems = [
     path: '/customerbase',
     icon: IconCustomerBase,
     authority: ['관리자'] },
-  { name: '입출고',
+  { name: '입고',
+    path: '/storein',
+    icon: IconStoreIn,
+    authority: ['관리자', '매장'] },
+  { name: '출고',
+    path: '/storeout',
+    icon: IconStoreOut,
+    authority: ['관리자', '매장'] },
+  { name: '입출고 내역',
     path: '/store',
     icon: IconStore,
     authority: ['관리자', '매장'] }];

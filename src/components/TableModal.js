@@ -1,11 +1,10 @@
-/* global FileReader */
 import React from 'react';
+import PropTypes from 'prop-types';
+import Modal from 'react-bootstrap-modal';
+
 import {
   Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter } from 'react-bootstrap';
+} from 'react-bootstrap';
 
 const styles = {
   header: {
@@ -16,18 +15,32 @@ const TableModal = function TableModal(props) {
   return (
     <div>
       <Modal
-        show
-        animation={false}
-        bsSize="large"
+        show={props.show}
+        large
+        keyboard
+        onHide={props.close}
       >
-        <ModalHeader style={styles.header}>
+        <Modal.Header style={styles.header}>
           <h1>{props.title}</h1>
           <h4>{props.subtitle}</h4>
-        </ModalHeader>
-        <ModalBody>
+        </Modal.Header>
+        <Modal.Body>
           {props.children}
-        </ModalBody>
-        <ModalFooter>
+        </Modal.Body>
+        <Modal.Footer>
+          {
+            props.check ?
+              <Button
+                bsSize="large"
+                bsStyle="primary"
+                onClick={props.check}
+              >
+                {
+                  props.checkMessage
+                }
+              </Button>
+              : null
+          }
           <Button
             bsSize="large"
             onClick={
@@ -38,9 +51,15 @@ const TableModal = function TableModal(props) {
                 }
             }
           >닫기</Button>
-        </ModalFooter>
+        </Modal.Footer>
       </Modal>
     </div>
   );
+};
+TableModal.propTypes = {
+  show: PropTypes.bool,
+};
+TableModal.defaultProps = {
+  show: true,
 };
 export default TableModal;

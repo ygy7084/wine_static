@@ -82,7 +82,7 @@ const sessionFailure = function sessionFailure(error) {
 const sessionRequest = function sessionRequest() {
   return (dispatch) => {
     dispatch(session());
-    return fetch(`${API}/auth`, {
+    return fetch(`${API}/customerauth`, {
       method: 'GET',
       credentials: 'include',
       headers: {

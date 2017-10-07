@@ -11,7 +11,6 @@ import {
   sale,
   shop,
 } from '../actions';
-
 import {
   TableModal,
   VintageList,
@@ -19,30 +18,24 @@ import {
   SaleList,
   SaleModal,
   SaleInsertModal,
-  RemoveModal,
+  CheckModal,
 } from '../components';
-
 import {
   loader,
   errorHandler,
 } from '../modules';
+import structures from './structures';
 
 class Sale extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       saleModalItem: null,
-      saleInsertModalItem: null,
-      shopItem: null,
     };
     this.shopLoad = this.shopLoad.bind(this);
-    this.shopClick = this.shopClick.bind(this);
-    this.shopUnClick = this.shopUnClick.bind(this);
-    this.shopSelectClick = this.shopSelectClick.bind(this);
     this.vintageLoad = this.vintageLoad.bind(this);
     this.saleLoad = this.saleLoad.bind(this);
     this.saleClick = this.saleClick.bind(this);
-    this.vintageClick = this.vintageClick.bind(this);
     this.saleInsert = this.saleInsert.bind(this);
     this.saleModify = this.saleModify.bind(this);
     this.saleRemove = this.saleRemove.bind(this);
@@ -51,6 +44,7 @@ class Sale extends React.Component {
   componentWillMount() {
     this.saleLoad();
     this.vintageLoad();
+    this.shopLoad();
   }
   shopLoad() {
     loader.on();
@@ -66,18 +60,6 @@ class Sale extends React.Component {
         loader.off();
         errorHandler(data);
       });
-  }
-  shopClick(shop, url) {
-    this.setState({ shopItem: shop });
-    this.props.changePage(url);
-  }
-  shopSelectClick(url) {
-    this.shopLoad();
-    this.setState({ shopItem: null });
-    this.props.changePage(url);
-  }
-  shopUnClick() {
-    this.setState({ shopItem: null });
   }
   vintageLoad() {
     loader.on();
@@ -115,17 +97,12 @@ class Sale extends React.Component {
     });
     this.props.changePage('/wine/sale/modal');
   }
-  vintageClick(vintage) {
-    this.setState({
-      saleInsertModalItem: vintage,
-    });
-    this.props.changePage('/wine/sale/vintage/insertmodal');
-  }
   saleInsert(sale) {
     loader.on();
     this.props.saleInsertRequest(sale)
       .then((data) => {
         if (this.props.saleInsert.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/wine/sale');
           this.saleLoad();
           loader.off();
@@ -144,6 +121,7 @@ class Sale extends React.Component {
     this.props.saleModifyRequest(sale)
       .then((data) => {
         if (this.props.saleModify.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/wine/sale');
           this.saleLoad();
         } else if (this.props.saleModify.status === 'FAILURE') {
@@ -161,6 +139,7 @@ class Sale extends React.Component {
     this.props.saleRemoveRequest(sale)
       .then((data) => {
         if (this.props.saleRemove.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/wine/sale');
           this.saleLoad();
         } else if (this.props.saleRemove.status === 'FAILURE') {
@@ -178,6 +157,7 @@ class Sale extends React.Component {
     this.props.saleRemoveAllRequest()
       .then((data) => {
         if (this.props.saleRemoveAll.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/wine/sale');
           this.saleLoad();
         } else if (this.props.saleRemoveAll.status === 'FAILURE') {
@@ -194,108 +174,55 @@ class Sale extends React.Component {
     return (
       <div>
         <SaleList
-          saleClick={this.saleClick}
-          saleRemoveAllClick={() => this.props.changePage('/wine/sale/removeallmodal')}
-          saleInsertClick={() => this.props.changePage('/wine/sale/vintage')}
           list={this.props.saleGetList.list}
+          structure={structures.sale}
+          rowClick={this.saleClick}
+          removeAllClick={() => this.props.changePage('/wine/sale/removeallmodal')}
+          insertClick={() => this.props.changePage('/wine/sale/insert')}
           refresh={this.saleLoad}
+          outputTable={e => console.log(e)}
         />
         <Route
           path="/wine/sale/modal"
           render={props =>
             this.state.saleModalItem ?
               <SaleModal
+                imageView
+                title="상품 정보"
+                mode="modify"
+                item={this.state.saleModalItem}
+                modify={this.saleModify}
+                remove={this.saleRemove}
+                shopList={this.props.shopGetList.list}
+                shopStructure={structures.shop}
                 close={() => this.props.changePage('/wine/sale')}
-                sale={this.state.saleModalItem}
-                shop={this.state.shopItem}
-                saleModify={this.saleModify}
-                saleRemove={this.saleRemove}
-                shopSelectClick={() => this.shopSelectClick('/wine/sale/modal/shop')}
-                {...props}
               /> : <Redirect to="/wine/sale" />
           }
         />
         <Route
-          path="/wine/sale/modal/shop"
-          render={props =>
-            (
-              <TableModal
-                title="매장 선택"
-                subtitle="상품을 연결할 매장을 선택하십시요."
-                close={() => this.props.changePage('/wine/sale/modal')}
-              >
-                <ShopList
-                  onlyView
-                  shopClick={shop => this.shopClick(shop, '/wine/sale/modal')}
-                  list={this.props.shopGetList.list}
-                  refresh={this.shopLoad}
-                  {...props}
-                />
-              </TableModal>
-            )
-          }
-        />
-        <Route
-          path="/wine/sale/vintage"
+          path="/wine/sale/insert"
           render={props => (
-            <TableModal
+            <SaleInsertModal
               title="상품 추가"
-              subtitle="상품을 추가할 빈티지를 선택하십시요."
+              subtitle="상품을 추가 할 빈티지를 선택하십시요."
+              vintageStructure={structures.vintage}
+              vintageList={this.props.vintageGetList.list}
+              shopStructure={structures.shop}
+              shopList={this.props.shopGetList.list}
+              insert={this.saleInsert}
               close={() => this.props.changePage('/wine/sale')}
-            >
-              <VintageList
-                onlyView
-                vintageClick={this.vintageClick}
-                list={this.props.vintageGetList.list}
-                refresh={this.vintageLoad}
-                {...props}
-              />
-            </TableModal>
+            />
           )}
-        />
-        <Route
-          path="/wine/sale/vintage/insertmodal"
-          render={props =>
-            this.state.saleInsertModalItem ?
-              <SaleInsertModal
-                vintage={this.state.saleInsertModalItem}
-                close={() => this.props.changePage('/wine/sale/vintage')}
-                saleInsert={this.saleInsert}
-                shop={this.state.shopItem}
-                shopSelectClick={() => this.shopSelectClick('/wine/sale/vintage/insertmodal/shop')}
-                {...props}
-              /> : <Redirect to="/wine/sale" />
-          }
-        />
-        <Route
-          path="/wine/sale/vintage/insertmodal/shop"
-          render={props =>
-            (
-              <TableModal
-                title="매장 선택"
-                subtitle="상품을 연결할 매장을 선택하십시요."
-                close={() => this.props.changePage('/wine/sale/vintage/insertmodal')}
-              >
-                <ShopList
-                  onlyView
-                  shopClick={shop => this.shopClick(shop, '/wine/sale/vintage/insertmodal')}
-                  list={this.props.shopGetList.list}
-                  refresh={this.shopLoad}
-                  {...props}
-                />
-              </TableModal>
-            )
-          }
         />
         <Route
           path="/wine/sale/removeallmodal"
           render={props =>
-            <RemoveModal
+            <CheckModal
+              bsStyle="danger"
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="상품이 전부 삭제됩니다. "
-              handleRemove={this.saleRemoveAll}
+              handleCheck={this.saleRemoveAll}
               handleClose={() => this.props.changePage('/wine/sale')}
-              {...props}
             />
           }
         />

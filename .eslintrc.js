@@ -15,6 +15,9 @@ module.exports = {
         "no-underscore-dangle":0,
         "no-nested-ternary":0,
         "no-return-assign":0,
-        "no-undef-init":0
+        "no-undef-init":0,
+        "react/no-array-index-key":0,
+        "react/forbid-prop-types":0,
+        "class-methods-use-this":0,
     },
 };

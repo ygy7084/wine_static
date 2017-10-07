@@ -6,22 +6,19 @@ import {
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { push } from 'react-router-redux';
-
 import {
   customerBase,
 } from '../actions';
-
 import {
   CustomerBaseList,
   CustomerBaseModal,
-  CustomerBaseInsertModal,
-  RemoveModal,
+  CheckModal,
 } from '../components';
-
 import {
   loader,
   errorHandler,
 } from '../modules';
+import structures from './structures';
 
 class CustomerBase extends React.Component {
   constructor(props) {
@@ -69,6 +66,7 @@ class CustomerBase extends React.Component {
     this.props.customerBaseInsertRequest(customerBase)
       .then((data) => {
         if (this.props.customerBaseInsert.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/customerbase');
           this.customerBaseLoad();
         } else if (this.props.customerBaseInsert.status === 'FAILURE') {
@@ -86,6 +84,7 @@ class CustomerBase extends React.Component {
     this.props.customerBaseModifyRequest(customerBase)
       .then((data) => {
         if (this.props.customerBaseModify.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/customerbase');
           this.customerBaseLoad();
         } else if (this.props.customerBaseModify.status === 'FAILURE') {
@@ -103,6 +102,7 @@ class CustomerBase extends React.Component {
     this.props.customerBaseRemoveRequest(customerBase)
       .then((data) => {
         if (this.props.customerBaseRemove.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/customerbase');
           this.customerBaseLoad();
         } else if (this.props.customerBaseRemove.status === 'FAILURE') {
@@ -122,6 +122,7 @@ class CustomerBase extends React.Component {
         this.props.accountSession.account.shop : null)
       .then((data) => {
         if (this.props.customerBaseRemoveAll.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/customerbase');
           this.customerBaseLoad();
         } else if (this.props.customerBaseRemoveAll.status === 'FAILURE') {
@@ -138,55 +139,55 @@ class CustomerBase extends React.Component {
     return (
       <div>
         <CustomerBaseList
-          account={this.props.accountSession.account}
-          customerBaseClick={this.customerBaseClick}
-          customerBaseInsertClick={this.customerBaseInsertClick}
           list={this.props.customerBaseGetList.list}
+          structure={structures.customerBase}
+          rowClick={this.customerBaseClick}
+          insertClick={this.customerBaseInsertClick}
           refresh={this.customerBaseLoad}
-          customerBaseRemoveAllClick={() => this.props.changePage('/customerbase/removeallmodal')}
+          removeAllClick={() => this.props.changePage('/customerbase/removeallmodal')}
+          outputTable={e => console.log(e)}
         />
         <Route
           path="/customerbase/modal"
           render={props =>
             this.state.customerBaseModalItem ?
               <CustomerBaseModal
+                title="고객 계정 정보"
+                mode="modify"
                 close={() => this.props.changePage('/customerbase')}
-                customerBase={this.state.customerBaseModalItem}
-                customerBaseModify={this.customerBaseModify}
-                customerBaseRemove={this.customerBaseRemove}
-                account={this.props.accountSession.account}
-                {...props}
+                item={this.state.customerBaseModalItem}
+                modify={this.customerBaseModify}
+                remove={this.customerBaseRemove}
               /> : <Redirect to="/customerbase" />
           }
         />
         <Route
           path="/customerbase/insertmodal"
           render={props =>
-            (<CustomerBaseInsertModal
+            <CustomerBaseModal
+              title="고객 계정 추가"
+              mode="insert"
               close={() => this.props.changePage('/customerbase')}
-              customerBaseInsert={this.customerBaseInsert}
-              account={this.props.accountSession.account}
-              {...props}
-            />)
+              insert={this.customerBaseInsert}
+            />
           }
         />
         <Route
           path="/customerbase/removeallmodal"
           render={props =>
-            (<RemoveModal
+            <CheckModal
+              bsStyle="danger"
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="고객이 전부 삭제됩니다. 연결된 고객과 입출고 내역도 사라집니다."
-              handleRemove={this.customerBaseRemoveAll}
+              handleCheck={this.customerBaseRemoveAll}
               handleClose={() => this.props.changePage('/customerbase')}
-              {...props}
-            />)
+            />
           }
         />
       </div>
     );
   }
 }
-
 const mapStateToProps = state => ({
   accountSession: {
     status: state.account.session.status,

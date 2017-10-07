@@ -70,6 +70,9 @@ const styles = {
       textAlign: 'center',
     },
   },
+  button: {
+    borderRadius: '0px',
+  },
 };
 class ListA extends React.Component {
   constructor(props) {
@@ -168,16 +171,19 @@ class ListA extends React.Component {
                 id="dropDownWine1"
                 title={`${this.state.itemInList}개씩 보기`}
                 onSelect={value => this.setState({ itemInList: value, activePage: 1 })}
+                style={styles.button}
               >
                 <MenuItem active={this.state.itemInList === 10} eventKey={10}>10개씩 보기</MenuItem>
                 <MenuItem active={this.state.itemInList === 20} eventKey={20}>20개씩 보기</MenuItem>
                 <MenuItem active={this.state.itemInList === 50} eventKey={50}>50개씩 보기</MenuItem>
               </DropdownButton>
               <Button
+                style={styles.button}
                 bsStyle="primary"
                 onClick={this.props.refresh}
               >새로 고침</Button>
               <Button
+                style={styles.button}
                 bsStyle="danger"
                 onClick={this.props.removeAllClick}
               >전부 삭제</Button>

@@ -1,5 +1,22 @@
 import React from 'react';
-import { Button, ControlLabel, Form, FormGroup, FormControl, Modal, ModalHeader, ModalBody, ModalFooter } from 'react-bootstrap';
+import PropTypes from 'prop-types';
+import {
+  Button,
+  ControlLabel,
+  Form,
+  FormGroup,
+  FormControl,
+  Image,
+} from 'react-bootstrap';
+import Modal from 'react-bootstrap-modal';
+import {
+  TableModal,
+  CustomerList,
+} from './';
+import {
+  errorHandler,
+  configure,
+} from '../modules';
 
 const styles = {
   header: {
@@ -10,25 +27,18 @@ const styles = {
     marginRight: '10px',
   },
 };
+// only insertion
 class StoreModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      modifyMode: false,
-      price: this.props.store.price,
-      lowestPrice: this.props.store.lowestPrice,
-      vintage: this.props.store.vintage,
-      shop: this.props.store.shop,
+      customer: null,
+      quantityChange: 0,
     };
-    this.handlePriceInput = this.handlePriceInput.bind(this);
-    this.handleLowestPriceInput = this.handleLowestPriceInput.bind(this);
-    this.storeModify = this.storeModify.bind(this);
-    this.storeRemove = this.storeRemove.bind(this);
+    this.handleQuantityChangeInput = this.handleQuantityChangeInput.bind(this);
+    this.handleInsert = this.handleInsert.bind(this);
   }
-  componentWillReceiveProps(nextProps) {
-    this.setState({ shop: nextProps.shop });
-  }
-  handlePriceInput(e) {
+  handleQuantityChangeInput(e) {
     let value = e.target.value;
     if (parseInt(value, 10) < 0) {
       value = '0';
@@ -37,33 +47,24 @@ class StoreModal extends React.Component {
       price: value,
     });
   }
-  handleLowestPriceInput(e) {
-    let value = e.target.value;
-    if (parseInt(value, 10) < 0) {
-      value = '0';
+  handleInsert() {
+    if (!this.state.shop || !this.state.customer || !this.state.quantityChange) {
+      errorHandler({ message: '입력이 잘못되었습니다. ' });
+    } else {
+      this.props.handleInsert({
+        sale: this.props.sale ? this.props.sale._id : null,
+        shop: this.props.sale.shop._id,
+        customer: this.state.customer._id,
+        quantityChange: this.state.quantityChange,
+      });
     }
-    this.setState({
-      lowestPrice: value,
-    });
-  }
-  storeModify() {
-    this.props.storeModify({
-      _id: this.props.store._id,
-      vintage: this.state.vintage._id,
-      shop: this.state.shop._id,
-      price: this.state.price,
-      lowestPrice: this.state.lowestPrice,
-    });
-  }
-  storeRemove() {
-    this.props.storeRemove({ _id: this.props.store._id });
   }
   render() {
-    const { store } = this.props;
-    if (!store) {
+    const { sale } = this.props;
+    if (!sale) {
       return null;
     }
-    const { vintage } = store;
+    const { vintage } = sale;
     if (!vintage) {
       return null;
     }
@@ -71,16 +72,25 @@ class StoreModal extends React.Component {
     if (!original) {
       return null;
     }
+    const { shop } = this.props.sale;
     return (
       <div>
         <Modal
-          animation={false}
-          show
+          show={this.props.show}
+          onHide={this.props.close}
         >
-          <ModalHeader style={styles.header}>
-            <h1>상품 정보</h1>
-          </ModalHeader>
-          <ModalBody>
+          <Modal.Header style={styles.header}>
+            <h1>{this.props.title}</h1>
+          </Modal.Header>
+          <Modal.Body>
+            {
+              this.props.imageView ?
+                <Image
+                  style={styles.image}
+                  src={`${configure.imagePath}${original.photo_url}?${new Date().getTime()}`}
+                  responsive
+                /> : null
+            }
             <Form>
               <FormGroup controlId="formControlsText">
                 <ControlLabel>영문 줄임명</ControlLabel>
@@ -99,14 +109,6 @@ class StoreModal extends React.Component {
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
-                <ControlLabel>종류</ControlLabel>
-                <FormControl
-                  type="text"
-                  value={original.category}
-                  disabled
-                />
-              </FormGroup>
-              <FormGroup controlId="formControlsText">
                 <ControlLabel>빈티지</ControlLabel>
                 <FormControl
                   type="number"
@@ -115,29 +117,11 @@ class StoreModal extends React.Component {
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
-                <ControlLabel>도매가</ControlLabel>
-                <FormControl
-                  type="number"
-                  value={vintage.wholeStorePrice}
-                  disabled
-                />
-              </FormGroup>
-              <FormGroup controlId="formControlsText">
                 <ControlLabel>판매가</ControlLabel>
                 <FormControl
                   type="number"
-                  value={this.state.price}
-                  onChange={this.handlePriceInput}
-                  disabled={!this.state.modifyMode}
-                />
-              </FormGroup>
-              <FormGroup controlId="formControlsText">
-                <ControlLabel>최저가</ControlLabel>
-                <FormControl
-                  type="number"
-                  value={this.state.lowestPrice}
-                  onChange={this.handleLowestPriceInput}
-                  disabled={!this.state.modifyMode}
+                  value={sale.price}
+                  disabled
                 />
               </FormGroup>
               <hr />
@@ -145,7 +129,7 @@ class StoreModal extends React.Component {
                 <ControlLabel>매장 이름</ControlLabel>
                 <FormControl
                   type="text"
-                  value={this.state.shop ? this.state.shop.name : ''}
+                  value={shop.name}
                   disabled
                 />
               </FormGroup>
@@ -153,45 +137,98 @@ class StoreModal extends React.Component {
                 <ControlLabel>매장 전화번호</ControlLabel>
                 <FormControl
                   type="text"
-                  value={this.state.shop ? this.state.shop.phone : ''}
+                  value={shop.phone}
                   disabled
+                />
+              </FormGroup>
+              <hr />
+              <FormGroup controlId="formControlsText">
+                <ControlLabel>고객 이름</ControlLabel>
+                <FormControl
+                  type="text"
+                  value={this.state.customer ? this.state.customer.name : ''}
+                  disabled
+                />
+              </FormGroup>
+              <FormGroup controlId="formControlsText">
+                <ControlLabel>고객 전화번호</ControlLabel>
+                <FormControl
+                  type="text"
+                  value={this.state.customer ? this.state.customer.phone : ''}
+                  disabled
+                />
+              </FormGroup>
+              <FormGroup controlId="formControlsText">
+                <ControlLabel>입고 개수</ControlLabel>
+                <FormControl
+                  type="number"
+                  value={this.state.quantityChange}
+                  onChange={e => this.setState({ quantityChange: e.target.value })}
                 />
               </FormGroup>
               <Button
                 bsStyle="success"
-                onClick={this.props.shopSelectClick}
-                disabled={!this.state.modifyMode}
-              >상품에 매장 연결</Button>
+                onClick={this.props.customerSelectClick}
+              >고객 선택</Button>
             </Form>
-          </ModalBody>
-          <ModalFooter>
-            {
-              this.state.modifyMode === false ?
-                <Button
-                  bsStyle="primary"
-                  bsSize="large"
-                  onClick={() => this.setState({ modifyMode: true })}
-                >수정 또는 삭제</Button> :
-                <div style={styles.buttons}>
-                  <Button
-                    bsStyle="info"
-                    bsSize="large"
-                    onClick={this.storeModify}
-                  >수정</Button>
-                  <Button
-                    bsStyle="warning"
-                    bsSize="large"
-                    onClick={this.storeRemove}
-                  >삭제</Button>
-                </div>
-            }
-            <Button bsSize="large" onClick={this.props.close}>닫기</Button>
-          </ModalFooter>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              bsStyle="success"
+              bsSize="large"
+              onClick={this.handleInsert}
+            >입고</Button>
+            <Button
+              bsSize="large"
+              onClick={this.props.close}
+            >닫기</Button>
+          </Modal.Footer>
         </Modal>
+        <TableModal
+          show={this.state.customerModalOn}
+          title="고객 선택"
+          close={() => this.setState({ customerModalOn: false })}
+        >
+          <CustomerList
+            onlyView
+            structure={this.props.customerStructure}
+            rowClick={(item) => {
+              this.setState({
+                customerModalOn: false,
+                customer: item,
+              });
+            }}
+            list={this.props.customerList}
+          />
+        </TableModal>
+        <TableModal
+          show={this.state.customerModalOn}
+          title="고객 선택"
+          close={() => this.setState({ customerModalOn: false })}
+        >
+          <CustomerList
+            onlyView
+            structure={this.props.customerStructure}
+            rowClick={(item) => {
+              this.setState({
+                customerModalOn: false,
+                customer: item,
+              });
+            }}
+            list={this.props.customerList}
+          />
+        </TableModal>
       </div>
     );
   }
 }
-
-
+StoreModal.propTypes = {
+  show: PropTypes.bool,
+  customer: PropTypes.object,
+  sale: PropTypes.object.isRequired,
+};
+StoreModal.defaultProps = {
+  show: true,
+  customer: undefined,
+};
 export default StoreModal;

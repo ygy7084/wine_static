@@ -6,22 +6,19 @@ import {
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { push } from 'react-router-redux';
-
 import {
   shop,
 } from '../actions';
-
 import {
   ShopList,
   ShopModal,
-  ShopInsertModal,
-  RemoveModal,
+  CheckModal,
 } from '../components';
-
 import {
   loader,
   errorHandler,
 } from '../modules';
+import structures from './structures';
 
 class Shop extends React.Component {
   constructor(props) {
@@ -72,6 +69,7 @@ class Shop extends React.Component {
     this.props.shopInsertRequest(shop)
       .then((data) => {
         if (this.props.shopInsert.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/shop');
           this.shopLoad();
         } else if (this.props.shopInsert.status === 'FAILURE') {
@@ -89,6 +87,7 @@ class Shop extends React.Component {
     this.props.shopModifyRequest(shop)
       .then((data) => {
         if (this.props.shopModify.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/shop');
           this.shopLoad();
         } else if (this.props.shopModify.status === 'FAILURE') {
@@ -109,6 +108,7 @@ class Shop extends React.Component {
       this.props.shopRemoveRequest(shop)
         .then((data) => {
           if (this.props.shopRemove.status === 'SUCCESS') {
+            loader.off();
             this.props.changePage('/shop');
             this.shopLoad();
           } else if (this.props.shopRemove.status === 'FAILURE') {
@@ -127,6 +127,7 @@ class Shop extends React.Component {
     this.props.shopRemoveAllRequest()
       .then((data) => {
         if (this.props.shopRemoveAll.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/shop');
           this.shopLoad();
         } else if (this.props.shopRemoveAll.status === 'FAILURE') {
@@ -147,52 +148,56 @@ class Shop extends React.Component {
             this.props.accountSession.account &&
             this.props.accountSession.account.level === '매장'
           }
-          shopClick={this.shopClick}
-          shopInsertClick={this.shopInsertClick}
           list={this.props.shopGetList.list}
+          structure={structures.shop}
+          rowClick={this.shopClick}
+          insertClick={this.shopInsertClick}
           refresh={this.shopLoad}
-          shopRemoveAllClick={() => this.props.changePage('/shop/removeallmodal')}
+          removeAllClick={() => this.props.changePage('/shop/removeallmodal')}
+          outputTable={e => console.log(e)}
         />
         <Route
           path="/shop/modal"
           render={props =>
             this.state.shopModalItem ?
               <ShopModal
+                title="매장 정보"
+                mode="modify"
+                item={this.state.shopModalItem}
+                modify={this.shopModify}
+                remove={this.shopRemove}
                 close={() => this.props.changePage('/shop')}
-                shop={this.state.shopModalItem}
-                shopModify={this.shopModify}
-                shopRemove={this.shopRemove}
-                {...props}
               /> : <Redirect to="/shop" />
           }
         />
         <Route
           path="/shop/insertmodal"
           render={props =>
-            (<ShopInsertModal
+            <ShopModal
+              title="매장 추가"
+              mode="insert"
+              item={this.state.shopModalItem}
+              insert={this.shopInsert}
               close={() => this.props.changePage('/shop')}
-              shopInsert={this.shopInsert}
-              {...props}
-            />)
+            />
           }
         />
         <Route
           path="/shop/removeallmodal"
           render={props =>
-            (<RemoveModal
+            <CheckModal
+              bsStyle="danger"
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="매장이 전부 삭제됩니다. 연결된 상품도 사라집니다."
-              handleRemove={this.shopRemoveAll}
+              handleCheck={this.shopRemoveAll}
               handleClose={() => this.props.changePage('/shop')}
-              {...props}
-            />)
+            />
           }
         />
       </div>
     );
   }
 }
-
 const mapStateToProps = state => ({
   accountSession: {
     status: state.account.session.status,

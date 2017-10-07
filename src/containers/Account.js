@@ -13,12 +13,9 @@ import {
 } from '../actions';
 
 import {
-  TableModal,
-  ShopList,
   AccountList,
   AccountModal,
-  AccountInsertModal,
-  RemoveModal,
+  CheckModal,
 } from '../components';
 
 import {
@@ -26,12 +23,13 @@ import {
   errorHandler,
 } from '../modules';
 
+import structures from './structures';
+
 class Account extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       accountModalItem: null,
-      shopItem: null,
     };
     this.shopLoad = this.shopLoad.bind(this);
     this.accountLoad = this.accountLoad.bind(this);
@@ -41,11 +39,10 @@ class Account extends React.Component {
     this.accountModify = this.accountModify.bind(this);
     this.accountRemove = this.accountRemove.bind(this);
     this.accountRemoveAll = this.accountRemoveAll.bind(this);
-    this.shopClick = this.shopClick.bind(this);
-    this.shopUnClick = this.shopUnClick.bind(this);
-    this.shopSelectClick = this.shopSelectClick.bind(this);
+    this.accountRemoveAllClick = this.accountRemoveAllClick.bind(this);
   }
   componentWillMount() {
+    this.shopLoad();
     this.accountLoad();
   }
   shopLoad() {
@@ -87,13 +84,16 @@ class Account extends React.Component {
   accountInsertClick() {
     this.props.changePage('/account/insertmodal');
   }
+  accountRemoveAllClick() {
+    this.props.changePage('/account/removeallmodal');
+  }
   accountInsert(account) {
     loader.on();
     this.props.accountInsertRequest(account)
       .then((data) => {
         if (this.props.accountInsert.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/account');
-          this.shopUnClick();
           this.accountLoad();
         } else if (this.props.accountInsert.status === 'FAILURE') {
           loader.off();
@@ -110,8 +110,8 @@ class Account extends React.Component {
     this.props.accountModifyRequest(account)
       .then((data) => {
         if (this.props.accountModify.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/account');
-          this.shopUnClick();
           this.accountLoad();
         } else if (this.props.accountModify.status === 'FAILURE') {
           loader.off();
@@ -128,8 +128,8 @@ class Account extends React.Component {
     this.props.accountRemoveRequest(account)
       .then((data) => {
         if (this.props.accountRemove.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/account');
-          this.shopUnClick();
           this.accountLoad();
         } else if (this.props.accountRemove.status === 'FAILURE') {
           loader.off();
@@ -146,8 +146,8 @@ class Account extends React.Component {
     this.props.accountRemoveAllRequest()
       .then((data) => {
         if (this.props.accountRemoveAll.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/account');
-          this.shopUnClick();
           this.accountLoad();
         } else if (this.props.accountRemoveAll.status === 'FAILURE') {
           loader.off();
@@ -159,107 +159,58 @@ class Account extends React.Component {
         errorHandler(data);
       });
   }
-  shopClick(shop, url) {
-    this.setState({ shopItem: shop });
-    this.props.changePage(url);
-  }
-  shopSelectClick(url) {
-    this.shopLoad();
-    this.setState({ shopItem: null });
-    this.props.changePage(url);
-  }
-  shopUnClick() {
-    this.setState({ shopItem: null });
-  }
   render() {
     return (
       <div>
         <AccountList
-          accountClick={this.accountClick}
-          accountInsertClick={this.accountInsertClick}
           list={this.props.accountGetList.list}
+          structure={structures.account}
+          rowClick={this.accountClick}
+          insertClick={this.accountInsertClick}
           refresh={this.accountLoad}
-          accountRemoveAllClick={() => this.props.changePage('/account/removeallmodal')}
+          removeAllClick={this.accountRemoveAllClick}
+          outputTable={e => console.log(e)}
         />
         <Route
           path="/account/modal"
           render={props =>
             this.state.accountModalItem ?
               <AccountModal
+                title="계정 정보"
+                mode="modify"
                 close={() => this.props.changePage('/account')}
-                account={this.state.accountModalItem}
-                accountModify={this.accountModify}
-                accountRemove={this.accountRemove}
-                shop={this.state.shopItem}
-                shopUnClick={this.shopUnClick}
-                shopSelectClick={() => this.shopSelectClick('/account/modal/shop')}
-                {...props}
+                item={this.state.accountModalItem}
+                modify={this.accountModify}
+                remove={this.accountRemove}
+                shopList={this.props.shopGetList.list}
+                shopStructure={structures.shop}
               /> : <Redirect to="/account" />
-          }
-        />
-        <Route
-          path="/account/modal/shop"
-          render={props =>
-            (
-              <TableModal
-                title="매장 선택"
-                subtitle="계정을 연결할 매장을 선택하십시요."
-                close={() => this.props.changePage('/account/modal')}
-              >
-                <ShopList
-                  onlyView
-                  shopClick={shop => this.shopClick(shop, '/account/modal')}
-                  list={this.props.shopGetList.list}
-                  refresh={this.shopLoad}
-                  {...props}
-                />
-              </TableModal>
-            )
           }
         />
         <Route
           path="/account/insertmodal"
           render={props =>
-            (<AccountInsertModal
+            (<AccountModal
+              title="계정 추가"
+              mode="insert"
               close={() => this.props.changePage('/account')}
-              accountInsert={this.accountInsert}
-              shop={this.state.shopItem}
-              shopUnClick={this.shopUnClick}
-              shopSelectClick={() => this.shopSelectClick('/account/insertmodal/shop')}
-              {...props}
+              insert={this.accountInsert}
+              shopList={this.props.shopGetList.list}
+              shopStructure={structures.shop}
             />)
-          }
-        />
-        <Route
-          path="/account/insertmodal/shop"
-          render={props =>
-            (
-              <TableModal
-                title="매장 선택"
-                subtitle="계정을 연결할 매장을 선택하십시요."
-                close={() => this.props.changePage('/account/insertmodal')}
-              >
-                <ShopList
-                  onlyView
-                  shopClick={shop => this.shopClick(shop, '/account/insertmodal')}
-                  list={this.props.shopGetList.list}
-                  refresh={this.shopLoad}
-                  {...props}
-                />
-              </TableModal>
-            )
           }
         />
         <Route
           path="/account/removeallmodal"
-          render={props =>
-            (<RemoveModal
+          render={props => (
+            <CheckModal
+              bsStyle="danger"
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="계정이 전부 삭제됩니다. 초기화 계정(ID: 0, PASSWORD: 0)이 다시 생성됩니다."
-              handleRemove={this.accountRemoveAll}
+              handleCheck={this.accountRemoveAll}
               handleClose={() => this.props.changePage('/account')}
-              {...props}
-            />)
+            />
+          )
           }
         />
       </div>

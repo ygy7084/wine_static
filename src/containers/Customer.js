@@ -6,22 +6,19 @@ import {
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { push } from 'react-router-redux';
-
 import {
   customer,
 } from '../actions';
-
 import {
   CustomerList,
   CustomerModal,
-  CustomerInsertModal,
-  RemoveModal,
+  CheckModal,
 } from '../components';
-
 import {
   loader,
   errorHandler,
 } from '../modules';
+import structures from './structures';
 
 class Customer extends React.Component {
   constructor(props) {
@@ -67,13 +64,15 @@ class Customer extends React.Component {
     this.props.changePage('/customer/insertmodal');
   }
   customerInsert(customer) {
-    if (!customer.shop) {
-      errorHandler({ message: '매장 정보가 없습니다.' });
-    } else {
+    if (this.props.accountSession.account &&
+        this.props.accountSession.account.shop) {
       loader.on();
-      this.props.customerInsertRequest(customer)
+      const modified = JSON.parse(JSON.stringify(customer));
+      modified.shop = this.props.accountSession.account.shop;
+      this.props.customerInsertRequest(modified)
         .then((data) => {
           if (this.props.customerInsert.status === 'SUCCESS') {
+            loader.off();
             this.props.changePage('/customer');
             this.customerLoad();
           } else if (this.props.customerInsert.status === 'FAILURE') {
@@ -85,6 +84,8 @@ class Customer extends React.Component {
           loader.off();
           errorHandler(data);
         });
+    } else {
+      errorHandler({ message: '매장 정보가 없습니다.' });
     }
   }
   customerModify(customer) {
@@ -92,6 +93,7 @@ class Customer extends React.Component {
     this.props.customerModifyRequest(customer)
       .then((data) => {
         if (this.props.customerModify.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/customer');
           this.customerLoad();
         } else if (this.props.customerModify.status === 'FAILURE') {
@@ -109,6 +111,7 @@ class Customer extends React.Component {
     this.props.customerRemoveRequest(customer)
       .then((data) => {
         if (this.props.customerRemove.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/customer');
           this.customerLoad();
         } else if (this.props.customerRemove.status === 'FAILURE') {
@@ -128,6 +131,7 @@ class Customer extends React.Component {
         this.props.accountSession.account.shop : null)
       .then((data) => {
         if (this.props.customerRemoveAll.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/customer');
           this.customerLoad();
         } else if (this.props.customerRemoveAll.status === 'FAILURE') {
@@ -144,48 +148,49 @@ class Customer extends React.Component {
     return (
       <div>
         <CustomerList
-          account={this.props.accountSession.account}
-          customerClick={this.customerClick}
-          customerInsertClick={this.customerInsertClick}
           list={this.props.customerGetList.list}
+          structure={structures.customer}
+          rowClick={this.customerClick}
+          insertClick={this.customerInsertClick}
+          removeAllClick={() => this.props.changePage('/customer/removeallmodal')}
           refresh={this.customerLoad}
-          customerRemoveAllClick={() => this.props.changePage('/customer/removeallmodal')}
+          outputTable={e => console.log(e)}
         />
         <Route
           path="/customer/modal"
           render={props =>
             this.state.customerModalItem ?
               <CustomerModal
+                title="고객 정보"
+                mode="modify"
                 close={() => this.props.changePage('/customer')}
-                customer={this.state.customerModalItem}
-                customerModify={this.customerModify}
-                customerRemove={this.customerRemove}
-                account={this.props.accountSession.account}
-                {...props}
+                item={this.state.customerModalItem}
+                modify={this.customerModify}
+                remove={this.customerRemove}
               /> : <Redirect to="/customer" />
           }
         />
         <Route
           path="/customer/insertmodal"
           render={props =>
-            (<CustomerInsertModal
+            <CustomerModal
+              title="고객 추가"
+              mode="insert"
               close={() => this.props.changePage('/customer')}
-              customerInsert={this.customerInsert}
-              account={this.props.accountSession.account}
-              {...props}
-            />)
+              insert={this.customerInsert}
+            />
           }
         />
         <Route
           path="/customer/removeallmodal"
           render={props =>
-            (<RemoveModal
+            <CheckModal
+              bsStyle="danger"
               title="주의! 리스트를 전부 삭제합니다."
-              subtitle="고객이 전부 삭제됩니다. 연결된 입출고 내역도 사라집니다."
-              handleRemove={this.customerRemoveAll}
+              subtitle="고객과 연결된 입출고 리스트가 전부 삭제됩니다.."
+              handleCheck={this.customerRemoveAll}
               handleClose={() => this.props.changePage('/customer')}
-              {...props}
-            />)
+            />
           }
         />
       </div>

@@ -112,7 +112,7 @@ class CustomerSideCard extends React.Component {
                   <CardSubtitle>{`원산지 ${item.original.locationString}`}</CardSubtitle>
                   <CardSubtitle>{`품종 ${item.original.grapeString}`}</CardSubtitle>
                   <CardText>
-                    <p>{item.original.desc}</p>
+                    <p style={{whiteSpace: 'pre-line'}}>{item.original.desc}</p>
                   </CardText>
                 </CardBlock>
                 <CardFooter>

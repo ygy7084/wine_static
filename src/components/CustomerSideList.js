@@ -42,8 +42,6 @@ class CustomerSideStore extends React.Component {
     const showList = this.state.list.slice(
       (this.state.activePage - 1) * this.state.itemInList,
       this.state.activePage * this.state.itemInList);
-    console.log(this.props);
-    console.log(showList);
     return (
       <div style={Object.assign({}, styles.slide)}>
         <Card style={styles.card}>

@@ -12,7 +12,6 @@ import {
   customer,
   shop,
 } from '../actions';
-
 import {
   TableModal,
   SaleList,
@@ -22,15 +21,15 @@ import {
   StoreModal,
   StoreOutModal,
   StoreInsertModal,
-  RemoveModal,
+  CheckModal,
 } from '../components';
-
 import {
   loader,
   errorHandler,
 } from '../modules';
+import structures from './structures';
 
-class Store extends React.Component {
+class StoreHistory extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -227,6 +226,7 @@ class Store extends React.Component {
     this.props.storeRemoveRequest(store)
       .then((data) => {
         if (this.props.storeRemove.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/store');
           this.storeLoad();
         } else if (this.props.storeRemove.status === 'FAILURE') {
@@ -244,6 +244,8 @@ class Store extends React.Component {
     this.props.storeRemoveAllRequest()
       .then((data) => {
         if (this.props.storeRemoveAll.status === 'SUCCESS') {
+          loader.off();
+          console.log('success');
           this.props.changePage('/store');
           this.storeLoad();
         } else if (this.props.storeRemoveAll.status === 'FAILURE') {
@@ -257,17 +259,44 @@ class Store extends React.Component {
       });
   }
   render() {
+    console.log(this.props);
     return (
       <div>
         <StoreList
-          onlyView={this.props.accountSession.account &&
-          this.props.accountSession.account.level === '매장'}
-          storeClick={this.storeClick}
-          storeRemoveAllClick={() => this.props.changePage('/store/removeallmodal')}
+          deleteLock={
+            this.props.accountSession.account &&
+              this.props.accountSession.account.level === '매장'
+          }
+          list={this.props.storeGetList.list}
+          structure={structures.store}
+          rowClick={this.storeClick}
+          removeAllClick={() => this.props.changePage('/store/removeallmodal')}
           storeInClick={() => this.props.changePage('/store/in')}
           storeOutClick={() => this.props.changePage('/store/out')}
-          list={this.props.storeGetList.list}
           refresh={this.storeLoad}
+          outputTable={e => console.log(e)}
+        />
+        <Route
+          path="store/in"
+          render={props =>
+            <StoreOutModal
+              title="입고 추가"
+              subtitle="입고 정보를 입력하십시요."
+              close={() => this.props.changePage('/store')}
+              shop={
+                this.props.accountSession.account &&
+                  this.props.accountSession.account.level === '매장' ?
+                  this.props.accountSession.account.shop : null
+              }
+              shopStructure={structures.shop}
+              shopList={this.props.shopGetList.list}
+              customerStructure={structures.customer}
+              customerList={this.props.customerGetList.list}
+              saleStructure={structures.sale}
+              saleList={this.props.saleGetList.list}
+              insert={this.storeInsert}
+            />
+          }
         />
         <Route
           path="/store/in"
@@ -280,8 +309,9 @@ class Store extends React.Component {
               >
                 <SaleList
                   onlyView
-                  saleClick={sale => this.saleClick(sale, '/store/in/insertmodal')}
+                  rowClick={sale => this.saleClick(sale, '/store/in/insertmodal')}
                   list={this.props.saleGetList.list}
+                  structure={structures.sale}
                   refresh={this.shopLoad}
                   {...props}
                 />
@@ -316,8 +346,9 @@ class Store extends React.Component {
               >
                 <ShopList
                   onlyView
-                  shopClick={sale => this.shopClick(sale, '/store/in/insertmodal')}
+                  rowClick={sale => this.shopClick(sale, '/store/in/insertmodal')}
                   list={this.props.shopGetList.list}
+                  structure={structures.shop}
                   refresh={this.shopLoad}
                   {...props}
                 />
@@ -337,20 +368,18 @@ class Store extends React.Component {
                 <CustomerList
                   onlyView
                   account={this.props.accountSession.account}
-                  customerClick={sale => this.customerClick(sale, '/store/in/insertmodal')}
+                  rowClick={sale => this.customerClick(sale, '/store/in/insertmodal')}
                   list={this.state.shopItem ?
                     this.props.customerGetList.list.filter(v => v.shop && v.shop._id === this.state.shopItem._id) :
                     this.props.customerGetList.list
                   }
+                  structure={structures.customer}
                   refresh={this.shopLoad}
                   {...props}
                 />
               </TableModal>
             )
           }
-        />
-        <Route
-          path="/store/in/insertmodal/customer/new"
         />
         <Route
           path="/store/out"
@@ -424,12 +453,12 @@ class Store extends React.Component {
         <Route
           path="/store/removeallmodal"
           render={props =>
-            <RemoveModal
+            <CheckModal
+              bsStyle="danger"
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="입출고내역이 전부 삭제됩니다. "
-              handleRemove={this.storeRemoveAll}
+              handleCheck={this.storeRemoveAll}
               handleClose={() => this.props.changePage('/store')}
-              {...props}
             />
           }
         />
@@ -482,4 +511,4 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(Store);
+)(StoreHistory);

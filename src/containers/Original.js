@@ -1,5 +1,4 @@
 import React from 'react';
-import async from 'async';
 import {
   Route,
   Redirect,
@@ -17,14 +16,15 @@ import {
 import {
   OriginalList,
   OriginalModal,
-  OriginalInsertModal,
-  RemoveModal,
+  CheckModal,
 } from '../components';
 
 import {
   loader,
   errorHandler,
 } from '../modules';
+
+import structures from './structures';
 
 class Original extends React.Component {
   constructor(props) {
@@ -33,6 +33,8 @@ class Original extends React.Component {
       originalModalItem: null,
     };
     this.originalLoad = this.originalLoad.bind(this);
+    this.grapeLoad = this.grapeLoad.bind(this);
+    this.locationLoad = this.locationLoad.bind(this);
     this.originalClick = this.originalClick.bind(this);
     this.originalInsert = this.originalInsert.bind(this);
     this.originalModify = this.originalModify.bind(this);
@@ -41,54 +43,53 @@ class Original extends React.Component {
   }
   componentWillMount() {
     this.originalLoad();
+    this.grapeLoad();
+    this.locationLoad();
   }
   originalLoad() {
     loader.on();
-    async.parallel([
-      (cb) => {
-        this.props.originalGetListRequest()
-          .then((data) => {
-            if (this.props.originalGetList.status === 'SUCCESS') {
-              cb(null);
-            } else if (this.props.originalGetList.status === 'FAILURE') {
-              throw data;
-            }
-          })
-          .catch((data) => {
-            cb(null);
-            errorHandler(data);
-          });
-      },
-      (cb) => {
-        this.props.locationGetListRequest()
-          .then((data) => {
-            if (this.props.locationGetList.status === 'SUCCESS') {
-              cb(null);
-            } else if (this.props.locationGetList.status === 'FAILURE') {
-              throw data;
-            }
-          })
-          .catch((data) => {
-            cb(null);
-            errorHandler(data);
-          });
-      },
-      (cb) => {
-        this.props.grapeGetListRequest()
-          .then((data) => {
-            if (this.props.grapeGetList.status === 'SUCCESS') {
-              cb(null);
-            } else if (this.props.grapeGetList.status === 'FAILURE') {
-              throw data;
-            }
-          })
-          .catch((data) => {
-            cb(null);
-            errorHandler(data);
-          });
-      }], () => {
-      loader.off();
-    });
+    this.props.originalGetListRequest()
+      .then((data) => {
+        if (this.props.originalGetList.status === 'SUCCESS') {
+          loader.off();
+        } else if (this.props.originalGetList.status === 'FAILURE') {
+          throw data;
+        }
+      })
+      .catch((data) => {
+        loader.off();
+        errorHandler(data);
+      });
+  }
+  grapeLoad() {
+    loader.on();
+    this.props.grapeGetListRequest()
+      .then((data) => {
+        if (this.props.grapeGetList.status === 'SUCCESS') {
+          loader.off();
+        } else if (this.props.grapeGetList.status === 'FAILURE') {
+          throw data;
+        }
+      })
+      .catch((data) => {
+        loader.off();
+        errorHandler(data);
+      });
+  }
+  locationLoad() {
+    loader.on();
+    this.props.locationGetListRequest()
+      .then((data) => {
+        if (this.props.locationGetList.status === 'SUCCESS') {
+          loader.off();
+        } else if (this.props.locationGetList.status === 'FAILURE') {
+          throw data;
+        }
+      })
+      .catch((data) => {
+        loader.off();
+        errorHandler(data);
+      });
   }
   originalClick(original) {
     this.setState({
@@ -101,6 +102,7 @@ class Original extends React.Component {
     this.props.originalInsertRequest(original, file)
       .then((data) => {
         if (this.props.originalInsert.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/wine/original');
           this.originalLoad();
         } else if (this.props.originalInsert.status === 'FAILURE') {
@@ -117,6 +119,7 @@ class Original extends React.Component {
     this.props.originalModifyRequest(original, file)
       .then((data) => {
         if (this.props.originalModify.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/wine/original');
           this.originalLoad();
         } else if (this.props.originalModify.status === 'FAILURE') {
@@ -133,6 +136,7 @@ class Original extends React.Component {
     this.props.originalRemoveRequest(original)
       .then((data) => {
         if (this.props.originalRemove.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/wine/original');
           this.originalLoad();
         } else if (this.props.originalRemove.status === 'FAILURE') {
@@ -149,6 +153,7 @@ class Original extends React.Component {
     this.props.originalRemoveAllRequest()
       .then((data) => {
         if (this.props.originalRemoveAll.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/wine/original');
           this.originalLoad();
         } else if (this.props.originalRemoveAll.status === 'FAILURE') {
@@ -165,22 +170,26 @@ class Original extends React.Component {
     return (
       <div>
         <OriginalList
-          originalClick={this.originalClick}
           list={this.props.originalGetList.list}
-          refresh={this.accountLoad}
-          originalInsertClick={() => this.props.changePage('/wine/original/insertmodal')}
-          originalRemoveAllClick={() => this.props.changePage('/wine/original/removeallmodal')}
+          structure={structures.original}
+          rowClick={this.originalClick}
+          refresh={this.originalLoad}
+          insertClick={() => this.props.changePage('/wine/original/insertmodal')}
+          removeAllClick={() => this.props.changePage('/wine/original/removeallmodal')}
+          outputTable={e => console.log(e)}
         />
         <Route
           path="/wine/original/modal"
           render={props =>
             this.state.originalModalItem ?
               <OriginalModal
-                original={this.state.originalModalItem}
+                title="오리지날 정보"
+                mode="modify"
+                item={this.state.originalModalItem}
                 locations={this.props.locationGetList.options}
                 grapes={this.props.grapeGetList.list}
-                originalModify={this.originalModify}
-                originalRemove={this.originalRemove}
+                modify={this.originalModify}
+                remove={this.originalRemove}
                 close={() => this.props.changePage('/wine/original')}
                 {...props}
               /> : <Redirect to="/wine/original" />
@@ -190,10 +199,12 @@ class Original extends React.Component {
           path="/wine/original/insertmodal"
           render={props =>
             this.props.locationGetList.options ?
-              <OriginalInsertModal
-                originalInsert={this.originalInsert}
+              <OriginalModal
+                title="오리지날 추가"
+                mode="insert"
                 locations={this.props.locationGetList.options}
                 grapes={this.props.grapeGetList.list}
+                insert={this.originalInsert}
                 close={() => this.props.changePage('/wine/original')}
                 {...props}
               /> : <Redirect to="/wine/original" />
@@ -202,13 +213,13 @@ class Original extends React.Component {
         <Route
           path="/wine/original/removeallmodal"
           render={props =>
-            (<RemoveModal
+            <CheckModal
+              bsStyle="danger"
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="오리지날이 전부 삭제됩니다. 연관된 빈티지와 상품도 삭제됩니다."
-              handleRemove={this.originalRemoveAll}
+              handleCheck={this.originalRemoveAll}
               handleClose={() => this.props.changePage('/wine/original')}
-              {...props}
-            />)
+            />
           }
         />
       </div>

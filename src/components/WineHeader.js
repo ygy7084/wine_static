@@ -7,6 +7,11 @@ import {
   MenuItem,
 } from 'react-bootstrap';
 
+const styles = {
+  dropdown: {
+    borderRadius: '0px',
+  },
+};
 const WineHeader = function WineHeader(props) {
   let title;
   switch (props.match.params.selected) {
@@ -32,6 +37,7 @@ const WineHeader = function WineHeader(props) {
     <div>
       <DropdownButton
         id="dropDownWine"
+        style={styles.dropdown}
         bsStyle="primary"
         title={title}
         onSelect={props.modeChange}

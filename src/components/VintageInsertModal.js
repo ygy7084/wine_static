@@ -1,119 +1,54 @@
 import React from 'react';
-import { Button, ControlLabel, Form, FormGroup, FormControl, Modal, ModalHeader, ModalBody, ModalFooter } from 'react-bootstrap';
+import PropTypes from 'prop-types';
+import {
+  TableModal,
+  OriginalList,
+  VintageModal,
+} from './';
 
-const styles = {
-  header: {
-    textAlign: 'center',
-  },
-};
 class VintageInsertModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      vintage: '',
+      original: undefined,
+      vintageModalOn: false,
     };
-    this.handleVintageInput = this.handleVintageInput.bind(this);
-    this.vintageInsert = this.vintageInsert.bind(this);
-  }
-  handleVintageInput(e) {
-    let value = e.target.value;
-    if (parseInt(value, 10) < 1) {
-      value = '1';
-    }
-    this.setState({
-      vintage: value,
-    });
-  }
-  vintageInsert() {
-    this.props.vintageInsert({
-      original: this.props.original._id,
-      vintage: this.state.vintage,
-    });
   }
   render() {
-    const { original } = this.props;
-    if (!original) {
-      return null;
-    }
     return (
       <div>
-        <Modal
-          show
-          animation={false}
+        <TableModal
+          show={this.props.show}
+          title={this.props.title}
+          subtitle={this.props.subtitle}
+          close={this.props.close}
         >
-          <ModalHeader style={styles.header}>
-            <h1>빈티지 추가</h1>
-          </ModalHeader>
-          <ModalBody>
-            <Form>
-              <FormGroup controlId="formControlsText">
-                <ControlLabel>영문 줄임명</ControlLabel>
-                <FormControl
-                  type="text"
-                  value={original.eng_shortname}
-                  disabled
-                />
-              </FormGroup>
-              <FormGroup controlId="formControlsText">
-                <ControlLabel>한글 줄임명</ControlLabel>
-                <FormControl
-                  type="text"
-                  value={original.kor_shortname}
-                  disabled
-                />
-              </FormGroup>
-              <FormGroup controlId="formControlsText">
-                <ControlLabel>종류</ControlLabel>
-                <FormControl
-                  type="text"
-                  value={original.category}
-                  disabled
-                />
-              </FormGroup>
-              <FormGroup controlId="formControlsText">
-                <ControlLabel>원산지</ControlLabel>
-                <FormControl
-                  type="text"
-                  value={original.locationString}
-                  disabled
-                />
-              </FormGroup>
-              <FormGroup controlId="formControlsText">
-                <ControlLabel>품종</ControlLabel>
-                <FormControl
-                  type="text"
-                  value={original.grapeString}
-                  disabled
-                />
-              </FormGroup>
-              <FormGroup controlId="formControlsText">
-                <ControlLabel>빈티지</ControlLabel>
-                <FormControl
-                  type="number"
-                  value={this.state.vintage}
-                  onChange={e => this.setState({ vintage: e.target.value })}
-                />
-              </FormGroup>
-            </Form>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              bsStyle="success"
-              bsSize="large"
-              onClick={this.vintageInsert}
-            >추가</Button>
-            <Button
-              bsSize="large"
-              onClick={() => {
-                this.props.close();
-              }}
-            >닫기</Button>
-          </ModalFooter>
-        </Modal>
+          <OriginalList
+            onlyView
+            structure={this.props.originalStructure}
+            rowClick={item => this.setState({
+              original: item,
+              vintageModalOn: true,
+            })}
+            list={this.props.originalList}
+          />
+        </TableModal>
+        <VintageModal
+          title={this.props.title}
+          show={this.state.vintageModalOn}
+          mode="insert"
+          original={this.state.original}
+          close={() => this.setState({ vintageModalOn: false })}
+          insert={this.props.insert}
+        />
       </div>
     );
   }
 }
-
-
+VintageInsertModal.propTypes = {
+  show: PropTypes.bool,
+};
+VintageInsertModal.defaultProps = {
+  show: true,
+};
 export default VintageInsertModal;

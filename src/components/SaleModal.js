@@ -1,5 +1,22 @@
 import React from 'react';
-import { Button, ControlLabel, Form, FormGroup, FormControl, Modal, ModalHeader, ModalBody, ModalFooter } from 'react-bootstrap';
+import PropTypes from 'prop-types';
+import {
+  Button,
+  ControlLabel,
+  Form,
+  FormGroup,
+  FormControl,
+  Image,
+} from 'react-bootstrap';
+import Modal from 'react-bootstrap-modal';
+import {
+  errorHandler,
+  configure,
+} from '../modules';
+import {
+  TableModal,
+  ShopList,
+} from './';
 
 const styles = {
   header: {
@@ -9,26 +26,41 @@ const styles = {
     display: 'inline-block',
     marginRight: '10px',
   },
+  image: {
+    height: 'auto',
+    width: '100%',
+    margin: 'auto',
+  },
 };
 class SaleModal extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      modifyMode: false,
-      price: this.props.sale.price,
-      lowestPrice: this.props.sale.lowestPrice,
-      wholeSalePrice: this.props.sale.wholeSalePrice,
-      vintage: this.props.sale.vintage,
-      shop: this.props.sale.shop,
-    };
+    this.state = {};
+    if (this.props.mode === 'modify' && this.props.item) {
+      this.state = {
+        modifyMode: false,
+        price: this.props.item.price,
+        lowestPrice: this.props.item.lowestPrice,
+        wholeSalePrice: this.props.item.wholeSalePrice,
+        vintage: this.props.item.vintage,
+        shop: this.props.item.shop,
+        shopModalOn: false,
+      };
+    } else {
+      this.state = {
+        price: '',
+        lowestPrice: '',
+        wholeSalePrice: '',
+        shop: null,
+        shopModalOn: false,
+      };
+    }
     this.handlePriceInput = this.handlePriceInput.bind(this);
     this.handleLowestPriceInput = this.handleLowestPriceInput.bind(this);
     this.handleWholeSalePriceInput = this.handleWholeSalePriceInput.bind(this);
-    this.saleModify = this.saleModify.bind(this);
-    this.saleRemove = this.saleRemove.bind(this);
-  }
-  componentWillReceiveProps(nextProps) {
-    this.setState({ shop: nextProps.shop });
+    this.handleInsert = this.handleInsert.bind(this);
+    this.handleModify = this.handleModify.bind(this);
+    this.handleRemove = this.handleRemove.bind(this);
   }
   handlePriceInput(e) {
     let value = e.target.value;
@@ -57,9 +89,22 @@ class SaleModal extends React.Component {
       wholeSalePrice: value,
     });
   }
-  saleModify() {
-    this.props.saleModify({
-      _id: this.props.sale._id,
+  handleInsert() {
+    if (!this.state.shop || !this.state.shop._id) {
+      errorHandler({ message: '매장 선택이 잘못되었습니다. ' });
+    } else {
+      this.props.insert({
+        vintage: this.props.vintage._id,
+        shop: this.state.shop._id,
+        price: this.state.price,
+        lowestPrice: this.state.lowestPrice,
+        wholeSalePrice: this.state.wholeSalePrice,
+      });
+    }
+  }
+  handleModify() {
+    this.props.modify({
+      _id: this.props.item._id,
       vintage: this.state.vintage._id,
       shop: this.state.shop._id,
       price: this.state.price,
@@ -67,37 +112,51 @@ class SaleModal extends React.Component {
       wholeSalePrice: this.state.wholeSalePrice,
     });
   }
-  saleRemove() {
-    this.props.saleRemove({ _id: this.props.sale._id });
+  handleRemove() {
+    this.props.remove(this.props.item);
   }
   render() {
-    const { sale } = this.props;
-    if (!sale) {
-      return null;
+    let vintage;
+    let original;
+    if (this.props.mode === 'modify') {
+      vintage = this.props.item.vintage;
+      if (!vintage) {
+        return null;
+      }
+      original = vintage.original;
+    } else if (this.props.mode === 'insert') {
+      vintage = this.props.vintage;
+      if (!vintage) {
+        return null;
+      }
+      original = vintage.original;
     }
-    const { vintage } = sale;
-    if (!vintage) {
-      return null;
-    }
-    const { original } = vintage;
     if (!original) {
       return null;
     }
     return (
       <div>
         <Modal
-          show
+          show={this.props.show}
         >
-          <ModalHeader style={styles.header}>
-            <h1>상품 정보</h1>
-          </ModalHeader>
-          <ModalBody>
+          <Modal.Header style={styles.header}>
+            <h1>{this.props.title}</h1>
+          </Modal.Header>
+          <Modal.Body>
+            {
+              this.props.imageView ?
+                <Image
+                  style={styles.image}
+                  src={`${configure.imagePath}${original.photo_url}?${new Date().getTime()}`}
+                  responsive
+                /> : null
+            }
             <Form>
               <FormGroup controlId="formControlsText">
                 <ControlLabel>영문 줄임명</ControlLabel>
                 <FormControl
                   type="text"
-                  value={original.eng_shortname}
+                  value={original ? original.eng_shortname : ''}
                   disabled
                 />
               </FormGroup>
@@ -105,7 +164,7 @@ class SaleModal extends React.Component {
                 <ControlLabel>한글 줄임명</ControlLabel>
                 <FormControl
                   type="text"
-                  value={original.kor_shortname}
+                  value={original ? original.kor_shortname : ''}
                   disabled
                 />
               </FormGroup>
@@ -113,7 +172,7 @@ class SaleModal extends React.Component {
                 <ControlLabel>종류</ControlLabel>
                 <FormControl
                   type="text"
-                  value={original.category}
+                  value={original ? original.category : ''}
                   disabled
                 />
               </FormGroup>
@@ -121,7 +180,7 @@ class SaleModal extends React.Component {
                 <ControlLabel>빈티지</ControlLabel>
                 <FormControl
                   type="number"
-                  value={vintage.vintage}
+                  value={vintage ? vintage.vintage : ''}
                   disabled
                 />
               </FormGroup>
@@ -131,7 +190,7 @@ class SaleModal extends React.Component {
                   type="number"
                   value={this.state.wholeSalePrice}
                   onChange={e => this.setState({ wholeSalePrice: e.target.value })}
-                  disabled={!this.state.modifyMode}
+                  disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
@@ -140,7 +199,7 @@ class SaleModal extends React.Component {
                   type="number"
                   value={this.state.price}
                   onChange={this.handlePriceInput}
-                  disabled={!this.state.modifyMode}
+                  disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
@@ -149,7 +208,7 @@ class SaleModal extends React.Component {
                   type="number"
                   value={this.state.lowestPrice}
                   onChange={this.handleLowestPriceInput}
-                  disabled={!this.state.modifyMode}
+                  disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 />
               </FormGroup>
               <hr />
@@ -171,39 +230,69 @@ class SaleModal extends React.Component {
               </FormGroup>
               <Button
                 bsStyle="success"
-                onClick={this.props.shopSelectClick}
-                disabled={!this.state.modifyMode}
+                onClick={() => this.setState({ shopModalOn: true })}
+                disabled={!this.state.modifyMode && this.props.mode === 'modify'}
               >상품에 매장 연결</Button>
             </Form>
-          </ModalBody>
-          <ModalFooter>
+          </Modal.Body>
+          <Modal.Footer>
             {
-              this.state.modifyMode === false ?
+              this.props.mode === 'insert' ?
                 <Button
-                  bsStyle="primary"
+                  bsStyle="success"
                   bsSize="large"
-                  onClick={() => this.setState({ modifyMode: true })}
-                >수정 또는 삭제</Button> :
-                <div style={styles.buttons}>
-                  <Button
-                    bsStyle="info"
-                    bsSize="large"
-                    onClick={this.saleModify}
-                  >수정</Button>
-                  <Button
-                    bsStyle="warning"
-                    bsSize="large"
-                    onClick={this.saleRemove}
-                  >삭제</Button>
-                </div>
+                  onClick={this.handleInsert}
+                >추가</Button> :
+                this.props.mode === 'modify' && !this.props.onlyView ?
+                  this.state.modifyMode === false ?
+                    <Button
+                      bsStyle="primary"
+                      bsSize="large"
+                      onClick={() => this.setState({ modifyMode: true })}
+                    >수정 또는 삭제</Button> :
+                    <div style={styles.buttons}>
+                      <Button
+                        bsStyle="info"
+                        bsSize="large"
+                        onClick={this.handleModify}
+                      >수정</Button>
+                      <Button
+                        bsStyle="warning"
+                        bsSize="large"
+                        onClick={this.handleRemove}
+                      >삭제</Button>
+                    </div>
+                  : null
             }
             <Button bsSize="large" onClick={this.props.close}>닫기</Button>
-          </ModalFooter>
+          </Modal.Footer>
         </Modal>
+        <TableModal
+          show={this.state.shopModalOn}
+          title="매장 선택"
+          subtitle="상품을 연결할 매장을 선택하십시요."
+          close={() => this.setState({ shopModalOn: false })}
+        >
+          <ShopList
+            onlyView
+            structure={this.props.shopStructure}
+            rowClick={(item) => {
+              this.setState({
+                shopModalOn: false,
+                shop: item,
+              });
+            }}
+            list={this.props.shopList}
+          />
+        </TableModal>
       </div>
     );
   }
 }
-
-
+SaleModal.propTypes = {
+  show: PropTypes.bool,
+};
+SaleModal.defaultProps = {
+  show: true,
+};
 export default SaleModal;

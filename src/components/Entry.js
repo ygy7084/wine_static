@@ -3,9 +3,9 @@ import {
   Button,
   Form,
   FormGroup,
-  ControlLabel,
-  FormControl,
-} from 'react-bootstrap';
+  Label,
+  Input,
+} from 'reactstrap';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -26,7 +26,7 @@ const styles = {
   },
   form: {
     textAlign: 'center',
-    fontSize: '2rem',
+    fontSize: '1.5rem',
   },
   formLabel: {
     marginTop: '10px',
@@ -72,15 +72,14 @@ class Entry extends React.Component {
           <div className="wine" style={styles.wine} />
           <Form onSubmit={(e) => { e.preventDefault(); this.loginRequest(); }}>
             <FormGroup>
-              <ControlLabel>ID</ControlLabel>
-              <FormControl
-                type="text"
+              <Label>ID</Label>
+              <Input
                 value={this.state.usernameInput}
                 style={styles.form}
                 onChange={e => this.handleInputChange('username', e)}
               />
-              <ControlLabel style={styles.formLabel}>Password</ControlLabel>
-              <FormControl
+              <Label style={styles.formLabel}>Password</Label>
+              <Input
                 type="password"
                 value={this.state.passwordInput}
                 style={styles.form}

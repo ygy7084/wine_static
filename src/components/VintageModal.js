@@ -1,5 +1,15 @@
 import React from 'react';
-import { Button, ControlLabel, Form, FormGroup, FormControl, Modal, ModalHeader, ModalBody, ModalFooter } from 'react-bootstrap';
+import PropTypes from 'prop-types';
+import {
+  Button,
+  ControlLabel,
+  Form,
+  FormGroup,
+  FormControl,
+  Image,
+} from 'react-bootstrap';
+import Modal from 'react-bootstrap-modal';
+import { configure } from '../modules';
 
 const styles = {
   header: {
@@ -9,17 +19,30 @@ const styles = {
     display: 'inline-block',
     marginRight: '10px',
   },
+  image: {
+    height: 'auto',
+    width: '100%',
+    margin: 'auto',
+  },
 };
 class VintageModal extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      vintage: this.props.vintage.vintage,
-      modifyMode: false,
-    };
+    this.state = {};
+    if (this.props.mode === 'modify' && this.props.item) {
+      this.state = {
+        vintage: this.props.item.vintage,
+        modifyMode: false,
+      };
+    } else {
+      this.state = {
+        vintage: '',
+      };
+    }
     this.handleVintageInput = this.handleVintageInput.bind(this);
-    this.vintageModify = this.vintageModify.bind(this);
-    this.vintageRemove = this.vintageRemove.bind(this);
+    this.handleInsert = this.handleInsert.bind(this);
+    this.handleModify = this.handleModify.bind(this);
+    this.handleRemove = this.handleRemove.bind(this);
   }
   handleVintageInput(e) {
     let value = e.target.value;
@@ -30,30 +53,50 @@ class VintageModal extends React.Component {
       vintage: value,
     });
   }
-  vintageModify() {
-    this.props.vintageModify({
-      _id: this.props.vintage._id,
+  handleInsert() {
+    this.props.insert({
+      original: this.props.original._id,
       vintage: this.state.vintage,
     });
   }
-  vintageRemove() {
-    this.props.vintageRemove({ _id: this.props.vintage._id });
+  handleModify() {
+    this.props.modify({
+      _id: this.props.item._id,
+      vintage: this.state.vintage,
+    });
+  }
+  handleRemove() {
+    this.props.remove(this.props.item);
   }
   render() {
-    if (!this.props.vintage) {
+    let original;
+    if (this.props.mode === 'modify') {
+      original = this.props.item.original;
+    } else if (this.props.mode === 'insert') {
+      original = this.props.original;
+    }
+    if (!original) {
       return null;
     }
-    const { original } = this.props.vintage;
     return (
       <div>
         <Modal
-          animation={false}
-          show
+          show={this.props.show}
+          onHide={this.props.close}
+          keyboard
         >
-          <ModalHeader style={styles.header}>
-            <h1>빈티지 정보</h1>
-          </ModalHeader>
-          <ModalBody>
+          <Modal.Header style={styles.header}>
+            <h1>{this.props.title}</h1>
+          </Modal.Header>
+          <Modal.Body>
+            {
+              this.props.imageView ?
+                <Image
+                  style={styles.image}
+                  src={`${configure.imagePath}${original.photo_url}?${new Date().getTime()}`}
+                  responsive
+                /> : null
+            }
             <Form>
               <FormGroup controlId="formControlsText">
                 <ControlLabel>영문 줄임명</ControlLabel>
@@ -101,39 +144,55 @@ class VintageModal extends React.Component {
                   type="number"
                   value={this.state.vintage}
                   onChange={e => this.setState({ vintage: e.target.value })}
-                  disabled={!this.state.modifyMode}
+                  disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 />
               </FormGroup>
             </Form>
-          </ModalBody>
-          <ModalFooter>
+          </Modal.Body>
+          <Modal.Footer>
             {
-              this.state.modifyMode === false ?
+              this.props.mode === 'insert' ?
                 <Button
-                  bsStyle="primary"
+                  bsStyle="success"
                   bsSize="large"
-                  onClick={() => this.setState({ modifyMode: true })}
-                >수정 또는 삭제</Button> :
-                <div style={styles.buttons}>
-                  <Button
-                    bsStyle="info"
-                    bsSize="large"
-                    onClick={this.vintageModify}
-                  >수정</Button>
-                  <Button
-                    bsStyle="warning"
-                    bsSize="large"
-                    onClick={this.vintageRemove}
-                  >삭제</Button>
-                </div>
+                  onClick={this.handleInsert}
+                >추가</Button> :
+                this.props.mode === 'modify' && !this.props.onlyView ?
+                  this.state.modifyMode === false ?
+                    <Button
+                      bsStyle="primary"
+                      bsSize="large"
+                      onClick={() => this.setState({ modifyMode: true })}
+                    >수정 또는 삭제</Button> :
+                    <div style={styles.buttons}>
+                      <Button
+                        bsStyle="info"
+                        bsSize="large"
+                        onClick={this.handleModify}
+                      >수정</Button>
+                      <Button
+                        bsStyle="warning"
+                        bsSize="large"
+                        onClick={this.handleRemove}
+                      >삭제</Button>
+                    </div>
+                  : null
             }
             <Button bsSize="large" onClick={this.props.close}>닫기</Button>
-          </ModalFooter>
+          </Modal.Footer>
         </Modal>
       </div>
     );
   }
 }
-
-
+VintageModal.propTypes = {
+  show: PropTypes.bool,
+  imageView: PropTypes.bool,
+  onlyView: PropTypes.bool,
+};
+VintageModal.defaultProps = {
+  show: true,
+  imageView: false,
+  onlyView: false,
+};
 export default VintageModal;

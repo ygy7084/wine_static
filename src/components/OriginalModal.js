@@ -1,7 +1,14 @@
 /* global FileReader */
 import React from 'react';
-import { Typeahead } from 'react-bootstrap-typeahead'; // ES2015
-import { Image, Button, ControlLabel, Form, FormGroup, FormControl, Modal, ModalHeader, ModalBody, ModalFooter } from 'react-bootstrap';
+import {
+  Image,
+  Button,
+  ControlLabel,
+  Form,
+  FormGroup,
+  FormControl,
+} from 'react-bootstrap';
+import Modal from 'react-bootstrap-modal';
 import { configure } from '../modules';
 
 const styles = {
@@ -21,46 +28,70 @@ const styles = {
 class OriginalModal extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      modifyMode: false,
-      file: '',
-      photo_url: this.props.original.photo_url && this.props.original.photo_url !== '' ?
-        `${configure.imagePath}${this.props.original.photo_url}?${new Date().getTime()}` : '',
-      photo_changed: false,
-      categoryOptions: ['레드', '화이트', '스파클링'],
-      grapeOptions: this.props.grapes,
-      countryOptions: this.props.locations.country,
-      regionOptions:
-        Object.prototype.hasOwnProperty.call(
-          this.props.locations.region,
-          this.props.original.country,
-        ) ?
-          this.props.locations.region[this.props.original.country] :
-          [],
-      subregionOptions:
-        Object.prototype.hasOwnProperty.call(
-          this.props.locations.subregion,
-          `${this.props.original.country}${this.props.original.region}`,
-        ) ?
-          this.props.locations.subregion[`${this.props.original.country}${this.props.original.region}`] :
-          [],
-      eng_fullname: this.props.original.eng_fullname,
-      eng_shortname: this.props.original.eng_shortname,
-      kor_fullname: this.props.original.kor_fullname,
-      kor_shortname: this.props.original.kor_shortname,
-      category: this.props.original.category,
-      country: this.props.original.country,
-      region: this.props.original.region,
-      subregion: this.props.original.subregion,
-      grape_race: this.props.original.grape_race,
-      desc: this.props.original.desc,
-    };
+    this.state = {};
+    if (this.props.mode === 'modify' && this.props.item) {
+      this.state = {
+        modifyMode: false,
+        file: '',
+        photo_url: this.props.item.photo_url && this.props.item.photo_url !== '' ?
+          `${configure.imagePath}${this.props.item.photo_url}?${new Date().getTime()}` : '',
+        photo_changed: false,
+        categoryOptions: ['레드', '화이트', '스파클링'],
+        grapeOptions: this.props.grapes,
+        countryOptions: this.props.locations.country,
+        regionOptions:
+          Object.prototype.hasOwnProperty.call(
+            this.props.locations.region,
+            this.props.item.country,
+          ) ?
+            this.props.locations.region[this.props.item.country] :
+            [],
+        subregionOptions:
+          Object.prototype.hasOwnProperty.call(
+            this.props.locations.subregion,
+            `${this.props.item.country}${this.props.item.region}`,
+          ) ?
+            this.props.locations.subregion[`${this.props.item.country}${this.props.item.region}`] :
+            [],
+        eng_fullname: this.props.item.eng_fullname,
+        eng_shortname: this.props.item.eng_shortname,
+        kor_fullname: this.props.item.kor_fullname,
+        kor_shortname: this.props.item.kor_shortname,
+        category: this.props.item.category,
+        country: this.props.item.country,
+        region: this.props.item.region,
+        subregion: this.props.item.subregion,
+        grape_race: this.props.item.grape_race,
+        desc: this.props.item.desc,
+      };
+    } else {
+      this.state = {
+        file: '',
+        photo_url: '',
+        categoryOptions: ['레드', '화이트', '스파클링'],
+        grapeOptions: this.props.grapes,
+        countryOptions: this.props.locations ? this.props.locations.country : {},
+        regionOptions: [],
+        subregionOptions: [],
+        eng_fullname: '',
+        eng_shortname: '',
+        kor_fullname: '',
+        kor_shortname: '',
+        category: '',
+        country: '',
+        region: '',
+        subregion: '',
+        grape_race: [],
+        desc: '',
+      };
+    }
     this.handleCountryInputChange = this.handleCountryInputChange.bind(this);
     this.handleRegionInputChange = this.handleRegionInputChange.bind(this);
     this.handleGrapeInputChange = this.handleGrapeInputChange.bind(this);
     this.handleImageChange = this.handleImageChange.bind(this);
-    this.originalModify = this.originalModify.bind(this);
-    this.originalRemove = this.originalRemove.bind(this);
+    this.handleInsert = this.handleInsert.bind(this);
+    this.handleModify = this.handleModify.bind(this);
+    this.handleRemove = this.handleRemove.bind(this);
   }
   handleCountryInputChange(e) {
     const input = e.target.value;
@@ -106,14 +137,28 @@ class OriginalModal extends React.Component {
       this.setState({
         file,
         photo_url: reader.result,
-        photo_changed: true,
+        photo_changed: this.props.mode === 'modify' ? true : undefined,
       });
     };
     reader.readAsDataURL(file);
   }
-  originalModify() {
-    this.props.originalModify({
-      _id: this.props.original._id,
+  handleInsert() {
+    this.props.insert({
+      eng_fullname: this.state.eng_fullname,
+      eng_shortname: this.state.eng_shortname,
+      kor_fullname: this.state.kor_fullname,
+      kor_shortname: this.state.kor_shortname,
+      category: this.state.category,
+      country: this.state.country,
+      region: this.state.region,
+      subregion: this.state.subregion,
+      grape_race: this.state.grape_race,
+      desc: this.state.desc,
+    }, this.state.file);
+  }
+  handleModify() {
+    this.props.modify({
+      _id: this.props.item._id,
       eng_fullname: this.state.eng_fullname,
       eng_shortname: this.state.eng_shortname,
       kor_fullname: this.state.kor_fullname,
@@ -126,8 +171,8 @@ class OriginalModal extends React.Component {
       desc: this.state.desc,
     }, this.state.photo_changed ? this.state.file : null);
   }
-  originalRemove() {
-    this.props.originalRemove(this.props.original);
+  handleRemove() {
+    this.props.remove(this.props.item);
   }
   render() {
     let grapeString = '';
@@ -137,19 +182,22 @@ class OriginalModal extends React.Component {
         grapeString += '/';
       }
     }
-    console.log(this.props);
-    console.log(this.state);
     return (
       <div>
         <Modal
           show
-          animation={false}
+          onHide={this.props.close}
+          keyboard
         >
-          <ModalHeader style={styles.header}>
-            <h1>오리지날 정보</h1>
-          </ModalHeader>
-          <ModalBody>
-            <Image src={this.state.photo_url} style={styles.image} responsive />
+          <Modal.Header style={styles.header}>
+            <h1>{this.props.title}</h1>
+          </Modal.Header>
+          <Modal.Body>
+            <Image
+              style={styles.image}
+              src={this.state.photo_url}
+              responsive
+            />
             <Form>
               <FormGroup controlId="formControlsFile">
                 <ControlLabel>이미지</ControlLabel>
@@ -157,7 +205,7 @@ class OriginalModal extends React.Component {
                   type="file"
                   label="File"
                   onChange={this.handleImageChange}
-                  disabled={!this.state.modifyMode}
+                  disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
@@ -166,7 +214,7 @@ class OriginalModal extends React.Component {
                   type="text"
                   value={this.state.eng_fullname}
                   onChange={e => this.setState({ eng_fullname: e.target.value })}
-                  disabled={!this.state.modifyMode}
+                  disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
@@ -175,7 +223,7 @@ class OriginalModal extends React.Component {
                   type="text"
                   value={this.state.eng_shortname}
                   onChange={e => this.setState({ eng_shortname: e.target.value })}
-                  disabled={!this.state.modifyMode}
+                  disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
@@ -184,7 +232,7 @@ class OriginalModal extends React.Component {
                   type="text"
                   value={this.state.kor_fullname}
                   onChange={e => this.setState({ kor_fullname: e.target.value })}
-                  disabled={!this.state.modifyMode}
+                  disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
@@ -193,17 +241,16 @@ class OriginalModal extends React.Component {
                   type="text"
                   value={this.state.kor_shortname}
                   onChange={e => this.setState({ kor_shortname: e.target.value })}
-                  disabled={!this.state.modifyMode}
+                  disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
                 <ControlLabel>종류</ControlLabel>
                 <FormControl
                   componentClass="select"
-                  placeholder="선택"
                   value={this.state.category}
                   onChange={e => this.setState({ category: e.target.value })}
-                  disabled={!this.state.modifyMode}
+                  disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 >
                   <option value="">선택</option>
                   {
@@ -222,7 +269,7 @@ class OriginalModal extends React.Component {
                   componentClass="select"
                   value={this.state.country}
                   onChange={this.handleCountryInputChange}
-                  disabled={!this.state.modifyMode}
+                  disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 >
                   <option value="">
                     선택
@@ -243,7 +290,7 @@ class OriginalModal extends React.Component {
                   componentClass="select"
                   value={this.state.region}
                   onChange={this.handleRegionInputChange}
-                  disabled={!this.state.modifyMode}
+                  disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 >
                   <option value="">
                     선택
@@ -264,7 +311,7 @@ class OriginalModal extends React.Component {
                   componentClass="select"
                   value={this.state.subregion}
                   onChange={e => this.setState({ subregion: e.target.value })}
-                  disabled={!this.state.modifyMode}
+                  disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 >
                   <option value="">
                     선택
@@ -288,13 +335,12 @@ class OriginalModal extends React.Component {
                 />
                 <FormControl
                   componentClass="select"
-                  placeholder="선택"
                   value=""
                   onChange={this.handleGrapeInputChange}
-                  disabled={!this.state.modifyMode}
+                  disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 >
                   <option value="">
-                    선택
+                    품종 추가
                   </option>
                   {
                     this.state.grapeOptions.map(obj =>
@@ -312,39 +358,45 @@ class OriginalModal extends React.Component {
                   componentClass="textarea"
                   value={this.state.desc}
                   onChange={e => this.setState({ desc: e.target.value })}
-                  disabled={!this.state.modifyMode}
+                  disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 />
               </FormGroup>
             </Form>
-          </ModalBody>
-          <ModalFooter>
+          </Modal.Body>
+          <Modal.Footer>
             {
-              this.state.modifyMode === false ?
+              this.props.mode === 'insert' ?
                 <Button
-                  bsStyle="primary"
+                  bsStyle="success"
                   bsSize="large"
-                  onClick={() => this.setState({ modifyMode: true })}
-                >수정 또는 삭제</Button> :
-                <div style={styles.buttons}>
-                  <Button
-                    bsStyle="info"
-                    bsSize="large"
-                    onClick={this.originalModify}
-                  >수정</Button>
-                  <Button
-                    bsStyle="warning"
-                    bsSize="large"
-                    onClick={this.originalRemove}
-                  >삭제</Button>
-                </div>
+                  onClick={this.handleInsert}
+                >추가</Button> :
+                this.props.mode === 'modify' ?
+                  this.state.modifyMode === false ?
+                    <Button
+                      bsStyle="primary"
+                      bsSize="large"
+                      onClick={() => this.setState({ modifyMode: true })}
+                    >수정 또는 삭제</Button> :
+                    <div style={styles.buttons}>
+                      <Button
+                        bsStyle="info"
+                        bsSize="large"
+                        onClick={this.handleModify}
+                      >수정</Button>
+                      <Button
+                        bsStyle="warning"
+                        bsSize="large"
+                        onClick={this.handleRemove}
+                      >삭제</Button>
+                    </div>
+                  : null
             }
             <Button bsSize="large" onClick={this.props.close}>닫기</Button>
-          </ModalFooter>
+          </Modal.Footer>
         </Modal>
       </div>
     );
   }
 }
-
-
 export default OriginalModal;

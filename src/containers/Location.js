@@ -12,7 +12,7 @@ import {
 
 import {
   ListA,
-  RemoveModal,
+  CheckModal,
 } from '../components';
 
 import {
@@ -67,7 +67,6 @@ class Location extends React.Component {
       .then((data) => {
         if (this.props.locationGetList.status === 'SUCCESS') {
           loader.off();
-          console.log(this.props.locationGetList);
         } else if (this.props.locationGetList.status === 'FAILURE') {
           throw data;
         }
@@ -83,10 +82,10 @@ class Location extends React.Component {
   }
   locationInsert(location) {
     loader.on();
-    console.log(location);
     this.props.locationInsertRequest(location)
       .then((data) => {
         if (this.props.locationInsert.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/wine/location');
           this.locationLoad();
         } else if (this.props.locationInsert.status === 'FAILURE') {
@@ -104,6 +103,7 @@ class Location extends React.Component {
     this.props.locationRemoveRequest(this.state.selectedLocation)
       .then((data) => {
         if (this.props.locationRemove.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/wine/location');
           this.locationLoad();
         } else if (this.props.locationRemove.status === 'FAILURE') {
@@ -121,6 +121,7 @@ class Location extends React.Component {
     this.props.locationRemoveAllRequest()
       .then((data) => {
         if (this.props.locationRemoveAll.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/wine/location');
           this.locationLoad();
         } else if (this.props.locationRemoveAll.status === 'FAILURE') {
@@ -147,26 +148,28 @@ class Location extends React.Component {
 
         <Route
           path="/wine/location/removemodal"
-          render={props =>
-            (<RemoveModal
+          render={props => (
+            <CheckModal
+              bsStyle="danger"
               title="주의! 선택한 리스트를 삭제합니다."
               subtitle="원산지 정보를 삭제합니다."
-              handleRemove={this.locationRemove}
+              handleCheck={this.locationRemove}
               handleClose={() => this.props.changePage('/wine/location')}
-              {...props}
-            />)
+            />
+          )
           }
         />
         <Route
           path="/wine/location/removeallmodal"
-          render={props =>
-            (<RemoveModal
+          render={props => (
+            <CheckModal
+              bsStyle="danger"
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="원산지 정보를 삭제합니다."
-              handleRemove={this.locationRemoveAll}
+              handleCheck={this.locationRemoveAll}
               handleClose={() => this.props.changePage('/wine/location')}
-              {...props}
-            />)
+            />
+          )
           }
         />
       </div>

@@ -72,8 +72,8 @@ const getListRequest = function getListRequest(id) {
 
           const result = [];
           let a = {};
-          for(const obj of data) {
-            if(a = result.find(o => o.customer._id == obj.customer._id && o.sale._id == obj.sale._id && o.shop._id == obj.shop._id)) {
+          for (const obj of data) {
+            if (a = result.find(o => o.customer._id === obj.customer._id && o.sale._id === obj.sale._id && o.shop._id === obj.shop._id)) {
               a.remain += obj.quantityChange || 0;
             } else {
               result.push({
@@ -85,7 +85,7 @@ const getListRequest = function getListRequest(id) {
               });
             }
           }
-          return dispatch(getListSuccess(sortedData, result));
+          return dispatch(getListSuccess(sortedData, result.filter(o => o.remain)));
         }
         return dispatch(getListFailure({
           error: null,

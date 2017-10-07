@@ -34,6 +34,7 @@ class ManagerEntry extends React.Component {
     return this.props.accountLoginRequest(accountInput)
       .then(() => {
         if (this.props.accountLogin.status === 'SUCCESS') {
+          loader.off();
           this.sessionRequest('/');
         } else if (this.props.accountLogin.status === 'FAILURE') {
           loader.off();
@@ -49,6 +50,7 @@ class ManagerEntry extends React.Component {
     return this.props.accountLogoutRequest()
       .then(() => {
         if (this.props.accountLogout.status === 'SUCCESS') {
+          loader.off();
           this.sessionRequest('/');
         } else if (this.props.accountLogoutRequest === 'FAILURE') {
           loader.off();
@@ -76,7 +78,7 @@ class ManagerEntry extends React.Component {
   render() {
     let ManagerEntryPage = null;
     if (this.props.accountSession.status === 'SUCCESS') {
-      ManagerEntryPage = (
+      ManagerEntryPage =
         <Switch>
           <Route
             path="/"
@@ -84,8 +86,7 @@ class ManagerEntry extends React.Component {
               <Main logout={this.logoutRequest} {...props} />
             }
           />
-        </Switch>
-      );
+        </Switch>;
     } else if (this.props.accountSession.status === 'FAILURE') {
       ManagerEntryPage = (
         <Switch>

@@ -12,12 +12,10 @@ import {
 } from '../actions';
 
 import {
-  TableModal,
-  OriginalList,
   VintageList,
   VintageModal,
   VintageInsertModal,
-  RemoveModal,
+  CheckModal,
 } from '../components';
 
 import {
@@ -25,17 +23,17 @@ import {
   errorHandler,
 } from '../modules';
 
+import structures from './structures';
+
 class Vintage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       vintageModalItem: null,
-      vintageInsertModalItem: null,
     };
     this.originalLoad = this.originalLoad.bind(this);
     this.vintageLoad = this.vintageLoad.bind(this);
     this.vintageClick = this.vintageClick.bind(this);
-    this.originalClick = this.originalClick.bind(this);
     this.vintageInsert = this.vintageInsert.bind(this);
     this.vintageModify = this.vintageModify.bind(this);
     this.vintageRemove = this.vintageRemove.bind(this);
@@ -81,12 +79,6 @@ class Vintage extends React.Component {
     });
     this.props.changePage('/wine/vintage/modal');
   }
-  originalClick(original) {
-    this.setState({
-      vintageInsertModalItem: original,
-    });
-    this.props.changePage('/wine/vintage/original/insertmodal');
-  }
   vintageInsert(vintage) {
     loader.on();
     this.props.vintageInsertRequest(vintage)
@@ -110,6 +102,7 @@ class Vintage extends React.Component {
     this.props.vintageModifyRequest(vintage)
       .then((data) => {
         if (this.props.vintageModify.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/wine/vintage');
           this.vintageLoad();
         } else if (this.props.vintageModify.status === 'FAILURE') {
@@ -127,6 +120,7 @@ class Vintage extends React.Component {
     this.props.vintageRemoveRequest(vintage)
       .then((data) => {
         if (this.props.vintageRemove.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/wine/vintage');
           this.vintageLoad();
         } else if (this.props.vintageRemove.status === 'FAILURE') {
@@ -144,6 +138,7 @@ class Vintage extends React.Component {
     this.props.vintageRemoveAllRequest()
       .then((data) => {
         if (this.props.vintageRemoveAll.status === 'SUCCESS') {
+          loader.off();
           this.props.changePage('/wine/vintage');
           this.vintageLoad();
         } else if (this.props.vintageRemoveAll.status === 'FAILURE') {
@@ -160,65 +155,53 @@ class Vintage extends React.Component {
     return (
       <div>
         <VintageList
-          vintageClick={this.vintageClick}
-          vintageRemoveAllClick={() => this.props.changePage('/wine/vintage/removeallmodal')}
-          vintageInsertClick={() => this.props.changePage('/wine/vintage/original')}
           list={this.props.vintageGetList.list}
+          structure={structures.vintage}
+          rowClick={this.vintageClick}
           refresh={this.vintageLoad}
+          removeAllClick={() => this.props.changePage('/wine/vintage/removeallmodal')}
+          insertClick={() => this.props.changePage('/wine/vintage/insert')}
+          outputTable={e => console.log(e)}
         />
         <Route
           path="/wine/vintage/modal"
           render={props =>
             this.state.vintageModalItem ?
               <VintageModal
+                imageView
+                title="빈티지 정보"
+                mode="modify"
+                item={this.state.vintageModalItem}
+                modify={this.vintageModify}
+                remove={this.vintageRemove}
                 close={() => this.props.changePage('/wine/vintage')}
-                vintage={this.state.vintageModalItem}
-                vintageModify={this.vintageModify}
-                vintageRemove={this.vintageRemove}
-                {...props}
               /> : <Redirect to="/wine/vintage" />
           }
         />
         <Route
-          path="/wine/vintage/original"
+          path="/wine/vintage/insert"
           render={props => (
-            <TableModal
+            <VintageInsertModal
               title="빈티지 추가"
               subtitle="빈티지를 추가할 오리지날을 선택하십시요."
+              originalStructure={structures.original}
+              originalList={this.props.originalGetList.list}
+              insert={this.vintageInsert}
               close={() => this.props.changePage('/wine/vintage')}
-            >
-              <OriginalList
-                onlyView
-                originalClick={this.originalClick}
-                list={this.props.originalGetList.list}
-                refresh={this.originalLoad}
-                {...props}
-              />
-            </TableModal>
+            />
           )}
         />
         <Route
-          path="/wine/vintage/original/insertmodal"
-          render={props =>
-            this.state.vintageInsertModalItem ?
-              <VintageInsertModal
-                original={this.state.vintageInsertModalItem}
-                close={() => this.props.changePage('/wine/vintage/original')}
-                vintageInsert={this.vintageInsert}
-                {...props}
-              /> : <Redirect to="/wine/vintage" />
-          }
-        />
-        <Route
           path="/wine/vintage/removeallmodal"
-          render={props =>
-            <RemoveModal
+          render={props => (
+            <CheckModal
+              bsStyle="danger"
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="빈티지가 전부 삭제됩니다. 이와 연관된 상품도 삭제됩니다."
-              handleRemove={this.vintageRemoveAll}
+              handleCheck={this.vintageRemoveAll}
               handleClose={() => this.props.changePage('/wine/vintage')}
-              {...props}
             />
+          )
           }
         />
       </div>

@@ -46,6 +46,7 @@ class CustomerEntry extends React.Component {
     return this.props.customerAccountLoginRequest(customerAccountInput)
       .then(() => {
         if (this.props.customerAccountLogin.status === 'SUCCESS') {
+          loader.off();
           this.sessionRequest('/');
         } else if (this.props.customerAccountLogin.status === 'FAILURE') {
           loader.off();
@@ -61,6 +62,7 @@ class CustomerEntry extends React.Component {
     return this.props.customerAccountLogoutRequest()
       .then(() => {
         if (this.props.customerAccountLogout.status === 'SUCCESS') {
+          loader.off();
           this.sessionRequest('/');
         } else if (this.props.customerAccountLogoutRequest === 'FAILURE') {
           loader.off();
