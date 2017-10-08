@@ -19,7 +19,7 @@ class StoreListForSelect extends React.Component {
         selectedItems={this.props.selectedItems}
         rowClick={this.props.rowClick}
         rowSelect={this.props.rowSelect}
-        outputTable={this.props.outputTable}
+        tableToExcel={this.props.tableToExcel}
         structure={this.props.structure}
         view={[
           '영문줄임명',

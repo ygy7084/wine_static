@@ -1,4 +1,5 @@
 import React from 'react';
+import fileDownload from 'react-file-download';
 import {
   Route,
   Redirect,
@@ -6,23 +7,20 @@ import {
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { push } from 'react-router-redux';
-
 import {
   account,
   shop,
+  excel,
 } from '../actions';
-
 import {
   AccountList,
   AccountModal,
   CheckModal,
 } from '../components';
-
 import {
   loader,
   errorHandler,
 } from '../modules';
-
 import structures from './structures';
 
 class Account extends React.Component {
@@ -40,6 +38,7 @@ class Account extends React.Component {
     this.accountRemove = this.accountRemove.bind(this);
     this.accountRemoveAll = this.accountRemoveAll.bind(this);
     this.accountRemoveAllClick = this.accountRemoveAllClick.bind(this);
+    this.tableToExcel = this.tableToExcel.bind(this);
   }
   componentWillMount() {
     this.shopLoad();
@@ -159,6 +158,23 @@ class Account extends React.Component {
         errorHandler(data);
       });
   }
+  tableToExcel(table) {
+    loader.on();
+    this.props.excelTableToExcelReqeust(table)
+      .then((data) => {
+        if (this.props.excelTableToExcel.status === 'SUCCESS') {
+          loader.off();
+          fileDownload(this.props.excelTableToExcel.file, 'data.xlsx');
+        } else {
+          loader.off();
+          throw data;
+        }
+      })
+      .catch((data) => {
+        loader.off();
+        errorHandler(data);
+      });
+  }
   render() {
     return (
       <div>
@@ -169,7 +185,7 @@ class Account extends React.Component {
           insertClick={this.accountInsertClick}
           refresh={this.accountLoad}
           removeAllClick={this.accountRemoveAllClick}
-          outputTable={e => console.log(e)}
+          tableToExcel={this.tableToExcel}
         />
         <Route
           path="/account/modal"
@@ -240,6 +256,10 @@ const mapStateToProps = state => ({
   accountRemoveAll: {
     status: state.account.removeAll.status,
   },
+  excelTableToExcel: {
+    status: state.excel.tableToExcel.status,
+    file: state.excel.tableToExcel.file,
+  },
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
   shopGetListRequest: shop.getListRequest,
@@ -249,6 +269,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   accountModifyRequest: account.modifyRequest,
   accountRemoveRequest: account.removeRequest,
   accountRemoveAllRequest: account.removeAllRequest,
+  excelTableToExcelReqeust: excel.tableToExcelRequest,
   changePage: path => push(path),
 }, dispatch);
 export default connect(

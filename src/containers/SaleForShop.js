@@ -1,4 +1,5 @@
 import React from 'react';
+import fileDownload from 'react-file-download';
 import {
   Route,
   Redirect,
@@ -10,6 +11,7 @@ import {
   vintage,
   sale,
   shop,
+  excel,
 } from '../actions';
 import {
   SaleList,
@@ -52,6 +54,7 @@ class SaleForShop extends React.Component {
     this.vintageSelect = this.vintageSelect.bind(this);
     this.saleSelect = this.saleSelect.bind(this);
     this.selectAll = this.selectAll.bind(this);
+    this.tableToExcel = this.tableToExcel.bind(this);
   }
   componentWillMount() {
     this.saleLoad();
@@ -284,6 +287,23 @@ class SaleForShop extends React.Component {
         break;
     }
   }
+  tableToExcel(table) {
+    loader.on();
+    this.props.excelTableToExcelReqeust(table)
+      .then((data) => {
+        if (this.props.excelTableToExcel.status === 'SUCCESS') {
+          loader.off();
+          fileDownload(this.props.excelTableToExcel.file, 'data.xlsx');
+        } else {
+          loader.off();
+          throw data;
+        }
+      })
+      .catch((data) => {
+        loader.off();
+        errorHandler(data);
+      });
+  }
   render() {
     const filteredVintageList =
       this.props.vintageGetList.list.filter(v =>
@@ -300,7 +320,7 @@ class SaleForShop extends React.Component {
             removeAllClick={() => this.props.changePage('/sale/removeallmodal')}
             insertClick={() => this.props.changePage('/sale/vintage')}
             refresh={this.saleLoad}
-            outputTable={e => console.log(e)}
+            tableToExcel={this.tableToExcel}
           />
         );
         break;
@@ -311,7 +331,7 @@ class SaleForShop extends React.Component {
             selectedItems={this.state.selectedItems}
             rowClick={this.saleClick}
             rowSelect={this.saleSelect}
-            outputTable={e => console.log(e)}
+            tableToExcel={this.tableToExcel}
             structure={structures.sale}
             refresh={this.saleLoad}
             modifyClick={() => this.props.changePage('/sale/modifymodal')}
@@ -328,7 +348,7 @@ class SaleForShop extends React.Component {
             selectedItems={this.state.selectedVintages}
             rowClick={this.vintageClick}
             rowSelect={this.vintageSelect}
-            outputTable={e => console.log(e)}
+            tableToExcel={this.tableToExcel}
             structure={structures.vintage}
             refresh={this.vintageLoad}
             insertClick={() => this.props.changePage('/sale/insertmodal')}
@@ -471,6 +491,10 @@ const mapStateToProps = state => ({
   saleBulkRemove: {
     status: state.sale.bulkRemove.status,
   },
+  excelTableToExcel: {
+    status: state.excel.tableToExcel.status,
+    file: state.excel.tableToExcel.file,
+  },
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
   shopGetListRequest: shop.getListRequest,
@@ -483,6 +507,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   saleRemoveRequest: sale.removeRequest,
   saleRemoveAllRequest: sale.removeAllRequest,
   saleBulkRemoveRequest: sale.bulkRemoveRequest,
+  excelTableToExcelReqeust: excel.tableToExcelRequest,
   changePage: path => push(path),
 }, dispatch);
 export default connect(

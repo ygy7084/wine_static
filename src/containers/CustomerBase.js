@@ -145,7 +145,7 @@ class CustomerBase extends React.Component {
           insertClick={this.customerBaseInsertClick}
           refresh={this.customerBaseLoad}
           removeAllClick={() => this.props.changePage('/customerbase/removeallmodal')}
-          outputTable={e => console.log(e)}
+          tableToExcel={this.tableToExcel}
         />
         <Route
           path="/customerbase/modal"

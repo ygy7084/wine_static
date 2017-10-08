@@ -27,7 +27,7 @@ class KYTableBetaForSelect extends React.Component {
     this.listifyForSelected = this.listifyForSelected.bind(this);
     this.find = this.find.bind(this);
     this.selectCol = this.selectCol.bind(this);
-    this.outputTable = this.outputTable.bind(this);
+    this.tableToExcel = this.tableToExcel.bind(this);
   }
   componentWillReceiveProps(nextProps) {
     if (JSON.stringify(nextProps.list) !== JSON.stringify(this.props.list)) {
@@ -112,8 +112,8 @@ class KYTableBetaForSelect extends React.Component {
     }
     this.setState({ view });
   }
-  outputTable() {
-    this.props.outputTable(
+  tableToExcel() {
+    this.props.tableToExcel(
       this.listifyForSelected(
         this.state.list,
         this.props.structure,
@@ -122,7 +122,6 @@ class KYTableBetaForSelect extends React.Component {
       ));
   }
   render() {
-    console.log(this.props);
     const { cols, rows, selectedIndexes } = this.listifyForSelected(
       this.state.list, this.props.structure, this.state.view, this.props.selectedItems);
     const children = [];
@@ -158,7 +157,6 @@ class KYTableBetaForSelect extends React.Component {
         />,
       );
     }
-    console.log(this.props);
     return (
       <div>
         <KYTableForSelect
@@ -185,12 +183,12 @@ class KYTableBetaForSelect extends React.Component {
             />
           </div>
           {
-            this.props.outputTable ?
+            this.props.tableToExcel ?
               <div>
                 <KYButton
                   value="엑셀 출력"
                   block
-                  onClick={this.outputTable}
+                  onClick={this.tableToExcel}
                 />
               </div> : null
           }
@@ -233,7 +231,7 @@ KYTableBetaForSelect.propTypes = {
   colClick: PropTypes.func,
   rowClick: PropTypes.func,
   rowSelect: PropTypes.func,
-  outputTable: PropTypes.func,
+  tableToExcel: PropTypes.func,
   selectedItems: PropTypes.arrayOf(PropTypes.object),
   children: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
 };
@@ -248,7 +246,7 @@ KYTableBetaForSelect.defaultProps = {
   colClick: undefined,
   rowClick: undefined,
   rowSelect: undefined,
-  outputTable: undefined,
+  tableToExcel: undefined,
   selectedItems: [],
   children: undefined,
 };

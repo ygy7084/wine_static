@@ -17,7 +17,7 @@ class AccountList extends React.Component {
         option
         list={this.props.list}
         rowClick={this.props.rowClick}
-        outputTable={this.props.outputTable}
+        tableToExcel={this.props.tableToExcel}
         structure={this.props.structure}
         view={['ID', '이름', '권한', '매장명']}
       >

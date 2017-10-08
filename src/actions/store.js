@@ -141,7 +141,6 @@ const insertRequest = function insertRequest(store) {
       .catch(e => dispatch(insertFailure(e)));
   };
 };
-
 const bulkInsert = function bulkInsert() {
   return {
     type: STORE_BULKINSERT,

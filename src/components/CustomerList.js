@@ -17,7 +17,7 @@ class CustomerList extends React.Component {
         option
         list={this.props.list}
         rowClick={this.props.rowClick}
-        outputTable={this.props.outputTable}
+        tableToExcel={this.props.tableToExcel}
         structure={this.props.structure}
         view={['이름', '전화번호', '이메일', '주소', '매장명']}
       >

@@ -17,9 +17,14 @@ class OriginalList extends React.Component {
         option
         list={this.props.list}
         rowClick={this.props.rowClick}
-        outputTable={this.props.outputTable}
+        tableToExcel={this.props.tableToExcel}
         structure={this.props.structure}
+        excelToTable={this.props.excelToTable}
+        tableFromExcel={this.props.tableFromExcel}
+        insertTableFromExcel={this.props.insertTableFromExcel}
+        excelSampleDownload={this.props.excelSampleDownload}
         view={['영문줄임명', '한글줄임명', '종류', '원산지', '품종']}
+        tableFromExcelView={['영문줄임명', '한글줄임명', '영문풀네임', '한글풀네임']}
       >
         {
           this.props.onlyView ?

@@ -1,4 +1,5 @@
 import React from 'react';
+import fileDownload from 'react-file-download';
 import {
   Route,
   Redirect,
@@ -7,11 +8,10 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { push } from 'react-router-redux';
 import {
-  vintage,
   sale,
-  shop,
   store,
   customer,
+  excel,
 } from '../actions';
 import {
   SaleModal,
@@ -40,6 +40,7 @@ class StoreIn extends React.Component {
     this.storeBulkInsert = this.storeBulkInsert.bind(this);
     this.customerInsert = this.customerInsert.bind(this);
     this.selectAll = this.selectAll.bind(this);
+    this.tableToExcel = this.tableToExcel.bind(this);
   }
   componentWillMount() {
     this.saleLoad();
@@ -167,6 +168,23 @@ class StoreIn extends React.Component {
   selectAll() {
     this.setState({ selectedSales: this.props.saleGetList.list });
   }
+  tableToExcel(table) {
+    loader.on();
+    this.props.excelTableToExcelReqeust(table)
+      .then((data) => {
+        if (this.props.excelTableToExcel.status === 'SUCCESS') {
+          loader.off();
+          fileDownload(this.props.excelTableToExcel.file, 'data.xlsx');
+        } else {
+          loader.off();
+          throw data;
+        }
+      })
+      .catch((data) => {
+        loader.off();
+        errorHandler(data);
+      });
+  }
   render() {
     return (
       <div>
@@ -176,7 +194,7 @@ class StoreIn extends React.Component {
           selectedItems={this.state.selectedSales}
           rowClick={this.saleClick}
           rowSelect={this.saleSelect}
-          outputTable={e => console.log(e)}
+          tableToExcel={this.tableToExcel}
           structure={structures.sale}
           refresh={this.saleLoad}
           insertClick={this.storeInsertClick}
@@ -245,6 +263,10 @@ const mapStateToProps = state => ({
   storeBulkInsert: {
     status: state.store.bulkInsert.status,
   },
+  excelTableToExcel: {
+    status: state.excel.tableToExcel.status,
+    file: state.excel.tableToExcel.file,
+  },
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
   saleGetListRequest: sale.getListRequest,
@@ -252,6 +274,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   customerInsertRequest: customer.insertRequest,
   storeGetListRequest: store.getListRequest,
   storeBulkInsertRequest: store.bulkInsertRequest,
+  excelTableToExcelReqeust: excel.tableToExcelRequest,
   changePage: path => push(path),
 }, dispatch);
 export default connect(

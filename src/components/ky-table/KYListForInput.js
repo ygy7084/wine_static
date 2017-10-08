@@ -31,7 +31,6 @@ const styles = {
   },
 };
 function KYListForInput(props) {
-  console.log(props);
   return (
     <Table
       style={styles.table}

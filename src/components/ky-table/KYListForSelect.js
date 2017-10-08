@@ -33,7 +33,6 @@ const styles = {
   },
 };
 function KYListForSelect(props) {
-  console.log(props);
   return (
     <Table
       style={styles.table}

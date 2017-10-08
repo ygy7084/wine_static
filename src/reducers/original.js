@@ -9,6 +9,9 @@ const initialState = {
     list: [],
     options: {},
   },
+  bulkInsert: {
+    status: 'INIT',
+  },
   insert: {
     status: 'INIT',
     original: null,
@@ -46,6 +49,24 @@ export default (state = initialState, action) => {
           status: { $set: 'FAILURE' },
           list: { $set: [] },
           options: { $set: {} },
+        },
+      });
+    case actions.ORIGINAL_BULKINSERT:
+      return update(state, {
+        bulkInsert: {
+          status: { $set: 'WAITING' },
+        },
+      });
+    case actions.ORIGINAL_BULKINSERT_SUCCESS:
+      return update(state, {
+        bulkInsert: {
+          status: { $set: 'SUCCESS' },
+        },
+      });
+    case actions.ORIGINAL_BULKINSERT_FAILURE:
+      return update(state, {
+        bulkInsert: {
+          status: { $set: 'FAILURE' },
         },
       });
     case actions.ORIGINAL_INSERT:

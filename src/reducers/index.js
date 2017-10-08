@@ -11,6 +11,7 @@ import store from './store';
 import grape from './grape';
 import location from './location';
 import customerAccount from './customerAccount';
+import excel from './excel';
 
 export default combineReducers({
   routing: routerReducer,
@@ -25,4 +26,5 @@ export default combineReducers({
   grape,
   location,
   customerAccount,
+  excel,
 });

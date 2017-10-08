@@ -1,4 +1,5 @@
 import React from 'react';
+import fileDownload from 'react-file-download';
 import {
   Route,
   Redirect,
@@ -6,24 +7,21 @@ import {
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux'
 import { push } from 'react-router-redux';
-
 import {
   original,
   grape,
   location,
+  excel,
 } from '../actions';
-
 import {
   OriginalList,
   OriginalModal,
   CheckModal,
 } from '../components';
-
 import {
   loader,
   errorHandler,
 } from '../modules';
-
 import structures from './structures';
 
 class Original extends React.Component {
@@ -31,15 +29,21 @@ class Original extends React.Component {
     super(props);
     this.state = {
       originalModalItem: null,
+      tableFromExcel: [],
     };
     this.originalLoad = this.originalLoad.bind(this);
     this.grapeLoad = this.grapeLoad.bind(this);
     this.locationLoad = this.locationLoad.bind(this);
     this.originalClick = this.originalClick.bind(this);
+    this.originalBulkInsert = this.originalBulkInsert.bind(this);
     this.originalInsert = this.originalInsert.bind(this);
     this.originalModify = this.originalModify.bind(this);
     this.originalRemove = this.originalRemove.bind(this);
     this.originalRemoveAll = this.originalRemoveAll.bind(this);
+    this.tableToExcel = this.tableToExcel.bind(this);
+    this.excelToTable = this.excelToTable.bind(this);
+    this.excelSampleDownload = this.excelSampleDownload.bind(this);
+    this.insertTableFromExcel = this.insertTableFromExcel.bind(this);
   }
   componentWillMount() {
     this.originalLoad();
@@ -96,6 +100,23 @@ class Original extends React.Component {
       originalModalItem: original,
     });
     this.props.changePage('/wine/original/modal');
+  }
+  originalBulkInsert(bulk) {
+    loader.on();
+    this.props.originalBulkInsertRequest(bulk)
+      .then((data) => {
+        if (this.props.originalBulkInsert.status === 'SUCCESS') {
+          loader.off();
+          this.props.changePage('/wine/original');
+          this.originalLoad();
+        } else if (this.props.originalBulkInsert.status === 'FAILURE') {
+          throw data;
+        }
+      })
+      .catch((data) => {
+        loader.off();
+        errorHandler(data);
+      });
   }
   originalInsert(original, file) {
     loader.on();
@@ -166,6 +187,55 @@ class Original extends React.Component {
         errorHandler(data);
       });
   }
+  tableToExcel(table) {
+    loader.on();
+    this.props.excelTableToExcelReqeust(table)
+      .then((data) => {
+        if (this.props.excelTableToExcel.status === 'SUCCESS') {
+          loader.off();
+          fileDownload(this.props.excelTableToExcel.file, 'data.xlsx');
+        } else {
+          loader.off();
+          throw data;
+        }
+      })
+      .catch((data) => {
+        loader.off();
+        errorHandler(data);
+      });
+  }
+  excelToTable(file) {
+    loader.on();
+    this.props.excelExcelToTableRequest(file, 'original')
+      .then((data) => {
+        if (this.props.excelExcelToTable.status === 'SUCCESS') {
+          loader.off();
+          this.setState({
+            tableFromExcel: this.props.excelExcelToTable.table,
+          });
+        } else {
+          loader.off();
+          throw data;
+        }
+      })
+      .catch((data) => {
+        loader.off();
+        errorHandler(data);
+      })
+  }
+  excelSampleDownload() {
+    this.tableToExcel({
+     cols: ['영문줄임명', '한글줄임명', '영문풀네임', '한글풀네임'],
+    });
+  }
+  insertTableFromExcel() {
+    if (this.state.tableFromExcel.length) {
+      this.originalBulkInsert(this.state.tableFromExcel);
+      this.setState({
+        tableFromExcel: [],
+      });
+    }
+  }
   render() {
     return (
       <div>
@@ -176,7 +246,11 @@ class Original extends React.Component {
           refresh={this.originalLoad}
           insertClick={() => this.props.changePage('/wine/original/insertmodal')}
           removeAllClick={() => this.props.changePage('/wine/original/removeallmodal')}
-          outputTable={e => console.log(e)}
+          tableToExcel={this.tableToExcel}
+          excelToTable={this.excelToTable}
+          tableFromExcel={this.state.tableFromExcel}
+          insertTableFromExcel={this.insertTableFromExcel}
+          excelSampleDownload={this.excelSampleDownload}
         />
         <Route
           path="/wine/original/modal"
@@ -240,6 +314,9 @@ const mapStateToProps = state => ({
     status: state.original.getList.status,
     list: state.original.getList.list,
   },
+  originalBulkInsert: {
+    status: state.original.bulkInsert.status,
+  },
   originalInsert: {
     status: state.original.insert.status,
     original: state.original.insert.original,
@@ -253,15 +330,26 @@ const mapStateToProps = state => ({
   originalRemoveAll: {
     status: state.original.removeAll.status,
   },
+  excelTableToExcel: {
+    status: state.excel.tableToExcel.status,
+    file: state.excel.tableToExcel.file,
+  },
+  excelExcelToTable: {
+    status: state.excel.excelToTable.status,
+    table: state.excel.excelToTable.table,
+  },
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
   grapeGetListRequest: grape.getListRequest,
   locationGetListRequest: location.getListRequest,
   originalGetListRequest: original.getListRequest,
+  originalBulkInsertRequest: original.bulkInsertRequest,
   originalInsertRequest: original.insertRequest,
   originalModifyRequest: original.modifyRequest,
   originalRemoveRequest: original.removeRequest,
   originalRemoveAllRequest: original.removeAllRequest,
+  excelTableToExcelReqeust: excel.tableToExcelRequest,
+  excelExcelToTableRequest: excel.excelToTableRequest,
   changePage: path => push(path),
 }, dispatch);
 export default connect(

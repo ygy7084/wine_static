@@ -1,4 +1,5 @@
 import React from 'react';
+import fileDownload from 'react-file-download';
 import {
   Route,
   Redirect,
@@ -7,23 +8,15 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { push } from 'react-router-redux';
 import {
-  vintage,
   sale,
-  shop,
   store,
   customer,
+  excel,
 } from '../actions';
 import {
-  SaleList,
   SaleModal,
-  VintageModal,
-  SaleHeaderForShop,
-  CheckModal,
   StoreListForSelect,
-  VintageListForSelect,
-  SaleInsertModalForShop,
   StoreOutModal,
-  SaleModalForShop,
 } from '../components';
 import {
   loader,
@@ -47,6 +40,7 @@ class StoreOut extends React.Component {
     this.storeBulkInsert = this.storeBulkInsert.bind(this);
     this.customerInsert = this.customerInsert.bind(this);
     this.selectAll = this.selectAll.bind(this);
+    this.tableToExcel = this.tableToExcel.bind(this);
   }
   componentWillMount() {
     this.saleLoad();
@@ -176,9 +170,24 @@ class StoreOut extends React.Component {
   selectAll() {
     this.setState({ selectedStores: this.props.storeGetList.result });
   }
+  tableToExcel(table) {
+    loader.on();
+    this.props.excelTableToExcelReqeust(table)
+      .then((data) => {
+        if (this.props.excelTableToExcel.status === 'SUCCESS') {
+          loader.off();
+          fileDownload(this.props.excelTableToExcel.file, 'data.xlsx');
+        } else {
+          loader.off();
+          throw data;
+        }
+      })
+      .catch((data) => {
+        loader.off();
+        errorHandler(data);
+      });
+  }
   render() {
-    console.log('STOREOUT');
-    console.log(this.props);
     // StoreListForSelect에 사실상 store data 그대로가 들어있지는 않고 상품별로 총 수량 계산된 result가 사용된다.
     return (
       <div>
@@ -188,7 +197,7 @@ class StoreOut extends React.Component {
           selectedItems={this.state.selectedStores}
           rowClick={this.storeClick}
           rowSelect={this.storeSelect}
-          outputTable={e => console.log(e)}
+          tableToExcel={this.tableToExcel}
           structure={structures.storeResult}
           refresh={this.storeLoad}
           insertClick={this.storeInsertClick}
@@ -255,6 +264,10 @@ const mapStateToProps = state => ({
   storeBulkInsert: {
     status: state.store.bulkInsert.status,
   },
+  excelTableToExcel: {
+    status: state.excel.tableToExcel.status,
+    file: state.excel.tableToExcel.file,
+  },
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
   saleGetListRequest: sale.getListRequest,
@@ -262,6 +275,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   customerInsertRequest: customer.insertRequest,
   storeGetListRequest: store.getListRequest,
   storeBulkInsertRequest: store.bulkInsertRequest,
+  excelTableToExcelReqeust: excel.tableToExcelRequest,
   changePage: path => push(path),
 }, dispatch);
 export default connect(

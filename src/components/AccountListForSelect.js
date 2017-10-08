@@ -10,7 +10,6 @@ class AccountList extends React.Component {
     super(props);
   }
   render() {
-    console.log(this.props);
     return (
       <KYTableE
         sort
@@ -20,7 +19,7 @@ class AccountList extends React.Component {
         selectedItems={this.props.selectedItems}
         rowClick={this.props.rowClick}
         rowSelect={this.props.rowSelect}
-        outputTable={this.props.outputTable}
+        tableToExcel={this.props.tableToExcel}
         structure={this.props.structure}
         view={['ID', '이름', '권한', '매장명']}
       >

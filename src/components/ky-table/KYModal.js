@@ -2,11 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Modal from 'react-bootstrap-modal';
 import 'react-bootstrap-modal/lib/styles/rbm-patch.css';
-
 import {
   Button,
 } from 'react-bootstrap';
-
 const styles = {
   header: {
     textAlign: 'center',
@@ -18,7 +16,8 @@ const styles = {
 export default function KYModal(props) {
   return (
     <Modal
-      small
+      small={props.size === 'small'}
+      large={props.size === 'large'}
       show={props.open}
       onHide={props.close}
       keyboard
@@ -42,4 +41,10 @@ export default function KYModal(props) {
       </Modal.Footer>
     </Modal>
   );
+};
+KYModal.propTypes = {
+  size: PropTypes.string,
+};
+KYModal.defaultProps ={
+  size: 'small',
 };

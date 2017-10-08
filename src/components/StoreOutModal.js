@@ -51,11 +51,15 @@ class StoreOutModal extends React.Component {
     let v = value;
     if (name === '변경수량') {
       v = this.handleNumberInput(value);
+      let diff = obj.before - v;
+      if (diff < 0) {
+        diff = 0;
+        v = obj.before;
+      }
+      obj.next = diff;
     }
     obj[key] = v;
-    if (name === '변경수량') {
-      obj.next = obj.before - parseInt(value, 10);
-    }
+
     this.setState({ list });
   }
   handleInsert() {

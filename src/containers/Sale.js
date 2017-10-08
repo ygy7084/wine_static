@@ -1,4 +1,5 @@
 import React from 'react';
+import fileDownload from 'react-file-download';
 import {
   Route,
   Redirect,
@@ -10,11 +11,9 @@ import {
   vintage,
   sale,
   shop,
+  excel,
 } from '../actions';
 import {
-  TableModal,
-  VintageList,
-  ShopList,
   SaleList,
   SaleModal,
   SaleInsertModal,
@@ -40,6 +39,7 @@ class Sale extends React.Component {
     this.saleModify = this.saleModify.bind(this);
     this.saleRemove = this.saleRemove.bind(this);
     this.saleRemoveAll = this.saleRemoveAll.bind(this);
+    this.tableToExcel = this.tableToExcel.bind(this);
   }
   componentWillMount() {
     this.saleLoad();
@@ -170,6 +170,23 @@ class Sale extends React.Component {
         errorHandler(data);
       });
   }
+  tableToExcel(table) {
+    loader.on();
+    this.props.excelTableToExcelReqeust(table)
+      .then((data) => {
+        if (this.props.excelTableToExcel.status === 'SUCCESS') {
+          loader.off();
+          fileDownload(this.props.excelTableToExcel.file, 'data.xlsx');
+        } else {
+          loader.off();
+          throw data;
+        }
+      })
+      .catch((data) => {
+        loader.off();
+        errorHandler(data);
+      });
+  }
   render() {
     return (
       <div>
@@ -180,7 +197,7 @@ class Sale extends React.Component {
           removeAllClick={() => this.props.changePage('/wine/sale/removeallmodal')}
           insertClick={() => this.props.changePage('/wine/sale/insert')}
           refresh={this.saleLoad}
-          outputTable={e => console.log(e)}
+          tableToExcel={this.tableToExcel}
         />
         <Route
           path="/wine/sale/modal"
@@ -256,6 +273,10 @@ const mapStateToProps = state => ({
   saleRemoveAll: {
     status: state.sale.removeAll.status,
   },
+  excelTableToExcel: {
+    status: state.excel.tableToExcel.status,
+    file: state.excel.tableToExcel.file,
+  },
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
   shopGetListRequest: shop.getListRequest,
@@ -265,6 +286,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   saleModifyRequest: sale.modifyRequest,
   saleRemoveRequest: sale.removeRequest,
   saleRemoveAllRequest: sale.removeAllRequest,
+  excelTableToExcelReqeust: excel.tableToExcelRequest,
   changePage: path => push(path),
 }, dispatch);
 export default connect(

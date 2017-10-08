@@ -1,4 +1,5 @@
 import React from 'react';
+import fileDownload from 'react-file-download';
 import {
   Route,
   Redirect,
@@ -8,6 +9,7 @@ import { bindActionCreators } from 'redux';
 import { push } from 'react-router-redux';
 import {
   shop,
+  excel,
 } from '../actions';
 import {
   ShopList,
@@ -33,6 +35,7 @@ class Shop extends React.Component {
     this.shopModify = this.shopModify.bind(this);
     this.shopRemove = this.shopRemove.bind(this);
     this.shopRemoveAll = this.shopRemoveAll.bind(this);
+    this.tableToExcel = this.tableToExcel.bind(this);
   }
   componentWillMount() {
     this.shopLoad();
@@ -140,6 +143,23 @@ class Shop extends React.Component {
         errorHandler(data);
       });
   }
+  tableToExcel(table) {
+    loader.on();
+    this.props.excelTableToExcelReqeust(table)
+      .then((data) => {
+        if (this.props.excelTableToExcel.status === 'SUCCESS') {
+          loader.off();
+          fileDownload(this.props.excelTableToExcel.file, 'data.xlsx');
+        } else {
+          loader.off();
+          throw data;
+        }
+      })
+      .catch((data) => {
+        loader.off();
+        errorHandler(data);
+      });
+  }
   render() {
     return (
       <div>
@@ -154,7 +174,7 @@ class Shop extends React.Component {
           insertClick={this.shopInsertClick}
           refresh={this.shopLoad}
           removeAllClick={() => this.props.changePage('/shop/removeallmodal')}
-          outputTable={e => console.log(e)}
+          tableToExcel={this.tableToExcel}
         />
         <Route
           path="/shop/modal"
@@ -220,6 +240,10 @@ const mapStateToProps = state => ({
   shopRemoveAll: {
     status: state.shop.removeAll.status,
   },
+  excelTableToExcel: {
+    status: state.excel.tableToExcel.status,
+    file: state.excel.tableToExcel.file,
+  },
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
   shopGetListRequest: shop.getListRequest,
@@ -227,6 +251,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   shopModifyRequest: shop.modifyRequest,
   shopRemoveRequest: shop.removeRequest,
   shopRemoveAllRequest: shop.removeAllRequest,
+  excelTableToExcelReqeust: excel.tableToExcelRequest,
   changePage: path => push(path),
 }, dispatch);
 export default connect(

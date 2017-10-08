@@ -1,4 +1,5 @@
 import React from 'react';
+import fileDownload from 'react-file-download';
 import {
   Route,
   Redirect,
@@ -9,20 +10,18 @@ import { push } from 'react-router-redux';
 import {
   original,
   vintage,
+  excel,
 } from '../actions';
-
 import {
   VintageList,
   VintageModal,
   VintageInsertModal,
   CheckModal,
 } from '../components';
-
 import {
   loader,
   errorHandler,
 } from '../modules';
-
 import structures from './structures';
 
 class Vintage extends React.Component {
@@ -38,6 +37,7 @@ class Vintage extends React.Component {
     this.vintageModify = this.vintageModify.bind(this);
     this.vintageRemove = this.vintageRemove.bind(this);
     this.vintageRemoveAll = this.vintageRemoveAll.bind(this);
+    this.tableToExcel = this.tableToExcel.bind(this);
   }
   componentWillMount() {
     this.vintageLoad();
@@ -151,6 +151,23 @@ class Vintage extends React.Component {
         errorHandler(data);
       });
   }
+  tableToExcel(table) {
+    loader.on();
+    this.props.excelTableToExcelReqeust(table)
+      .then((data) => {
+        if (this.props.excelTableToExcel.status === 'SUCCESS') {
+          loader.off();
+          fileDownload(this.props.excelTableToExcel.file, 'data.xlsx');
+        } else {
+          loader.off();
+          throw data;
+        }
+      })
+      .catch((data) => {
+        loader.off();
+        errorHandler(data);
+      });
+  }
   render() {
     return (
       <div>
@@ -161,7 +178,7 @@ class Vintage extends React.Component {
           refresh={this.vintageLoad}
           removeAllClick={() => this.props.changePage('/wine/vintage/removeallmodal')}
           insertClick={() => this.props.changePage('/wine/vintage/insert')}
-          outputTable={e => console.log(e)}
+          tableToExcel={this.tableToExcel}
         />
         <Route
           path="/wine/vintage/modal"
@@ -230,6 +247,10 @@ const mapStateToProps = state => ({
   vintageRemoveAll: {
     status: state.vintage.removeAll.status,
   },
+  excelTableToExcel: {
+    status: state.excel.tableToExcel.status,
+    file: state.excel.tableToExcel.file,
+  },
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
   originalGetListRequest: original.getListRequest,
@@ -238,6 +259,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   vintageModifyRequest: vintage.modifyRequest,
   vintageRemoveRequest: vintage.removeRequest,
   vintageRemoveAllRequest: vintage.removeAllRequest,
+  excelTableToExcelReqeust: excel.tableToExcelRequest,
   changePage: path => push(path),
 }, dispatch);
 export default connect(

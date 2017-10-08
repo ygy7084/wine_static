@@ -31,7 +31,7 @@ class KYTableBetaForInput extends React.Component {
     this.listifyForInput = this.listifyForInput.bind(this);
     this.find = this.find.bind(this);
     this.selectCol = this.selectCol.bind(this);
-    this.outputTable = this.outputTable.bind(this);
+    this.tableToExcel = this.tableToExcel.bind(this);
   }
   componentWillReceiveProps(nextProps) {
     // list 변함에 따라.
@@ -141,8 +141,8 @@ class KYTableBetaForInput extends React.Component {
     }
     this.setState({ view });
   }
-  outputTable() {
-    this.props.outputTable(this.listifyForInput(this.state.list, this.props.structure, this.state.view));
+  tableToExcel() {
+    this.props.tableToExcel(this.listifyForInput(this.state.list, this.props.structure, this.state.view));
   }
   render() {
     const { cols, rows } = this.listifyForInput(this.state.list, this.props.structure, this.state.view);
@@ -213,12 +213,12 @@ class KYTableBetaForInput extends React.Component {
             />
           </div>
           {
-            this.props.outputTable ?
+            this.props.tableToExcel ?
               <div>
                 <KYButton
                   value="엑셀 출력"
                   block
-                  onClick={this.outputTable}
+                  onClick={this.tableToExcel}
                 />
               </div> : null
           }
@@ -262,7 +262,7 @@ KYTableBetaForInput.propTypes = {
   colClick: PropTypes.func,
   rowClick: PropTypes.func,
   inputChange: PropTypes.func,
-  outputTable: PropTypes.func,
+  tableToExcel: PropTypes.func,
   children: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
 };
 KYTableBetaForInput.defaultProps = {
@@ -277,7 +277,7 @@ KYTableBetaForInput.defaultProps = {
   colClick: undefined,
   rowClick: undefined,
   inputChange: undefined,
-  outputTable: undefined,
+  tableToExcel: undefined,
   children: undefined,
 };
 export default KYTableBetaForInput;

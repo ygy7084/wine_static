@@ -1,4 +1,5 @@
 import React from 'react';
+import fileDownload from 'react-file-download';
 import {
   Route,
   Redirect,
@@ -8,6 +9,7 @@ import { bindActionCreators } from 'redux';
 import { push } from 'react-router-redux';
 import {
   customer,
+  excel,
 } from '../actions';
 import {
   CustomerList,
@@ -33,6 +35,7 @@ class Customer extends React.Component {
     this.customerModify = this.customerModify.bind(this);
     this.customerRemove = this.customerRemove.bind(this);
     this.customerRemoveAll = this.customerRemoveAll.bind(this);
+    this.tableToExcel = this.tableToExcel.bind(this);
   }
   componentWillMount() {
     this.customerLoad();
@@ -144,6 +147,23 @@ class Customer extends React.Component {
         errorHandler(data);
       });
   }
+  tableToExcel(table) {
+    loader.on();
+    this.props.excelTableToExcelReqeust(table)
+      .then((data) => {
+        if (this.props.excelTableToExcel.status === 'SUCCESS') {
+          loader.off();
+          fileDownload(this.props.excelTableToExcel.file, 'data.xlsx');
+        } else {
+          loader.off();
+          throw data;
+        }
+      })
+      .catch((data) => {
+        loader.off();
+        errorHandler(data);
+      });
+  }
   render() {
     return (
       <div>
@@ -154,7 +174,7 @@ class Customer extends React.Component {
           insertClick={this.customerInsertClick}
           removeAllClick={() => this.props.changePage('/customer/removeallmodal')}
           refresh={this.customerLoad}
-          outputTable={e => console.log(e)}
+          tableToExcel={this.tableToExcel}
         />
         <Route
           path="/customer/modal"
@@ -220,6 +240,10 @@ const mapStateToProps = state => ({
   customerRemoveAll: {
     status: state.customer.removeAll.status,
   },
+  excelTableToExcel: {
+    status: state.excel.tableToExcel.status,
+    file: state.excel.tableToExcel.file,
+  },
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
   customerGetListRequest: customer.getListRequest,
@@ -227,6 +251,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   customerModifyRequest: customer.modifyRequest,
   customerRemoveRequest: customer.removeRequest,
   customerRemoveAllRequest: customer.removeAllRequest,
+  excelTableToExcelReqeust: excel.tableToExcelRequest,
   changePage: path => push(path),
 }, dispatch);
 export default connect(

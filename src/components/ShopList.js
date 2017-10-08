@@ -18,7 +18,7 @@ class ShopList extends React.Component {
         truncate
         list={this.props.list}
         rowClick={this.props.rowClick}
-        outputTable={this.props.outputTable}
+        tableToExcel={this.props.tableToExcel}
         structure={this.props.structure}
         view={['이름', '전화번호', '메모']}
       >

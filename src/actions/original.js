@@ -3,6 +3,9 @@ import {
   ORIGINAL_GETLIST,
   ORIGINAL_GETLIST_SUCCESS,
   ORIGINAL_GETLIST_FAILURE,
+  ORIGINAL_BULKINSERT,
+  ORIGINAL_BULKINSERT_SUCCESS,
+  ORIGINAL_BULKINSERT_FAILURE,
   ORIGINAL_INSERT,
   ORIGINAL_INSERT_SUCCESS,
   ORIGINAL_INSERT_FAILURE,
@@ -65,6 +68,51 @@ const getListRequest = function getListRequest() {
         }));
       })
       .catch(e => dispatch(getListFailure(e)));
+  };
+};
+const bulkInsert = function bulkInsert() {
+  return {
+    type: ORIGINAL_BULKINSERT,
+  };
+};
+const bulkInsertSuccess = function bulkInsertSuccess() {
+  return {
+    type: ORIGINAL_BULKINSERT_SUCCESS,
+  };
+};
+const bulkInsertFailure = function bulkInsertFailure(error) {
+  return {
+    type: ORIGINAL_BULKINSERT_FAILURE,
+    error,
+  };
+};
+const bulkInsertRequest = function bulkInsertRequest(bulk) {
+  return (dispatch) => {
+    dispatch(bulkInsert());
+    return fetch(`${API}/api/original/bulk`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        data: bulk,
+      }),
+    })
+      .then((res) => {
+        if (res.ok) { return res.json(); }
+        return res.json().then((error) => {
+          throw error;
+        });
+      })
+      .then((res) => {
+        if (res.data) {
+          return dispatch(bulkInsertSuccess(res.data));
+        }
+        return dispatch(bulkInsertFailure({
+          error: null,
+          message: '알 수 없는 오류',
+        }));
+      })
+      .catch(e => dispatch(bulkInsertFailure(e)));
   };
 };
 const insert = function insert() {
@@ -249,6 +297,7 @@ const removeAllRequest = function removeAllRequest() {
 
 export default {
   getListRequest,
+  bulkInsertRequest,
   insertRequest,
   modifyRequest,
   removeRequest,

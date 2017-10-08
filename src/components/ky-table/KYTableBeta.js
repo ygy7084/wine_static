@@ -1,6 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
+  FormGroup,
+  FormControl,
+  ControlLabel,
+  HelpBlock,
+} from 'react-bootstrap';
+import {
   objectKeyFollower,
   listFinder,
 } from './lib';
@@ -26,12 +32,14 @@ class KYTableBeta extends React.Component {
       view: this.props.view,
       optionModalOn: false,
       optionModalOnAnother: false,
+      excelInsertModalOn: false,
     };
     this.handleSort = this.handleSort.bind(this);
     this.listify = this.listify.bind(this);
     this.find = this.find.bind(this);
     this.selectCol = this.selectCol.bind(this);
-    this.outputTable = this.outputTable.bind(this);
+    this.tableToExcel = this.tableToExcel.bind(this);
+    this.excelToTable = this.excelToTable.bind(this);
   }
   componentWillReceiveProps(nextProps) {
     if (JSON.stringify(nextProps.list) !== JSON.stringify(this.props.list)) {
@@ -111,8 +119,13 @@ class KYTableBeta extends React.Component {
     }
     this.setState({ view });
   }
-  outputTable() {
-    this.props.outputTable(this.listify(this.state.list, this.props.structure, this.state.view));
+  tableToExcel() {
+    this.props.tableToExcel(this.listify(this.state.list, this.props.structure, this.state.view));
+  }
+  excelToTable(e) {
+    if (e.target.files && e.target.files[0]) {
+      this.props.excelToTable(e.target.files[0]);
+    }
   }
   render() {
     const { cols, rows } = this.listify(this.state.list, this.props.structure, this.state.view);
@@ -149,6 +162,13 @@ class KYTableBeta extends React.Component {
         />,
       );
     }
+    let parsedCols = [];
+    let parsedRows = [];
+    if (this.props.tableFromExcel && this.props.tableFromExcel.length) {
+      const obj = this.listify(this.props.tableFromExcel, this.props.structure, this.props.tableFromExcelView);
+      parsedCols = obj.cols;
+      parsedRows = obj.rows;
+    }
     return (
       <div>
         <KYTable
@@ -173,12 +193,22 @@ class KYTableBeta extends React.Component {
             />
           </div>
           {
-            this.props.outputTable ?
+            this.props.tableToExcel ?
               <div>
                 <KYButton
                   value="엑셀 출력"
                   block
-                  onClick={this.outputTable}
+                  onClick={this.tableToExcel}
+                />
+              </div> : null
+          }
+          {
+            this.props.excelToTable ?
+              <div>
+                <KYButton
+                  value="엑셀 입력"
+                  block
+                  onClick={() => this.setState({ excelInsertModalOn: true })}
                 />
               </div> : null
           }
@@ -203,6 +233,51 @@ class KYTableBeta extends React.Component {
             ))
           }
         </KYModal>
+        <KYModal
+          title="엑셀 입력"
+          size="large"
+          open={this.state.excelInsertModalOn}
+          close={() => this.setState({ excelInsertModalOn: false })}
+        >
+          <KYButton
+            value="엑셀 입력 틀 다운로드"
+            bsStyle="warning"
+            onClick={this.props.excelSampleDownload}
+          />
+          <hr />
+          <FormGroup>
+            <ControlLabel>엑셀 입력</ControlLabel>
+            <HelpBlock>데이터와 형식에 주의하십시요.</HelpBlock>
+            <FormControl
+              type="file"
+              label="파일 업로드"
+              onChange={this.excelToTable}
+            />
+          </FormGroup>
+          <hr />
+          {
+            parsedCols && parsedCols.length && parsedRows && parsedRows.length ?
+              <KYTable
+                cols={parsedCols}
+                list={parsedRows}
+              /> : null
+          }
+          {
+            parsedCols && parsedCols.length && parsedRows && parsedRows.length ?
+              <KYButton
+                value="리스트 저장"
+                bsStyle="success"
+                block
+                onClick={() => {
+                  this.props.insertTableFromExcel();
+                  this.setState({
+                    optionModalOn: false,
+                    excelInsertModalOn: false,
+                  });
+                }}
+              /> : null
+          }
+        </KYModal>
       </div>
     );
   }
@@ -220,7 +295,12 @@ KYTableBeta.propTypes = {
   view: PropTypes.arrayOf(PropTypes.string),
   colClick: PropTypes.func,
   rowClick: PropTypes.func,
-  outputTable: PropTypes.func,
+  tableToExcel: PropTypes.func,
+  excelToTable: PropTypes.func,
+  tableFromExcel: PropTypes.array,
+  insertTableFromExcel: PropTypes.func,
+  excelSampleDownload: PropTypes.func,
+  tableFromExcelView: PropTypes.array,
   children: PropTypes.oneOfType([PropTypes.array, PropTypes.object]),
 };
 KYTableBeta.defaultProps = {
@@ -233,7 +313,12 @@ KYTableBeta.defaultProps = {
   view: [],
   colClick: undefined,
   rowClick: undefined,
-  outputTable: undefined,
+  tableToExcel: undefined,
+  excelToTable: undefined,
+  tableFromExcel: [],
+  insertTableFromExcel: undefined,
+  excelSampleDownload: undefined,
+  tableFromExcelView: [],
   children: undefined,
 };
 export default KYTableBeta;
