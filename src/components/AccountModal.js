@@ -2,10 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Button,
+  ButtonGroup,
   ControlLabel,
   Form,
   FormGroup,
   FormControl,
+  Alert,
 } from 'react-bootstrap';
 import Modal from 'react-bootstrap-modal';
 
@@ -32,6 +34,9 @@ class AccountModal extends React.Component {
         username: this.props.item.username,
         password: this.props.item.password,
         passwordCheck: '',
+        passwordChangeOn: false,
+        passwordChangeWarning: '',
+        passwordShow: false,
         name: this.props.item.name,
         level: this.props.item.level || '관리자',
         shop: this.props.item.shop,
@@ -43,6 +48,7 @@ class AccountModal extends React.Component {
         username: '',
         password: '',
         passwordCheck: '',
+        passwordShow: false,
         name: '',
         level: '관리자',
         shopModalOn: false,
@@ -96,6 +102,28 @@ class AccountModal extends React.Component {
     }
   }
   render() {
+    const innerButtonGroup = [
+      this.props.mode === 'modify' && !this.state.passwordChangeOn ?
+        <Button
+          key="enter"
+          bsStyle="info"
+          onClick={() => {
+            this.state.password === this.state.passwordCheck ?
+              this.setState({
+                passwordChangeOn: true,
+                passwordChangeWarning: '새로운 비밀번호를 입력하고, 수정을 클릭하십시요.',
+                password: '',
+                passwordCheck: '',
+              }) :
+              this.setState({passwordChangeWarning: '비밀번호 확인 값을 올바르게 입력하십시요.'})
+          }}
+          disabled={!this.state.modifyMode && this.props.mode === 'modify'}
+        >비밀번호 수정</Button> : null,
+      <Button
+        key="show"
+        onClick={() => this.setState({ passwordShow: !this.state.passwordShow })}
+      >비밀번호 내용 보기</Button>
+    ];
     return (
       <div>
         <Modal
@@ -120,9 +148,11 @@ class AccountModal extends React.Component {
               <FormGroup controlId="formControlsText">
                 <ControlLabel>비밀번호</ControlLabel>
                 <FormControl
-                  type="password"
+                  type={!this.state.passwordShow ? "password" : "text"}
                   value={this.state.password}
-                  disabled={!this.state.modifyMode && this.props.mode === 'modify'}
+                  disabled={
+                    this.props.mode === 'modify' && !this.state.passwordChangeOn
+                  }
                   onChange={e => this.setState({ password: e.target.value })}
                 />
               </FormGroup>
@@ -135,12 +165,19 @@ class AccountModal extends React.Component {
               >
                 <ControlLabel>비밀번호 확인</ControlLabel>
                 <FormControl
-                  type="password"
+                  type={!this.state.passwordShow ? "password" : "text"}
                   value={this.state.passwordCheck}
                   disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                   onChange={e => this.setState({ passwordCheck: e.target.value })}
                 />
               </FormGroup>
+              <ButtonGroup>
+                {innerButtonGroup}
+              </ButtonGroup>
+              {
+                this.state.passwordChangeWarning && this.state.passwordChangeWarning !== '' ?
+                  <Alert bsStyle="warning">{this.state.passwordChangeWarning}</Alert> : null
+              }
               <FormGroup controlId="formControlsText">
                 <ControlLabel>이름</ControlLabel>
                 <FormControl

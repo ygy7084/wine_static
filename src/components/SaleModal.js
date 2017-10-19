@@ -124,14 +124,6 @@ class SaleModal extends React.Component {
             <h1>{this.props.title}</h1>
           </Modal.Header>
           <Modal.Body>
-            {
-              this.props.imageView ?
-                <Image
-                  style={styles.image}
-                  src={`${configure.imagePath}${original.photo_url}?${new Date().getTime()}`}
-                  responsive
-                /> : null
-            }
             <Form>
               <FormGroup controlId="formControlsText">
                 <ControlLabel>영문 줄임명</ControlLabel>
@@ -215,6 +207,14 @@ class SaleModal extends React.Component {
                 disabled={!this.state.modifyMode && this.props.mode === 'modify'}
               >상품에 매장 연결</Button>
             </Form>
+            {
+              this.props.imageView ?
+                <Image
+                  style={styles.image}
+                  src={`${configure.imagePath}${original.photo_url}?${new Date().getTime()}`}
+                  responsive
+                /> : null
+            }
           </Modal.Body>
           <Modal.Footer>
             {

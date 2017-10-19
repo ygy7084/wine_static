@@ -89,14 +89,6 @@ class VintageModal extends React.Component {
             <h1>{this.props.title}</h1>
           </Modal.Header>
           <Modal.Body>
-            {
-              this.props.imageView ?
-                <Image
-                  style={styles.image}
-                  src={`${configure.imagePath}${original.photo_url}?${new Date().getTime()}`}
-                  responsive
-                /> : null
-            }
             <Form>
               <FormGroup controlId="formControlsText">
                 <ControlLabel>영문 줄임명</ControlLabel>
@@ -148,6 +140,14 @@ class VintageModal extends React.Component {
                 />
               </FormGroup>
             </Form>
+            {
+              this.props.imageView ?
+                <Image
+                  style={styles.image}
+                  src={`${configure.imagePath}${original.photo_url}?${new Date().getTime()}`}
+                  responsive
+                /> : null
+            }
           </Modal.Body>
           <Modal.Footer>
             {

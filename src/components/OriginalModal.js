@@ -193,21 +193,7 @@ class OriginalModal extends React.Component {
             <h1>{this.props.title}</h1>
           </Modal.Header>
           <Modal.Body>
-            <Image
-              style={styles.image}
-              src={this.state.photo_url}
-              responsive
-            />
             <Form>
-              <FormGroup controlId="formControlsFile">
-                <ControlLabel>이미지</ControlLabel>
-                <FormControl
-                  type="file"
-                  label="File"
-                  onChange={this.handleImageChange}
-                  disabled={!this.state.modifyMode && this.props.mode === 'modify'}
-                />
-              </FormGroup>
               <FormGroup controlId="formControlsText">
                 <ControlLabel>영문 풀네임</ControlLabel>
                 <FormControl
@@ -358,6 +344,23 @@ class OriginalModal extends React.Component {
                   componentClass="textarea"
                   value={this.state.desc}
                   onChange={e => this.setState({ desc: e.target.value })}
+                  disabled={!this.state.modifyMode && this.props.mode === 'modify'}
+                />
+              </FormGroup>
+              {
+                this.state.photo_url && this.state.photo_url !== '' ?
+                  <Image
+                    style={styles.image}
+                    src={this.state.photo_url}
+                    responsive
+                  /> : null
+              }
+              <FormGroup controlId="formControlsFile">
+                <ControlLabel>이미지</ControlLabel>
+                <FormControl
+                  type="file"
+                  label="File"
+                  onChange={this.handleImageChange}
                   disabled={!this.state.modifyMode && this.props.mode === 'modify'}
                 />
               </FormGroup>

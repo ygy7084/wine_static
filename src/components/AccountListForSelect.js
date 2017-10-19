@@ -2,7 +2,6 @@ import React from 'react';
 
 import {
   KYTableE,
-  KYButton,
 } from './ky-table';
 
 class AccountList extends React.Component {
