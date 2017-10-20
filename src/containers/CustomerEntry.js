@@ -136,7 +136,7 @@ class CustomerEntry extends React.Component {
       .then((data) => {
         if (this.props.customerBaseFindPassword.status === 'SUCCESS') {
           loader.off();
-          notify('전송 완료');
+          notify('고객님의 이메일로 전송되었습니다.');
         } else if (this.props.customerBaseFindPassword.status === 'FAILURE') {
           loader.off();
           throw data;

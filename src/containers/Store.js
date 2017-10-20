@@ -14,9 +14,11 @@ import {
 import {
   StoreList,
   SaleModal,
+  CheckModal,
 } from '../components';
 import {
   loader,
+  notify,
   errorHandler,
 } from '../modules';
 import structures from './structures';
@@ -29,6 +31,7 @@ class StoreHistory extends React.Component {
     };
     this.storeLoad = this.storeLoad.bind(this);
     this.storeClick = this.storeClick.bind(this);
+    this.storeRemoveAll = this.storeRemoveAll.bind(this);
     this.tableToExcel = this.tableToExcel.bind(this);
   }
   componentWillMount() {
@@ -58,6 +61,29 @@ class StoreHistory extends React.Component {
       saleModalItem: obj,
     });
     this.props.changePage('/store/salemodal');
+  }
+  storeRemoveAll(password) {
+    if (password !== this.props.accountSession.account.password) {
+      errorHandler({ message: '잘못된 패스워드입니다.' });
+    } else {
+      loader.on();
+      this.props.storeRemoveAllRequest()
+        .then((data) => {
+          if (this.props.storeRemoveAll.status === 'SUCCESS') {
+            loader.off();
+            notify('삭제 완료');
+            this.props.changePage('/store');
+            this.storeLoad();
+          } else if (this.props.storeRemoveAll.status === 'FAILURE') {
+            loader.off();
+            throw data;
+          }
+        })
+        .catch((data) => {
+          loader.off();
+          errorHandler(data);
+        });
+    }
   }
   tableToExcel(table) {
     loader.on();
@@ -92,6 +118,19 @@ class StoreHistory extends React.Component {
           tableToExcel={this.tableToExcel}
         />
         <Route
+          path="/store/removeallmodal"
+          render={props =>
+            <CheckModal
+              checkPassword
+              bsStyle="danger"
+              title="주의! 리스트를 전부 삭제합니다."
+              subtitle="입출고 데이터가 전부 삭제됩니다. "
+              handleCheck={this.storeRemoveAll}
+              handleClose={() => this.props.changePage('/store')}
+            />
+          }
+        />
+        <Route
           path="/store/salemodal"
           render={props =>
             this.state.saleModalItem ?
@@ -118,6 +157,9 @@ const mapStateToProps = state => ({
     list: state.store.getList.list,
     result: state.store.getList.result,
   },
+  storeRemoveAll: {
+    status: state.store.removeAll.status,
+  },
   excelTableToExcel: {
     status: state.excel.tableToExcel.status,
     file: state.excel.tableToExcel.file,
@@ -125,6 +167,7 @@ const mapStateToProps = state => ({
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
   storeGetListRequest: store.getListRequest,
+  storeRemoveAllRequest: store.removeAllRequest,
   excelTableToExcelReqeust: excel.tableToExcelRequest,
   changePage: path => push(path),
 }, dispatch);
