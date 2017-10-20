@@ -17,9 +17,9 @@ import {
   CustomerBase,
   Store,
   SaleForShop,
-  AccountTest,
   StoreIn,
   StoreOut,
+  Configuration,
 } from './';
 
 import {
@@ -101,7 +101,7 @@ class Main extends React.Component {
                   <Route path="/storein" component={StoreIn} />
                   <Route path="/storeout" component={StoreOut} />
                   <Route path="/store" component={Store} />
-                  <Route path="/test" component={AccountTest} />
+                  <Route path="/configuration" component={Configuration} />
                   <Route component={Page404} />
                 </Switch>
             }

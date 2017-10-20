@@ -1,13 +1,9 @@
 /* global window */
 import React from 'react';
 import Radium, { StyleRoot } from 'radium';
-import PropTypes from 'prop-types';
 import {
   ButtonGroup, Button,
 } from 'react-bootstrap';
-import {
-  KYButton,
-} from './';
 
 const ButtonGroupRadium = Radium(ButtonGroup);
 const ButtonRadium = Radium(Button);

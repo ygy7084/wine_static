@@ -92,7 +92,8 @@ class Entry extends React.Component {
           </Form>
           <hr />
           <b>문의</b>
-          <p>abcde@gmail.com</p>
+          <p>mlee@lafite.co.kr</p>
+          <a href="/cside">고객 접속 페이지</a>
         </div>
       </div>
     );

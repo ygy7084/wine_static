@@ -3,12 +3,7 @@ import PropTypes from 'prop-types';
 import {
   TableModal,
   StoreListForInput,
-  CustomerList,
-  CustomerModal,
 } from './';
-import {
-  errorHandler,
-} from '../modules';
 
 class StoreOutModal extends React.Component {
   constructor(props) {
@@ -49,7 +44,7 @@ class StoreOutModal extends React.Component {
     const key = this.props.structure.find(o => o.name === name).key[0];
     const obj = list.find(obj => obj._id === item._id);
     let v = value;
-    if (name === '변경수량') {
+    if (name === '수량') {
       v = this.handleNumberInput(value);
       let diff = obj.before - v;
       if (diff < 0) {
@@ -79,7 +74,7 @@ class StoreOutModal extends React.Component {
   render() {
     const storeNewStructure = JSON.parse(JSON.stringify(this.props.structure));
     storeNewStructure.splice(
-      storeNewStructure.findIndex(o => o.name === '변경수량'), 0,
+      storeNewStructure.findIndex(o => o.name === '수량'), 0,
       {
         name: '기존수량',
         key: ['before'],
@@ -101,7 +96,7 @@ class StoreOutModal extends React.Component {
           <StoreListForInput
             structure={storeNewStructure}
             list={this.state.list}
-            inputs={['변경수량']}
+            inputs={['수량']}
             inputChange={this.handleInput}
           />
         </TableModal>

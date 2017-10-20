@@ -20,6 +20,7 @@ import {
 import {
   loader,
   errorHandler,
+  notify,
 } from '../modules';
 import structures from './structures';
 
@@ -92,6 +93,7 @@ class Account extends React.Component {
       .then((data) => {
         if (this.props.accountInsert.status === 'SUCCESS') {
           loader.off();
+          notify('생성 완료');
           this.props.changePage('/account');
           this.accountLoad();
         } else if (this.props.accountInsert.status === 'FAILURE') {
@@ -110,6 +112,7 @@ class Account extends React.Component {
       .then((data) => {
         if (this.props.accountModify.status === 'SUCCESS') {
           loader.off();
+          notify('수정 완료');
           this.props.changePage('/account');
           this.accountLoad();
         } else if (this.props.accountModify.status === 'FAILURE') {
@@ -128,6 +131,7 @@ class Account extends React.Component {
       .then((data) => {
         if (this.props.accountRemove.status === 'SUCCESS') {
           loader.off();
+          notify('삭제 완료');
           this.props.changePage('/account');
           this.accountLoad();
         } else if (this.props.accountRemove.status === 'FAILURE') {
@@ -140,23 +144,28 @@ class Account extends React.Component {
         errorHandler(data);
       });
   }
-  accountRemoveAll() {
-    loader.on();
-    this.props.accountRemoveAllRequest()
-      .then((data) => {
-        if (this.props.accountRemoveAll.status === 'SUCCESS') {
+  accountRemoveAll(password) {
+    if (password !== this.props.accountSession.account.password) {
+      errorHandler({ message: '잘못된 패스워드입니다.' });
+    } else {
+      loader.on();
+      this.props.accountRemoveAllRequest()
+        .then((data) => {
+          if (this.props.accountRemoveAll.status === 'SUCCESS') {
+            loader.off();
+            notify('삭제 완료');
+            this.props.changePage('/account');
+            this.accountLoad();
+          } else if (this.props.accountRemoveAll.status === 'FAILURE') {
+            loader.off();
+            throw data;
+          }
+        })
+        .catch((data) => {
           loader.off();
-          this.props.changePage('/account');
-          this.accountLoad();
-        } else if (this.props.accountRemoveAll.status === 'FAILURE') {
-          loader.off();
-          throw data;
-        }
-      })
-      .catch((data) => {
-        loader.off();
-        errorHandler(data);
-      });
+          errorHandler(data);
+        });
+    }
   }
   tableToExcel(table) {
     loader.on();
@@ -220,6 +229,7 @@ class Account extends React.Component {
           path="/account/removeallmodal"
           render={props => (
             <CheckModal
+              checkPassword
               bsStyle="danger"
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="계정이 전부 삭제됩니다. 초기화 계정(ID: 0, PASSWORD: 0)이 다시 생성됩니다."
@@ -235,6 +245,10 @@ class Account extends React.Component {
 }
 
 const mapStateToProps = state => ({
+  accountSession: {
+    status: state.account.session.status,
+    account: state.account.session.account,
+  },
   shopGetList: {
     status: state.shop.getList.status,
     list: state.shop.getList.list,

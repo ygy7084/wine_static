@@ -6,9 +6,6 @@ import {
 } from './ky-table';
 
 class OriginalList extends React.Component {
-  constructor(props) {
-    super(props);
-  }
   render() {
     return (
       <KYTableD

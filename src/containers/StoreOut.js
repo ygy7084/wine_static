@@ -21,6 +21,7 @@ import {
 import {
   loader,
   errorHandler,
+  notify,
 } from '../modules';
 import structures from './structures';
 
@@ -137,9 +138,10 @@ class StoreOut extends React.Component {
     this.props.storeBulkInsertRequest(stores)
       .then((data) => {
         if (this.props.storeBulkInsert.status === 'SUCCESS') {
+          loader.off();
+          notify('생성 완료');
           this.props.changePage('/storeout');
           this.storeLoad();
-          loader.off();
         } else if (this.props.storeBulkInsert.status === 'FAILURE') {
           loader.off();
           throw data;
@@ -156,6 +158,7 @@ class StoreOut extends React.Component {
       .then((data) => {
         if (this.props.customerInsert.status === 'SUCCESS') {
           loader.off();
+          notify('생성 완료');
           this.customerLoad();
         } else if (this.props.customerInsert.status === 'FAILURE') {
           loader.off();

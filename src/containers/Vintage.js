@@ -21,6 +21,7 @@ import {
 import {
   loader,
   errorHandler,
+  notify,
 } from '../modules';
 import structures from './structures';
 
@@ -84,9 +85,10 @@ class Vintage extends React.Component {
     this.props.vintageInsertRequest(vintage)
       .then((data) => {
         if (this.props.vintageInsert.status === 'SUCCESS') {
+          loader.off();
+          notify('생성 완료');
           this.props.changePage('/wine/vintage');
           this.vintageLoad();
-          loader.off();
         } else if (this.props.vintageInsert.status === 'FAILURE') {
           loader.off();
           throw data;
@@ -103,6 +105,7 @@ class Vintage extends React.Component {
       .then((data) => {
         if (this.props.vintageModify.status === 'SUCCESS') {
           loader.off();
+          notify('수정 완료');
           this.props.changePage('/wine/vintage');
           this.vintageLoad();
         } else if (this.props.vintageModify.status === 'FAILURE') {
@@ -121,6 +124,7 @@ class Vintage extends React.Component {
       .then((data) => {
         if (this.props.vintageRemove.status === 'SUCCESS') {
           loader.off();
+          notify('삭제 완료');
           this.props.changePage('/wine/vintage');
           this.vintageLoad();
         } else if (this.props.vintageRemove.status === 'FAILURE') {
@@ -133,23 +137,28 @@ class Vintage extends React.Component {
         errorHandler(data);
       });
   }
-  vintageRemoveAll() {
-    loader.on();
-    this.props.vintageRemoveAllRequest()
-      .then((data) => {
-        if (this.props.vintageRemoveAll.status === 'SUCCESS') {
+  vintageRemoveAll(password) {
+    if (password !== this.props.accountSession.account.password) {
+      errorHandler({ message: '잘못된 패스워드입니다.' });
+    } else {
+      loader.on();
+      this.props.vintageRemoveAllRequest()
+        .then((data) => {
+          if (this.props.vintageRemoveAll.status === 'SUCCESS') {
+            loader.off();
+            notify('삭제 완료');
+            this.props.changePage('/wine/vintage');
+            this.vintageLoad();
+          } else if (this.props.vintageRemoveAll.status === 'FAILURE') {
+            loader.off();
+            throw data;
+          }
+        })
+        .catch((data) => {
           loader.off();
-          this.props.changePage('/wine/vintage');
-          this.vintageLoad();
-        } else if (this.props.vintageRemoveAll.status === 'FAILURE') {
-          loader.off();
-          throw data;
-        }
-      })
-      .catch((data) => {
-        loader.off();
-        errorHandler(data);
-      });
+          errorHandler(data);
+        });
+    }
   }
   tableToExcel(table) {
     loader.on();
@@ -212,6 +221,7 @@ class Vintage extends React.Component {
           path="/wine/vintage/removeallmodal"
           render={props => (
             <CheckModal
+              checkPassword
               bsStyle="danger"
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="빈티지가 전부 삭제됩니다. 이와 연관된 상품도 삭제됩니다."
@@ -226,6 +236,10 @@ class Vintage extends React.Component {
   }
 }
 const mapStateToProps = state => ({
+  accountSession: {
+    status: state.account.session.status,
+    account: state.account.session.account,
+  },
   originalGetList: {
     status: state.original.getList.status,
     list: state.original.getList.list,

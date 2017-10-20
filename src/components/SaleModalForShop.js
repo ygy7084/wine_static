@@ -44,7 +44,7 @@ class SaleModalForShop extends React.Component {
     // 구조에 의해 index 0
     const key = this.props.structure.find(o => o.name === name).key[0];
     let v = value;
-    if (name === '도매가' || name === '판매가' || name === '최저가') {
+    if (name === '입고가' || name === '판매가' || name === '최저가') {
       v = this.handleNumberInput(value);
     }
     list.find(obj => obj._id === item._id)[key] = v;
@@ -95,7 +95,7 @@ class SaleModalForShop extends React.Component {
             onlyView
             structure={this.props.structure}
             list={this.state.list}
-            inputs={['도매가', '판매가', '최저가']}
+            inputs={['입고가', '판매가', '최저가']}
             inputChange={this.handleInput}
           />
         </TableModal>

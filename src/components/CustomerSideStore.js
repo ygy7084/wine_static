@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, CardHeader, CardFooter, CardImg, CardText, CardBlock,
-  CardTitle, CardSubtitle } from 'reactstrap';
+import { Card, CardHeader, CardFooter, CardText, CardBlock,
+  CardTitle, } from 'reactstrap';
 import { Pagination } from 'react-bootstrap';
 
 

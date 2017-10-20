@@ -120,11 +120,11 @@ class SaleModal extends React.Component {
           show={this.props.show}
           onHide={this.props.close}
         >
-          <Modal.Header style={styles.header}>
-            <h1>{this.props.title}</h1>
-          </Modal.Header>
-          <Modal.Body>
-            <Form>
+          <Form onSubmit={(e) => e.preventDefault()}>
+            <Modal.Header style={styles.header}>
+              <h1>{this.props.title}</h1>
+            </Modal.Header>
+            <Modal.Body>
               <FormGroup controlId="formControlsText">
                 <ControlLabel>영문 줄임명</ControlLabel>
                 <FormControl
@@ -158,7 +158,7 @@ class SaleModal extends React.Component {
                 />
               </FormGroup>
               <FormGroup controlId="formControlsText">
-                <ControlLabel>도매가</ControlLabel>
+                <ControlLabel>입고가</ControlLabel>
                 <FormControl
                   type="text"
                   value={this.state.wholeSalePrice}
@@ -206,47 +206,49 @@ class SaleModal extends React.Component {
                 onClick={() => this.setState({ shopModalOn: true })}
                 disabled={!this.state.modifyMode && this.props.mode === 'modify'}
               >상품에 매장 연결</Button>
-            </Form>
-            {
-              this.props.imageView ?
-                <Image
-                  style={styles.image}
-                  src={`${configure.imagePath}${original.photo_url}?${new Date().getTime()}`}
-                  responsive
-                /> : null
-            }
-          </Modal.Body>
-          <Modal.Footer>
-            {
-              this.props.mode === 'insert' ?
-                <Button
-                  bsStyle="success"
-                  bsSize="large"
-                  onClick={this.handleInsert}
-                >추가</Button> :
-                this.props.mode === 'modify' && !this.props.onlyView ?
-                  this.state.modifyMode === false ?
-                    <Button
-                      bsStyle="primary"
-                      bsSize="large"
-                      onClick={() => this.setState({ modifyMode: true })}
-                    >수정 또는 삭제</Button> :
-                    <div style={styles.buttons}>
+              {
+                this.props.imageView ?
+                  <Image
+                    style={styles.image}
+                    src={`${configure.imagePath}${original.photo_url}?${new Date().getTime()}`}
+                    responsive
+                  /> : null
+              }
+            </Modal.Body>
+            <Modal.Footer>
+              {
+                this.props.mode === 'insert' ?
+                  <Button
+                    bsStyle="success"
+                    bsSize="large"
+                    type="submit"
+                    onClick={this.handleInsert}
+                  >추가</Button> :
+                  this.props.mode === 'modify' && !this.props.onlyView ?
+                    this.state.modifyMode === false ?
                       <Button
-                        bsStyle="info"
+                        bsStyle="primary"
                         bsSize="large"
-                        onClick={this.handleModify}
-                      >수정</Button>
-                      <Button
-                        bsStyle="warning"
-                        bsSize="large"
-                        onClick={this.handleRemove}
-                      >삭제</Button>
-                    </div>
-                  : null
-            }
-            <Button bsSize="large" onClick={this.props.close}>닫기</Button>
-          </Modal.Footer>
+                        onClick={() => this.setState({ modifyMode: true })}
+                      >수정 또는 삭제</Button> :
+                      <div style={styles.buttons}>
+                        <Button
+                          bsStyle="info"
+                          bsSize="large"
+                          type="submit"
+                          onClick={this.handleModify}
+                        >수정</Button>
+                        <Button
+                          bsStyle="warning"
+                          bsSize="large"
+                          onClick={this.handleRemove}
+                        >삭제</Button>
+                      </div>
+                    : null
+              }
+              <Button bsSize="large" onClick={this.props.close}>닫기</Button>
+            </Modal.Footer>
+          </Form>
         </Modal>
         <TableModal
           show={this.state.shopModalOn}

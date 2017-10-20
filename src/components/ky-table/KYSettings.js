@@ -1,6 +1,5 @@
 import React from 'react';
 import Radium, {StyleRoot} from 'radium';
-import PropTypes from 'prop-types';
 import {
   DropdownButton,
   MenuItem,

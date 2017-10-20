@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Radium from 'radium';
-import { Col, Row, Pagination, } from 'react-bootstrap';
+import { Pagination, } from 'react-bootstrap';
 import {
   KYButton,
   KYButtonGroup,

@@ -1,7 +1,6 @@
-/* global QRCode, document */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Alert, ButtonGroup } from 'react-bootstrap';
+import { Button, Alert, ButtonGroup, FormControl, FormGroup, ControlLabel, } from 'react-bootstrap';
 import Modal from 'react-bootstrap-modal';
 
 const styles = {
@@ -12,30 +11,48 @@ const styles = {
     textAlign: 'right',
   },
 };
-const CheckModal = function CheckModal(props) {
-  return (
-    <div>
-      <Modal
-        show
-        onHide={props.handleClose}
-      >
-        <Alert bsStyle={props.bsStyle} style={styles.alert}>
-          <h3>{props.title || 'Title'}</h3>
-          <p>{props.subtitle || 'Subtitle'}</p>
-          <div style={styles.buttons}>
-            <ButtonGroup>
-              {
-                props.check ?
-                  <Button bsSize="large" bsStyle={props.bsStyle} onClick={props.handleCheck}>{props.checkMessage}</Button>
-                  : null
-              }
-              <Button bsSize="large" onClick={props.handleClose}>닫기</Button>
-            </ButtonGroup>
-          </div>
-        </Alert>
-      </Modal>
-    </div>
-  );
+class CheckModal extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { passwordInput: '' };
+  }
+  render() {
+    return (
+      <div>
+        <Modal
+          show
+          onHide={this.props.handleClose}
+        >
+          <Alert bsStyle={this.props.bsStyle} style={styles.alert}>
+            <h3>{this.props.title || 'Title'}</h3>
+            <p>{this.props.subtitle || 'Subtitle'}</p>
+            {
+              this.props.checkPassword ?
+                <FormGroup>
+                  <ControlLabel>계정 비밀번호를 입력하십시요.</ControlLabel>
+                  <FormControl
+                    type="password"
+                    value={this.state.passwordInput}
+                    onChange={e => this.setState({ passwordInput: e.target.value })}
+                  />
+                </FormGroup> : null
+            }
+            <div style={styles.buttons}>
+              <ButtonGroup>
+                {
+                  this.props.check ?
+                    <Button bsSize="large" bsStyle={this.props.bsStyle}
+                            onClick={() => this.props.handleCheck(this.state.passwordInput)}>{this.props.checkMessage}</Button>
+                    : null
+                }
+                <Button bsSize="large" onClick={this.props.handleClose}>닫기</Button>
+              </ButtonGroup>
+            </div>
+          </Alert>
+        </Modal>
+      </div>
+    );
+  }
 };
 CheckModal.propTyps = {
   bsStyle: PropTypes.oneOf(['success', 'warning', 'danger', 'info']).isRequired,
@@ -45,6 +62,7 @@ CheckModal.propTyps = {
   checkMessage: PropTypes.string,
   handleCheck: PropTypes.func,
   handleClose: PropTypes.func.isRequired,
+  checkPassword: PropTypes.bool,
 };
 CheckModal.defaultProps = {
   title: '',
@@ -52,5 +70,6 @@ CheckModal.defaultProps = {
   check: true,
   handleCheck: undefined,
   checkMessage: '확인',
+  checkPassword: false,
 };
 export default CheckModal;

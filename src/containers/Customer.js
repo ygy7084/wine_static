@@ -19,6 +19,7 @@ import {
 import {
   loader,
   errorHandler,
+  notify,
 } from '../modules';
 import structures from './structures';
 
@@ -76,6 +77,7 @@ class Customer extends React.Component {
         .then((data) => {
           if (this.props.customerInsert.status === 'SUCCESS') {
             loader.off();
+            notify('생성 완료');
             this.props.changePage('/customer');
             this.customerLoad();
           } else if (this.props.customerInsert.status === 'FAILURE') {
@@ -97,6 +99,7 @@ class Customer extends React.Component {
       .then((data) => {
         if (this.props.customerModify.status === 'SUCCESS') {
           loader.off();
+          notify('수정 완료');
           this.props.changePage('/customer');
           this.customerLoad();
         } else if (this.props.customerModify.status === 'FAILURE') {
@@ -115,6 +118,7 @@ class Customer extends React.Component {
       .then((data) => {
         if (this.props.customerRemove.status === 'SUCCESS') {
           loader.off();
+          notify('삭제 완료');
           this.props.changePage('/customer');
           this.customerLoad();
         } else if (this.props.customerRemove.status === 'FAILURE') {
@@ -127,25 +131,30 @@ class Customer extends React.Component {
         errorHandler(data);
       });
   }
-  customerRemoveAll() {
-    loader.on();
-    this.props.customerRemoveAllRequest(
-      this.props.accountSession.account.level === '매장' ?
-        this.props.accountSession.account.shop : null)
-      .then((data) => {
-        if (this.props.customerRemoveAll.status === 'SUCCESS') {
+  customerRemoveAll(password) {
+    if (password !== this.props.accountSession.account.password) {
+      errorHandler({ message: '잘못된 패스워드입니다.' });
+    } else {
+      loader.on();
+      this.props.customerRemoveAllRequest(
+        this.props.accountSession.account.level === '매장' ?
+          this.props.accountSession.account.shop : null)
+        .then((data) => {
+          if (this.props.customerRemoveAll.status === 'SUCCESS') {
+            loader.off();
+            notify('삭제 완료');
+            this.props.changePage('/customer');
+            this.customerLoad();
+          } else if (this.props.customerRemoveAll.status === 'FAILURE') {
+            loader.off();
+            throw data;
+          }
+        })
+        .catch((data) => {
           loader.off();
-          this.props.changePage('/customer');
-          this.customerLoad();
-        } else if (this.props.customerRemoveAll.status === 'FAILURE') {
-          loader.off();
-          throw data;
-        }
-      })
-      .catch((data) => {
-        loader.off();
-        errorHandler(data);
-      });
+          errorHandler(data);
+        });
+    }
   }
   tableToExcel(table) {
     loader.on();
@@ -205,6 +214,7 @@ class Customer extends React.Component {
           path="/customer/removeallmodal"
           render={props =>
             <CheckModal
+              checkPassword
               bsStyle="danger"
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="고객과 연결된 입출고 리스트가 전부 삭제됩니다.."

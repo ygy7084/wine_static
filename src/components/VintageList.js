@@ -6,9 +6,7 @@ import {
 } from './ky-table';
 
 class VintageList extends React.Component {
-  constructor(props) {
-    super(props);
-  }
+
   render() {
     return (
       <KYTableD

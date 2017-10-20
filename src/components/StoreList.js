@@ -6,9 +6,6 @@ import {
 } from './ky-table';
 
 class StoreList extends React.Component {
-  constructor(props) {
-    super(props);
-  }
   render() {
     return (
       <KYTableD
@@ -28,7 +25,7 @@ class StoreList extends React.Component {
           '고객명',
           '고객전화번호',
           '날짜',
-          '변경수량',
+          '수량',
         ]}
       >
         <KYButton

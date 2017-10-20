@@ -6,9 +6,6 @@ import {
 } from './ky-table';
 
 class SaleListForSelect extends React.Component {
-  constructor(props) {
-    super(props);
-  }
   render() {
     return (
       <KYTableE
@@ -29,7 +26,7 @@ class SaleListForSelect extends React.Component {
           '품종',
           '빈티지',
           '매장명',
-          '도매가',
+          '입고가',
           '판매가',
           '최저가',
         ]}

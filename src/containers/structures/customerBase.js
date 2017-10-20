@@ -8,6 +8,10 @@ const structure = [
     key: ['phone'],
   },
   {
+    name: '비밀번호',
+    key: ['password'],
+  },
+  {
     name: '이메일',
     key: ['email'],
   },

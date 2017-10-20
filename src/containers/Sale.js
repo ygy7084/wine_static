@@ -22,6 +22,7 @@ import {
 import {
   loader,
   errorHandler,
+  notify,
 } from '../modules';
 import structures from './structures';
 
@@ -103,9 +104,9 @@ class Sale extends React.Component {
       .then((data) => {
         if (this.props.saleInsert.status === 'SUCCESS') {
           loader.off();
+          notify('생성 완료');
           this.props.changePage('/wine/sale');
           this.saleLoad();
-          loader.off();
         } else if (this.props.saleInsert.status === 'FAILURE') {
           loader.off();
           throw data;
@@ -122,6 +123,7 @@ class Sale extends React.Component {
       .then((data) => {
         if (this.props.saleModify.status === 'SUCCESS') {
           loader.off();
+          notify('수정 완료');
           this.props.changePage('/wine/sale');
           this.saleLoad();
         } else if (this.props.saleModify.status === 'FAILURE') {
@@ -140,6 +142,7 @@ class Sale extends React.Component {
       .then((data) => {
         if (this.props.saleRemove.status === 'SUCCESS') {
           loader.off();
+          notify('삭제 완료');
           this.props.changePage('/wine/sale');
           this.saleLoad();
         } else if (this.props.saleRemove.status === 'FAILURE') {
@@ -152,23 +155,28 @@ class Sale extends React.Component {
         errorHandler(data);
       });
   }
-  saleRemoveAll() {
-    loader.on();
-    this.props.saleRemoveAllRequest()
-      .then((data) => {
-        if (this.props.saleRemoveAll.status === 'SUCCESS') {
+  saleRemoveAll(password) {
+    if (password !== this.props.accountSession.account.password) {
+      errorHandler({ message: '잘못된 패스워드입니다.' });
+    } else {
+      loader.on();
+      this.props.saleRemoveAllRequest()
+        .then((data) => {
+          if (this.props.saleRemoveAll.status === 'SUCCESS') {
+            loader.off();
+            notify('삭제 완료');
+            this.props.changePage('/wine/sale');
+            this.saleLoad();
+          } else if (this.props.saleRemoveAll.status === 'FAILURE') {
+            loader.off();
+            throw data;
+          }
+        })
+        .catch((data) => {
           loader.off();
-          this.props.changePage('/wine/sale');
-          this.saleLoad();
-        } else if (this.props.saleRemoveAll.status === 'FAILURE') {
-          loader.off();
-          throw data;
-        }
-      })
-      .catch((data) => {
-        loader.off();
-        errorHandler(data);
-      });
+          errorHandler(data);
+        });
+    }
   }
   tableToExcel(table) {
     loader.on();
@@ -235,6 +243,7 @@ class Sale extends React.Component {
           path="/wine/sale/removeallmodal"
           render={props =>
             <CheckModal
+              checkPassword
               bsStyle="danger"
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="상품이 전부 삭제됩니다. "
@@ -248,6 +257,10 @@ class Sale extends React.Component {
   }
 }
 const mapStateToProps = state => ({
+  accountSession: {
+    status: state.account.session.status,
+    account: state.account.session.account,
+  },
   shopGetList: {
     status: state.shop.getList.status,
     list: state.shop.getList.list,

@@ -10,9 +10,6 @@ import {
 import {
   Page404,
 } from '../components';
-import {
-  loader,
-} from '../modules';
 
 const App = function App() {
   return (

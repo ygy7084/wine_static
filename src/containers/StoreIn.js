@@ -17,10 +17,14 @@ import {
   SaleModal,
   SaleListForSelect,
   StoreInModal,
+  CustomerList,
+  CustomerModal,
+  TableModal,
 } from '../components';
 import {
   loader,
   errorHandler,
+  notify,
 } from '../modules';
 import structures from './structures';
 
@@ -30,6 +34,8 @@ class StoreIn extends React.Component {
     this.state = {
       saleModalItem: null,
       selectedSales: [],
+      selectedCustomer: null,
+      customerInsertModalOn: false,
     };
     this.saleLoad = this.saleLoad.bind(this);
     this.customerLoad = this.customerLoad.bind(this);
@@ -135,9 +141,10 @@ class StoreIn extends React.Component {
     this.props.storeBulkInsertRequest(stores)
       .then((data) => {
         if (this.props.storeBulkInsert.status === 'SUCCESS') {
+          loader.off();
+          notify('생성 완료');
           this.props.changePage('/storein');
           this.storeLoad();
-          loader.off();
         } else if (this.props.storeBulkInsert.status === 'FAILURE') {
           loader.off();
           throw data;
@@ -149,21 +156,31 @@ class StoreIn extends React.Component {
       });
   }
   customerInsert(customer) {
-    loader.on();
-    this.props.customerInsertRequest(customer)
-      .then((data) => {
-        if (this.props.customerInsert.status === 'SUCCESS') {
+    if (this.props.accountSession.account.level === '관리자') {
+      errorHandler({ message: '입고 화면 고객 추가는 매장만 할 수 있습니다.' });
+    } else if (!this.props.accountSession.account.shop) {
+      errorHandler({ message: '매장 정보가 없습니다.' });
+    } else {
+      loader.on();
+      const modifiedCustomer = JSON.parse(JSON.stringify(customer));
+      modifiedCustomer.shop = this.props.accountSession.account.shop;
+      this.props.customerInsertRequest(modifiedCustomer)
+        .then((data) => {
+          if (this.props.customerInsert.status === 'SUCCESS') {
+            loader.off();
+            notify('생성 완료');
+            this.customerLoad();
+            this.setState({customerInsertModalOn: false,});
+          } else if (this.props.customerInsert.status === 'FAILURE') {
+            loader.off();
+            throw data;
+          }
+        })
+        .catch((data) => {
           loader.off();
-          this.customerLoad();
-        } else if (this.props.customerInsert.status === 'FAILURE') {
-          loader.off();
-          throw data;
-        }
-      })
-      .catch((data) => {
-        loader.off();
-        errorHandler(data);
-      });
+          errorHandler(data);
+        });
+    }
   }
   selectAll() {
     this.setState({ selectedSales: this.props.saleGetList.list });
@@ -188,18 +205,47 @@ class StoreIn extends React.Component {
   render() {
     return (
       <div>
-        <SaleListForSelect
+        <CustomerList
           mode="storeIn"
-          list={this.props.saleGetList.list}
-          selectedItems={this.state.selectedSales}
-          rowClick={this.saleClick}
-          rowSelect={this.saleSelect}
-          tableToExcel={this.tableToExcel}
-          structure={structures.sale}
-          refresh={this.saleLoad}
-          insertClick={this.storeInsertClick}
-          cancelSelected={() => this.setState({ selectedSales: [] })}
-          selectAll={this.selectAll}
+          list={this.props.customerGetList.list.filter(customer =>
+            this.props.saleGetList.list.find(sale => sale.shop && customer.shop && sale.shop._id === customer.shop._id)
+          )}
+          structure={structures.customer}
+          rowClick={(customer) => {
+            this.setState({ selectedCustomer: customer });
+            this.props.changePage('/storein/salelist');
+          }}
+          insertClick={() => this.setState({ customerInsertModalOn: true})}
+        />
+        <CustomerModal
+          title="고객 추가"
+          mode="insert"
+          show={this.state.customerInsertModalOn}
+          close={() => this.setState({ customerInsertModalOn: false })}
+          insert={this.customerInsert}
+        />
+        <Route
+          path="/storein/salelist"
+          render={props =>
+            this.state.selectedCustomer ?
+              <TableModal
+                close={() => this.props.changePage('/storein')}
+              >
+                <SaleListForSelect
+                  mode="storeIn"
+                  list={this.props.saleGetList.list}
+                  selectedItems={this.state.selectedSales}
+                  rowClick={this.saleClick}
+                  rowSelect={this.saleSelect}
+                  tableToExcel={this.tableToExcel}
+                  structure={structures.sale}
+                  refresh={this.saleLoad}
+                  insertClick={this.storeInsertClick}
+                  cancelSelected={() => this.setState({selectedSales: []})}
+                  selectAll={this.selectAll}
+                />
+              </TableModal> : <Redirect to="/storein"/>
+          }
         />
         <Route
           path="/storein/salemodal"
@@ -222,12 +268,10 @@ class StoreIn extends React.Component {
                 title={'입고 진행'}
                 subtitle={`${this.state.selectedSales.length}개 상품을 입고합니다.`}
                 mode="insert"
+                customer={this.state.selectedCustomer}
                 structure={structures.store}
                 saleList={this.state.selectedSales}
                 saleStructure={structures.sale}
-                customerStructure={structures.customer}
-                customerList={this.props.customerGetList.list}
-                customerInsert={this.customerInsert}
                 insert={this.storeBulkInsert}
                 storeResult={this.props.storeGetList.result}
                 close={() => this.props.changePage('/storein')}

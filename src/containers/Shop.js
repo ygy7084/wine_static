@@ -19,6 +19,7 @@ import {
 import {
   loader,
   errorHandler,
+  notify,
 } from '../modules';
 import structures from './structures';
 
@@ -73,6 +74,7 @@ class Shop extends React.Component {
       .then((data) => {
         if (this.props.shopInsert.status === 'SUCCESS') {
           loader.off();
+          notify('생성 완료');
           this.props.changePage('/shop');
           this.shopLoad();
         } else if (this.props.shopInsert.status === 'FAILURE') {
@@ -91,6 +93,7 @@ class Shop extends React.Component {
       .then((data) => {
         if (this.props.shopModify.status === 'SUCCESS') {
           loader.off();
+          notify('수정 완료');
           this.props.changePage('/shop');
           this.shopLoad();
         } else if (this.props.shopModify.status === 'FAILURE') {
@@ -112,6 +115,7 @@ class Shop extends React.Component {
         .then((data) => {
           if (this.props.shopRemove.status === 'SUCCESS') {
             loader.off();
+            notify('삭제 완료');
             this.props.changePage('/shop');
             this.shopLoad();
           } else if (this.props.shopRemove.status === 'FAILURE') {
@@ -125,23 +129,28 @@ class Shop extends React.Component {
         });
     }
   }
-  shopRemoveAll() {
-    loader.on();
-    this.props.shopRemoveAllRequest()
-      .then((data) => {
-        if (this.props.shopRemoveAll.status === 'SUCCESS') {
+  shopRemoveAll(password) {
+    if (password !== this.props.accountSession.account.password) {
+      errorHandler({ message: '잘못된 패스워드입니다.' });
+    } else {
+      loader.on();
+      this.props.shopRemoveAllRequest()
+        .then((data) => {
+          if (this.props.shopRemoveAll.status === 'SUCCESS') {
+            loader.off();
+            notify('삭제 완료');
+            this.props.changePage('/shop');
+            this.shopLoad();
+          } else if (this.props.shopRemoveAll.status === 'FAILURE') {
+            loader.off();
+            throw data;
+          }
+        })
+        .catch((data) => {
           loader.off();
-          this.props.changePage('/shop');
-          this.shopLoad();
-        } else if (this.props.shopRemoveAll.status === 'FAILURE') {
-          loader.off();
-          throw data;
-        }
-      })
-      .catch((data) => {
-        loader.off();
-        errorHandler(data);
-      });
+          errorHandler(data);
+        });
+    }
   }
   tableToExcel(table) {
     loader.on();
@@ -206,6 +215,7 @@ class Shop extends React.Component {
           path="/shop/removeallmodal"
           render={props =>
             <CheckModal
+              checkPassword
               bsStyle="danger"
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="매장이 전부 삭제됩니다. 연결된 상품도 사라집니다."

@@ -3,6 +3,7 @@ import configure from './configure';
 import errorHandler from './errorHandler';
 import listFinder from './listFinder';
 import objectKeyFollower from './objectKeyFollower';
+import notify from './notify';
 
 export {
   loader,
@@ -10,4 +11,5 @@ export {
   errorHandler,
   listFinder,
   objectKeyFollower,
+  notify,
 };

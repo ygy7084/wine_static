@@ -13,7 +13,6 @@ import {
 } from './';
 import {
   Entry,
-  turnOnSimpleMessage,
   SimpleMessage,
 } from '../components';
 import { loader, errorHandler } from '../modules';

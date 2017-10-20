@@ -6,9 +6,6 @@ import {
 } from './ky-table';
 
 class VintageListForSelect extends React.Component {
-  constructor(props) {
-    super(props);
-  }
   render() {
     return (
       <KYTableE

@@ -4,6 +4,11 @@ import {
 } from '../actions';
 
 const initialState = {
+  preLogin: {
+    status: 'INIT',
+    initialLogin: false,
+    customer: null,
+  },
   getList: {
     status: 'INIT',
     list: [],
@@ -29,10 +34,35 @@ const initialState = {
     status: 'INIT',
     list: [],
   },
+  findPassword: {
+    status: 'INIT',
+  },
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    case actions.CUSTOMERBASE_PRELOGIN:
+      return update(state, {
+        preLogin: {
+          status: { $set: 'WAITING' },
+        },
+      });
+    case actions.CUSTOMERBASE_PRELOGIN_SUCCESS:
+      return update(state, {
+        preLogin: {
+          status: { $set: 'SUCCESS' },
+          initialLogin: { $set: action.initialLogin },
+          customer: { $set: action.customer },
+        },
+      });
+    case actions.CUSTOMERBASE_PRELOGIN_FAILURE:
+      return update(state, {
+        preLogin: {
+          status: { $set: 'FAILURE' },
+          initialLogin: { $set: false },
+          customer: { $set: null },
+        },
+      });
     case actions.CUSTOMERBASE_GETLIST:
       return update(state, {
         getList: {
@@ -165,6 +195,24 @@ export default (state = initialState, action) => {
         getHistory: {
           status: { $set: 'FAILURE' },
           list: { $set: [] },
+        },
+      });
+    case actions.CUSTOMERBASE_FINDPASSWORD:
+      return update(state, {
+        findPassword: {
+          status: { $set: 'WAITING' },
+        },
+      });
+    case actions.CUSTOMERBASE_FINDPASSWORD_SUCCESS:
+      return update(state, {
+        findPassword: {
+          status: { $set: 'SUCCESS' },
+        },
+      });
+    case actions.CUSTOMERBASE_FINDPASSWORD_FAILURE:
+      return update(state, {
+        findPassword: {
+          status: { $set: 'FAILURE' },
         },
       });
     default:

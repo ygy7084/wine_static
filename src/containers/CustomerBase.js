@@ -17,6 +17,7 @@ import {
 import {
   loader,
   errorHandler,
+  notify,
 } from '../modules';
 import structures from './structures';
 
@@ -67,6 +68,7 @@ class CustomerBase extends React.Component {
       .then((data) => {
         if (this.props.customerBaseInsert.status === 'SUCCESS') {
           loader.off();
+          notify('생성 완료');
           this.props.changePage('/customerbase');
           this.customerBaseLoad();
         } else if (this.props.customerBaseInsert.status === 'FAILURE') {
@@ -85,6 +87,7 @@ class CustomerBase extends React.Component {
       .then((data) => {
         if (this.props.customerBaseModify.status === 'SUCCESS') {
           loader.off();
+          notify('수정 완료');
           this.props.changePage('/customerbase');
           this.customerBaseLoad();
         } else if (this.props.customerBaseModify.status === 'FAILURE') {
@@ -103,6 +106,7 @@ class CustomerBase extends React.Component {
       .then((data) => {
         if (this.props.customerBaseRemove.status === 'SUCCESS') {
           loader.off();
+          notify('삭제 완료');
           this.props.changePage('/customerbase');
           this.customerBaseLoad();
         } else if (this.props.customerBaseRemove.status === 'FAILURE') {
@@ -115,25 +119,30 @@ class CustomerBase extends React.Component {
         errorHandler(data);
       });
   }
-  customerBaseRemoveAll() {
-    loader.on();
-    this.props.customerBaseRemoveAllRequest(
-      this.props.accountSession.account.level === '매장' ?
-        this.props.accountSession.account.shop : null)
-      .then((data) => {
-        if (this.props.customerBaseRemoveAll.status === 'SUCCESS') {
+  customerBaseRemoveAll(password) {
+    if (password !== this.props.accountSession.account.password) {
+      errorHandler({ message: '잘못된 패스워드입니다.' });
+    } else {
+      loader.on();
+      this.props.customerBaseRemoveAllRequest(
+        this.props.accountSession.account.level === '매장' ?
+          this.props.accountSession.account.shop : null)
+        .then((data) => {
+          if (this.props.customerBaseRemoveAll.status === 'SUCCESS') {
+            loader.off();
+            notify('삭제 완료');
+            this.props.changePage('/customerbase');
+            this.customerBaseLoad();
+          } else if (this.props.customerBaseRemoveAll.status === 'FAILURE') {
+            loader.off();
+            throw data;
+          }
+        })
+        .catch((data) => {
           loader.off();
-          this.props.changePage('/customerbase');
-          this.customerBaseLoad();
-        } else if (this.props.customerBaseRemoveAll.status === 'FAILURE') {
-          loader.off();
-          throw data;
-        }
-      })
-      .catch((data) => {
-        loader.off();
-        errorHandler(data);
-      });
+          errorHandler(data);
+        });
+    }
   }
   render() {
     return (
@@ -176,6 +185,7 @@ class CustomerBase extends React.Component {
           path="/customerbase/removeallmodal"
           render={props =>
             <CheckModal
+              checkPassword
               bsStyle="danger"
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="고객이 전부 삭제됩니다. 연결된 고객과 입출고 내역도 사라집니다."

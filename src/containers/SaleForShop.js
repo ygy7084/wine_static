@@ -27,6 +27,7 @@ import {
 import {
   loader,
   errorHandler,
+  notify,
 } from '../modules';
 import structures from './structures';
 
@@ -118,9 +119,10 @@ class SaleForShop extends React.Component {
     this.props.saleInsertRequest(sale)
       .then((data) => {
         if (this.props.handleInsert.status === 'SUCCESS') {
+          loader.off();
+          notify('생성 완료');
           this.props.changePage('/sale');
           this.saleLoad();
-          loader.off();
         } else if (this.props.handleInsert.status === 'FAILURE') {
           loader.off();
           throw data;
@@ -137,6 +139,7 @@ class SaleForShop extends React.Component {
       .then((data) => {
         if (this.props.handleModify.status === 'SUCCESS') {
           loader.off();
+          notify('수정 완료');
           this.props.changePage('/sale');
           this.saleLoad();
         } else if (this.props.handleModify.status === 'FAILURE') {
@@ -155,6 +158,7 @@ class SaleForShop extends React.Component {
       .then((data) => {
         if (this.props.handleRemove.status === 'SUCCESS') {
           loader.off();
+          notify('삭제 완료');
           this.props.changePage('/sale');
           this.saleLoad();
         } else if (this.props.handleRemove.status === 'FAILURE') {
@@ -176,6 +180,7 @@ class SaleForShop extends React.Component {
       .then((data) => {
         if (this.props.saleRemoveAll.status === 'SUCCESS') {
           loader.off();
+          notify('삭제 완료');
           this.props.changePage('/sale');
           this.saleLoad();
         } else if (this.props.saleRemoveAll.status === 'FAILURE') {
@@ -213,9 +218,10 @@ class SaleForShop extends React.Component {
     this.props.saleBulkInsertRequest(bulk)
       .then((data) => {
         if (this.props.saleBulkInsert.status === 'SUCCESS') {
+          loader.off();
+          notify('생성 완료');
           this.props.changePage('/sale');
           this.saleLoad();
-          loader.off();
         } else if (this.props.saleBulkInsert.status === 'FAILURE') {
           loader.off();
           throw data;
@@ -231,9 +237,10 @@ class SaleForShop extends React.Component {
     this.props.saleBulkModifyRequest(bulk)
       .then((data) => {
         if (this.props.saleBulkModify.status === 'SUCCESS') {
+          loader.off();
+          notify('수정 완료');
           this.props.changePage('/sale');
           this.saleLoad();
-          loader.off();
         } else if (this.props.saleBulkModify.status === 'FAILURE') {
           loader.off();
           throw data;
@@ -255,9 +262,10 @@ class SaleForShop extends React.Component {
     this.props.saleBulkRemoveRequest(bulk)
       .then((data) => {
         if (this.props.saleBulkRemove.status === 'SUCCESS') {
+          loader.off();
+          notify('삭제 완료');
           this.props.changePage('/sale');
           this.saleLoad();
-          loader.off();
         } else if (this.props.saleBulkRemove.status === 'FAILURE') {
           loader.off();
           throw data;
@@ -317,9 +325,6 @@ class SaleForShop extends React.Component {
             list={this.props.saleGetList.list}
             structure={structures.sale}
             rowClick={this.saleClick}
-            removeAllClick={() => this.props.changePage('/sale/removeallmodal')}
-            insertClick={() => this.props.changePage('/sale/vintage')}
-            refresh={this.saleLoad}
             tableToExcel={this.tableToExcel}
           />
         );
@@ -425,18 +430,6 @@ class SaleForShop extends React.Component {
           }
         />
         <Route
-          path="/sale/removeallmodal"
-          render={props =>
-            <CheckModal
-              bsStyle="danger"
-              title="주의! 리스트를 전부 삭제합니다."
-              subtitle="상품이 전부 삭제됩니다. "
-              handleCheck={this.saleRemoveAll}
-              handleClose={() => this.props.changePage('/sale')}
-            />
-          }
-        />
-        <Route
           path="/sale/removemodal"
           render={props =>
             <CheckModal
@@ -444,6 +437,19 @@ class SaleForShop extends React.Component {
               title="주의! 상품을 삭제합니다."
               subtitle="선택한 상품이 전부 삭제됩니다. "
               handleCheck={this.saleBulkRemove}
+              handleClose={() => this.props.changePage('/sale')}
+            />
+          }
+        />
+        <Route
+          path="/sale/removeallmodal"
+          render={props =>
+            <CheckModal
+              checkPassword
+              bsStyle="danger"
+              title="주의! 리스트를 전부 삭제합니다."
+              subtitle="상품이 전부 삭제됩니다. "
+              handleCheck={this.saleRemoveAll}
               handleClose={() => this.props.changePage('/sale')}
             />
           }

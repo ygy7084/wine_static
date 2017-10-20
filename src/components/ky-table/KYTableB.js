@@ -1,13 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  objectKeyFollower,
-  listFinder,
-} from './lib';
-
-import {
   KYTable,
-  KYTableAlpha,
   KYFinder,
   KYButton,
   KYModal,

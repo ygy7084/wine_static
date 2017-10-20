@@ -10,6 +10,7 @@ import IconMenu from 'react-icons/lib/ti/th-menu';
 import IconSale from 'react-icons/lib/md/list';
 import IconStoreIn from 'react-icons/lib/ti/arrow-left-outline';
 import IconStoreOut from 'react-icons/lib/ti/arrow-right-outline';
+import IconConfiguration from 'react-icons/lib/md/settings';
 import {
   Route,
 } from 'react-router-dom';
@@ -144,7 +145,12 @@ const sideListItems = [
   { name: '입출고 내역',
     path: '/store',
     icon: IconStore,
-    authority: ['관리자', '매장'] }];
+    authority: ['관리자', '매장'] },
+  { name: '설정',
+    path: '/configuration',
+    icon: IconConfiguration,
+    authority: ['관리자']},
+];
 const Header = function Header(props) {
   const sideBarStyle = [style.sideBar.base];
   if (props.menuClose) {

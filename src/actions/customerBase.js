@@ -1,5 +1,8 @@
 /* global fetch */ // FOR ESLINT
 import {
+  CUSTOMERBASE_PRELOGIN,
+  CUSTOMERBASE_PRELOGIN_SUCCESS,
+  CUSTOMERBASE_PRELOGIN_FAILURE,
   CUSTOMERBASE_GETLIST,
   CUSTOMERBASE_GETLIST_SUCCESS,
   CUSTOMERBASE_GETLIST_FAILURE,
@@ -21,12 +24,64 @@ import {
   CUSTOMERBASE_GETHISTORY,
   CUSTOMERBASE_GETHISTORY_SUCCESS,
   CUSTOMERBASE_GETHISTORY_FAILURE,
+  CUSTOMERBASE_FINDPASSWORD,
+  CUSTOMERBASE_FINDPASSWORD_SUCCESS,
+  CUSTOMERBASE_FINDPASSWORD_FAILURE,
 } from './actions';
 
 import { configure } from '../modules';
 
 const API = configure.url;
 
+const preLogin = function preLogin() {
+  return {
+    type: CUSTOMERBASE_PRELOGIN,
+  };
+};
+const preLoginSuccess = function preLoginSuccess(data) {
+  return {
+    type: CUSTOMERBASE_PRELOGIN_SUCCESS,
+    initialLogin : data.initialLogin,
+    customer: data.customer,
+  };
+};
+const preLoginFailure = function preLoginFailure(error) {
+  return {
+    type: CUSTOMERBASE_PRELOGIN_FAILURE,
+    error,
+  };
+};
+const preLoginRequest = function preLoginRequest(phone) {
+  return (dispatch) => {
+    dispatch(preLogin());
+    return fetch(`${API}/auth/customerprelogin`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        data: {
+          phone,
+        },
+      }),
+    })
+      .then((res) => {
+        if (res.ok) { return res.json(); }
+        return res.json().then((error) => {
+          throw error;
+        });
+      })
+      .then((res) => {
+        if (res.data) {
+          return dispatch(preLoginSuccess(res.data));
+        }
+        return dispatch(preLoginFailure({
+          error: null,
+          message: '알 수 없는 오류',
+        }));
+      })
+      .catch(e => dispatch(preLoginFailure(e)));
+  };
+};
 const getList = function getList() {
   return {
     type: CUSTOMERBASE_GETLIST,
@@ -345,7 +400,53 @@ const getHistoryRequest = function getHistoryRequest(id) {
       .catch(e => dispatch(getHistoryFailure(e)));
   };
 };
+const findPassword = function findPassword() {
+  return {
+    type: CUSTOMERBASE_FINDPASSWORD,
+  };
+};
+const findPasswordSuccess = function findPasswordSuccess() {
+  return {
+    type: CUSTOMERBASE_FINDPASSWORD_SUCCESS,
+  };
+};
+const findPasswordFailure = function findPasswordFailure(error) {
+  return {
+    type: CUSTOMERBASE_FINDPASSWORD_FAILURE,
+    error,
+  };
+};
+const findPasswordRequest = function findPasswordRequest(data) {
+  return (dispatch) => {
+    dispatch(findPassword());
+    return fetch(`${API}/auth/findpassword`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        data,
+      }),
+    })
+      .then((res) => {
+        if (res.ok) { return res.json(); }
+        return res.json().then((error) => {
+          throw error;
+        });
+      })
+      .then((res) => {
+        if (res.data) {
+          return dispatch(findPasswordSuccess(res.data));
+        }
+        return dispatch(findPasswordFailure({
+          error: null,
+          message: '알 수 없는 오류',
+        }));
+      })
+      .catch(e => dispatch(findPasswordFailure(e)));
+  };
+};
 export default {
+  preLoginRequest,
   getListRequest,
   insertRequest,
   modifyRequest,
@@ -353,4 +454,5 @@ export default {
   removeAllRequest,
   getStoreRequest,
   getHistoryRequest,
+  findPasswordRequest,
 };

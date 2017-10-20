@@ -36,7 +36,7 @@ const structure = [
     key: ['shop', 'name'],
   },
   {
-    name: '도매가',
+    name: '입고가',
     key: ['wholeSalePrice'],
   },
   {

@@ -1,15 +1,11 @@
 import React from 'react';
 
 import {
-  KYTableD,
   KYTableF,
-  KYButton,
 } from './ky-table';
 
 class SaleListForInput extends React.Component {
-  constructor(props) {
-    super(props);
-  }
+
   render() {
     return (
       <KYTableF
@@ -23,7 +19,7 @@ class SaleListForInput extends React.Component {
           '한글줄임명',
           '원산지',
           '빈티지',
-          '도매가',
+          '입고가',
           '판매가',
           '최저가',
         ]}

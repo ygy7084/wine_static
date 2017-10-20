@@ -21,6 +21,7 @@ import {
 import {
   loader,
   errorHandler,
+  notify,
 } from '../modules';
 import structures from './structures';
 
@@ -107,6 +108,7 @@ class Original extends React.Component {
       .then((data) => {
         if (this.props.originalBulkInsert.status === 'SUCCESS') {
           loader.off();
+          notify('생성 완료');
           this.props.changePage('/wine/original');
           this.originalLoad();
         } else if (this.props.originalBulkInsert.status === 'FAILURE') {
@@ -124,6 +126,7 @@ class Original extends React.Component {
       .then((data) => {
         if (this.props.originalInsert.status === 'SUCCESS') {
           loader.off();
+          notify('생성 완료');
           this.props.changePage('/wine/original');
           this.originalLoad();
         } else if (this.props.originalInsert.status === 'FAILURE') {
@@ -141,6 +144,7 @@ class Original extends React.Component {
       .then((data) => {
         if (this.props.originalModify.status === 'SUCCESS') {
           loader.off();
+          notify('수정 완료');
           this.props.changePage('/wine/original');
           this.originalLoad();
         } else if (this.props.originalModify.status === 'FAILURE') {
@@ -158,6 +162,7 @@ class Original extends React.Component {
       .then((data) => {
         if (this.props.originalRemove.status === 'SUCCESS') {
           loader.off();
+          notify('삭제 완료');
           this.props.changePage('/wine/original');
           this.originalLoad();
         } else if (this.props.originalRemove.status === 'FAILURE') {
@@ -169,23 +174,28 @@ class Original extends React.Component {
         errorHandler(data);
       });
   }
-  originalRemoveAll() {
-    loader.on();
-    this.props.originalRemoveAllRequest()
-      .then((data) => {
-        if (this.props.originalRemoveAll.status === 'SUCCESS') {
+  originalRemoveAll(password) {
+    if (password !== this.props.accountSession.account.password) {
+      errorHandler({ message: '잘못된 패스워드입니다.' });
+    } else {
+      loader.on();
+      this.props.originalRemoveAllRequest()
+        .then((data) => {
+          if (this.props.originalRemoveAll.status === 'SUCCESS') {
+            loader.off();
+            notify('삭제 완료');
+            this.props.changePage('/wine/original');
+            this.originalLoad();
+          } else if (this.props.originalRemoveAll.status === 'FAILURE') {
+            loader.off();
+            throw data;
+          }
+        })
+        .catch((data) => {
           loader.off();
-          this.props.changePage('/wine/original');
-          this.originalLoad();
-        } else if (this.props.originalRemoveAll.status === 'FAILURE') {
-          loader.off();
-          throw data;
-        }
-      })
-      .catch((data) => {
-        loader.off();
-        errorHandler(data);
-      });
+          errorHandler(data);
+        });
+    }
   }
   tableToExcel(table) {
     loader.on();
@@ -288,6 +298,7 @@ class Original extends React.Component {
           path="/wine/original/removeallmodal"
           render={props =>
             <CheckModal
+              checkPassword
               bsStyle="danger"
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="오리지날이 전부 삭제됩니다. 연관된 빈티지와 상품도 삭제됩니다."
@@ -301,6 +312,10 @@ class Original extends React.Component {
   }
 }
 const mapStateToProps = state => ({
+  accountSession: {
+    status: state.account.session.status,
+    account: state.account.session.account,
+  },
   grapeGetList: {
     status: state.grape.getList.status,
     list: state.grape.getList.list,

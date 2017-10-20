@@ -1,65 +1,42 @@
 /* global window */
 import React from 'react';
-import async from 'async';
 import BodyBackgroundColor from 'react-body-backgroundcolor';
 
-import {
-  Route,
-  Switch,
-  Redirect,
-} from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { push } from 'react-router-redux';
-
 import {
-  sale,
-  store,
-  customer,
-  shop,
   customerBase,
-  customerAccount,
 } from '../actions';
-
 import {
-  Account,
-  Wine,
-  Shop,
-  Customer,
-  CustomerBase,
-  Store,
-  SaleForShop,
-} from './';
-
-import {
-  Header,
-  Contents,
-  Page404,
   CustomerSideStore,
   CustomerSideCard,
   CustomerSideMenu,
   CustomerSideModal,
+  CustomerSideBaseModal,
 } from '../components';
-
 import {
   errorHandler,
   loader,
+  notify,
 } from '../modules';
 
-import './CustomerSide.css';
+import './CustomerMain.css';
 
 class CustomerMain extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
       menuToggle: false,
-      mode: '입고 와인 조회',
+      mode: '보관 와인 리스트',
       shop: '전체',
       cardIndex: 0,
+      customerSideBaseModalOn: false,
     };
 
     this.selectMode = this.selectMode.bind(this);
     this.selectShop = this.selectShop.bind(this);
+    this.customerBaseModify = this.customerBaseModify.bind(this);
   }
   componentWillMount() {
     loader.on();
@@ -99,6 +76,25 @@ class CustomerMain extends React.Component{
       shop,
     });
   }
+  customerBaseModify(customerBase) {
+    loader.on();
+    this.props.customerBaseModifyRequest(customerBase)
+      .then((data) => {
+        if (this.props.customerBaseModify.status === 'SUCCESS') {
+          loader.off();
+          notify('수정 완료');
+          this.setState({ customerSideBaseModalOn: false });
+          this.props.logout();
+        } else if (this.props.customerBaseModify.status === 'FAILURE') {
+          loader.off();
+          throw data;
+        }
+      })
+      .catch((data) => {
+        loader.off();
+        errorHandler(data);
+      });
+  }
   render() {
     let backgroundColor = 'burlywood';
     if (this.state.cardIndex > 0) {
@@ -120,12 +116,13 @@ class CustomerMain extends React.Component{
             menuClick={(e) => this.setState({ menuToggle: true })}
           />
           {
-            this.state.mode === '입고 와인 조회' ?
+            this.state.mode === '보관 와인 리스트' ?
               <CustomerSideCard
                 list={this.state.shop !== '전체' ?
                   this.props.customerBaseGetStore.list.filter(v => v.shop.name === this.state.shop) :
                   this.props.customerBaseGetStore.list
                 }
+                index={this.state.cardIndex}
                 changeIndex={e => this.setState({ cardIndex: e })}
               /> :
               <CustomerSideStore
@@ -144,6 +141,14 @@ class CustomerMain extends React.Component{
             logout={this.props.logout}
             shopList={['전체'].concat(this.props.customerBaseGetStore.list.map(o => o.shop.name).filter((v, i, s) => s.indexOf(v) === i))}
             close={() => this.setState({ menuToggle: false })}
+            baseModalOn={() => this.setState({ menuToggle: false, customerSideBaseModalOn: true,})}
+          />
+          <CustomerSideBaseModal
+            show={this.state.customerSideBaseModalOn}
+            title="고객 계정 정보"
+            close={() => this.setState({ customerSideBaseModalOn: false })}
+            item={this.props.customerAccountSession.customerAccount}
+            modify={this.customerBaseModify}
           />
         </div>
       </BodyBackgroundColor>
@@ -154,6 +159,9 @@ const mapStateToProps = state => ({
   customerAccountSession: {
     status: state.customerAccount.session.status,
     customerAccount: state.customerAccount.session.customerAccount,
+  },
+  customerBaseModify: {
+    status: state.customerBase.modify.status,
   },
   customerBaseGetStore: {
     status: state.customerBase.getStore.status,
@@ -167,6 +175,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
   customerBaseGetStoreRequest: customerBase.getStoreRequest,
   customerBaseGetHistoryRequest: customerBase.getHistoryRequest,
+  customerBaseModifyRequest: customerBase.modifyRequest,
   changePage: path => push(path),
 }, dispatch);
 export default connect(

@@ -25,8 +25,6 @@ import SaleInsertModal from './SaleInsertModal';
 import CustomerList from './CustomerList';
 import CustomerModal from './CustomerModal';
 import StoreList from './StoreList';
-import StoreModal from './StoreModal';
-import StoreInsertModal from './StoreInsertModal';
 import ListA from './ListA';
 import CustomerBaseList from './CustomerBaseList';
 import CustomerBaseModal from './CustomerBaseModal';
@@ -42,6 +40,8 @@ import StoreInModal from './StoreInModal';
 import StoreOutModal from './StoreOutModal';
 import StoreListForInput from './StoreListForInput';
 import StoreListForSelect from './StoreListForSelect';
+import EmailConfiguration from './EmailConfiguration';
+import CustomerSideBaseModal from './CustomerSideBaseModal';
 
 import {
   KYButton,
@@ -80,8 +80,6 @@ export {
   CustomerList,
   CustomerModal,
   StoreList,
-  StoreModal,
-  StoreInsertModal,
   ListA,
   CustomerBaseList,
   CustomerBaseModal,
@@ -102,5 +100,7 @@ export {
   StoreOutModal,
   StoreListForInput,
   StoreListForSelect,
+  EmailConfiguration,
+  CustomerSideBaseModal,
 };
 

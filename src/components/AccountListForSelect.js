@@ -5,9 +5,6 @@ import {
 } from './ky-table';
 
 class AccountList extends React.Component {
-  constructor(props) {
-    super(props);
-  }
   render() {
     return (
       <KYTableE

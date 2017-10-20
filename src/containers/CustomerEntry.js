@@ -1,33 +1,28 @@
+/* global window */
 import React from 'react';
 import {
   Route,
-  Redirect,
   Switch,
 } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { push } from 'react-router-redux';
 import {
-  sale,
-  store,
-  customer,
-  shop,
   customerBase,
   customerAccount,
 } from '../actions';
 import {
-  CustomerSide,
   CustomerMain,
 } from './';
 
 import {
   CustomerSideEntry,
-  Page404,
   SimpleMessage,
 } from '../components';
 import {
   loader,
   errorHandler,
+  notify,
 } from '../modules';
 
 class CustomerEntry extends React.Component {
@@ -36,6 +31,9 @@ class CustomerEntry extends React.Component {
     this.loginRequest = this.loginRequest.bind(this);
     this.logoutRequest = this.logoutRequest.bind(this);
     this.sessionRequest = this.sessionRequest.bind(this);
+    this.preLoginRequest = this.preLoginRequest.bind(this);
+    this.initialLoginRequest = this.initialLoginRequest.bind(this);
+    this.findPassword = this.findPassword.bind(this);
   }
   componentWillMount() {
     loader.off();
@@ -47,7 +45,7 @@ class CustomerEntry extends React.Component {
       .then(() => {
         if (this.props.customerAccountLogin.status === 'SUCCESS') {
           loader.off();
-          this.sessionRequest('/');
+          window.location = '/cside';
         } else if (this.props.customerAccountLogin.status === 'FAILURE') {
           loader.off();
           errorHandler({ message: '로그인에 실패하였습니다.' });
@@ -63,7 +61,7 @@ class CustomerEntry extends React.Component {
       .then(() => {
         if (this.props.customerAccountLogout.status === 'SUCCESS') {
           loader.off();
-          this.sessionRequest('/');
+          window.location = '/cside';
         } else if (this.props.customerAccountLogoutRequest === 'FAILURE') {
           loader.off();
         }
@@ -84,8 +82,69 @@ class CustomerEntry extends React.Component {
         }
       })
       .catch((e) => {
-        console.log(e);
         loader.off();
+      });
+  }
+  preLoginRequest(phoneInput) {
+    loader.on();
+    return this.props.customerBasePreLoginRequest(phoneInput)
+      .then(() => {
+        if (this.props.customerBasePreLogin.status === 'SUCCESS') {
+          loader.off();
+        } else if (this.props.customerBasePreLogin.status === 'FAILURE') {
+          loader.off();
+          errorHandler({ message: '로그인에 실패하였습니다.' });
+        }
+      })
+      .catch(() => {
+        loader.off();
+      });
+  }
+  initialLoginRequest(data) {
+    const { password, email } = data;
+    if (!password || password === '') {
+      errorHandler({ message: '패스워드를 입력해주십시요.' });
+    } else {
+      loader.on();
+      const input = {
+        _id: this.props.customerBasePreLogin.customer,
+        password,
+        email,
+      };
+      this.props.customerBaseModifyRequest(input)
+        .then((data) => {
+          if (this.props.customerBaseModify.status === 'SUCCESS') {
+            loader.off();
+            this.loginRequest({
+              username: this.props.customerBasePreLogin.customer.phone,
+              password,
+            });
+          } else if (this.props.customerBaseModify.status === 'FAILURE') {
+            loader.off();
+            throw data;
+          }
+        })
+        .catch((data) => {
+          loader.off();
+          errorHandler(data);
+        });
+    }
+  }
+  findPassword(phone) {
+    loader.on();
+    this.props.customerBaseFindPasswordRequest({ phone })
+      .then((data) => {
+        if (this.props.customerBaseFindPassword.status === 'SUCCESS') {
+          loader.off();
+          notify('전송 완료');
+        } else if (this.props.customerBaseFindPassword.status === 'FAILURE') {
+          loader.off();
+          throw data;
+        }
+      })
+      .catch((data) => {
+        loader.off();
+        errorHandler(data);
       });
   }
   render() {
@@ -96,7 +155,10 @@ class CustomerEntry extends React.Component {
           <Route
             path="/cside"
             render={props =>
-              <CustomerMain logout={this.logoutRequest} {...props} />
+              <CustomerMain
+                logout={this.logoutRequest}
+                sessionRequest={this.sessionRequest}
+                {...props} />
             }
           />
         </Switch>
@@ -110,6 +172,11 @@ class CustomerEntry extends React.Component {
             render={props => (
               <CustomerSideEntry
                 loginRequest={this.loginRequest}
+                preLoginRequest={this.preLoginRequest}
+                preLoginStatus={this.props.customerBasePreLogin.status}
+                initialLogin={this.props.customerBasePreLogin.initialLogin}
+                initialLoginRequest={this.initialLoginRequest}
+                findPassword={this.findPassword}
                 {...props}
               />
             )}
@@ -127,6 +194,11 @@ class CustomerEntry extends React.Component {
 }
 
 const mapStateToProps = state => ({
+  customerBasePreLogin: {
+    status: state.customerBase.preLogin.status,
+    initialLogin: state.customerBase.preLogin.initialLogin,
+    customer: state.customerBase.preLogin.customer,
+  },
   customerAccountLogin: {
     status: state.customerAccount.login.status,
   },
@@ -137,11 +209,20 @@ const mapStateToProps = state => ({
   customerAccountLogout: {
     status: state.customerAccount.logout.status,
   },
+  customerBaseModify: {
+    status: state.customerBase.modify.status,
+  },
+  customerBaseFindPassword: {
+    status: state.customerBase.findPassword.status,
+  },
 });
 const mapDispatchToProps = dispatch => bindActionCreators({
+  customerBasePreLoginRequest: customerBase.preLoginRequest,
   customerAccountLoginRequest: customerAccount.loginRequest,
   customerAccountSessionRequest: customerAccount.sessionRequest,
   customerAccountLogoutRequest: customerAccount.logoutRequest,
+  customerBaseModifyRequest: customerBase.modifyRequest,
+  customerBaseFindPasswordRequest: customerBase.findPasswordRequest,
   changePage: path => push(path),
 }, dispatch);
 export default connect(

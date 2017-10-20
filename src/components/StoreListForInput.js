@@ -1,15 +1,10 @@
 import React from 'react';
 
 import {
-  KYTableD,
   KYTableF,
-  KYButton,
 } from './ky-table';
 
 class StoreListForInput extends React.Component {
-  constructor(props) {
-    super(props);
-  }
   render() {
     return (
       <KYTableF
@@ -26,7 +21,7 @@ class StoreListForInput extends React.Component {
           '매장명',
           '고객명',
           '기존수량',
-          '변경수량',
+          '수량',
           '결과수량',
         ]}
         inputs={this.props.inputs}

@@ -32,7 +32,7 @@ const structure = [
     key: ['sale', 'vintage', 'vintage'],
   },
   {
-    name: '도매가',
+    name: '입고가',
     key: ['sale', 'wholeSalePrice'],
   },
   {

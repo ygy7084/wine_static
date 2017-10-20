@@ -18,6 +18,7 @@ import {
 import {
   loader,
   errorHandler,
+  notify,
 } from '../modules';
 
 const structure = [
@@ -86,6 +87,7 @@ class Location extends React.Component {
       .then((data) => {
         if (this.props.locationInsert.status === 'SUCCESS') {
           loader.off();
+          notify('생성 완료');
           this.props.changePage('/wine/location');
           this.locationLoad();
         } else if (this.props.locationInsert.status === 'FAILURE') {
@@ -104,6 +106,7 @@ class Location extends React.Component {
       .then((data) => {
         if (this.props.locationRemove.status === 'SUCCESS') {
           loader.off();
+          notify('삭제 완료');
           this.props.changePage('/wine/location');
           this.locationLoad();
         } else if (this.props.locationRemove.status === 'FAILURE') {
@@ -116,23 +119,28 @@ class Location extends React.Component {
         errorHandler(data);
       });
   }
-  locationRemoveAll() {
-    loader.on();
-    this.props.locationRemoveAllRequest()
-      .then((data) => {
-        if (this.props.locationRemoveAll.status === 'SUCCESS') {
+  locationRemoveAll(password) {
+    if (password !== this.props.accountSession.account.password) {
+      errorHandler({ message: '잘못된 패스워드입니다.' });
+    } else {
+      loader.on();
+      this.props.locationRemoveAllRequest()
+        .then((data) => {
+          if (this.props.locationRemoveAll.status === 'SUCCESS') {
+            loader.off();
+            notify('삭제 완료');
+            this.props.changePage('/wine/location');
+            this.locationLoad();
+          } else if (this.props.locationRemoveAll.status === 'FAILURE') {
+            loader.off();
+            throw data;
+          }
+        })
+        .catch((data) => {
           loader.off();
-          this.props.changePage('/wine/location');
-          this.locationLoad();
-        } else if (this.props.locationRemoveAll.status === 'FAILURE') {
-          loader.off();
-          throw data;
-        }
-      })
-      .catch((data) => {
-        loader.off();
-        errorHandler(data);
-      });
+          errorHandler(data);
+        });
+    }
   }
   render() {
     return (
@@ -163,6 +171,7 @@ class Location extends React.Component {
           path="/wine/location/removeallmodal"
           render={props => (
             <CheckModal
+              checkPassword
               bsStyle="danger"
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="원산지 정보를 삭제합니다."
@@ -178,6 +187,10 @@ class Location extends React.Component {
 }
 
 const mapStateToProps = state => ({
+  accountSession: {
+    status: state.account.session.status,
+    account: state.account.session.account,
+  },
   locationGetList: {
     status: state.location.getList.status,
     list: state.location.getList.list,
