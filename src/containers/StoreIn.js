@@ -207,9 +207,7 @@ class StoreIn extends React.Component {
       <div>
         <CustomerList
           mode="storeIn"
-          list={this.props.customerGetList.list.filter(customer =>
-            this.props.saleGetList.list.find(sale => sale.shop && customer.shop && sale.shop._id === customer.shop._id)
-          )}
+          list={this.props.customerGetList.list}
           structure={structures.customer}
           rowClick={(customer) => {
             this.setState({ selectedCustomer: customer });

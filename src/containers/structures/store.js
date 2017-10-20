@@ -60,7 +60,7 @@ const structure = [
     key: ['datetimeString'],
   },
   {
-    name: '수량 변화',
+    name: '수량',
     key: ['quantityChange'],
   },
 ];
