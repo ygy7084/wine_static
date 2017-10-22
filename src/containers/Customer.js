@@ -177,6 +177,9 @@ class Customer extends React.Component {
     return (
       <div>
         <CustomerList
+          noInsert={this.props.accountSession.account ?
+            this.props.accountSession.account.level === '관리자' : false
+          }
           list={this.props.customerGetList.list}
           structure={structures.customer}
           rowClick={this.customerClick}

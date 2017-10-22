@@ -20,7 +20,7 @@ class CustomerList extends React.Component {
       >
         {
           this.props.mode === 'storeIn' ?
-            this.props.onlyView ?
+            (this.props.onlyView ?
               null:
             [
               <KYButton
@@ -28,24 +28,39 @@ class CustomerList extends React.Component {
                 bsStyle="success"
                 onClick={this.props.insertClick}
               >고객 추가</KYButton>,
-            ] :
-            [
-              <KYButton
-                key="insert"
-                bsStyle="success"
-                onClick={this.props.insertClick}
-              >고객 추가</KYButton>,
-              <KYButton
-                key="refresh"
-                bsStyle="primary"
-                onClick={this.props.refresh}
-              >새로 고침</KYButton>,
-              <KYButton
-                key="remove"
-                bsStyle="danger"
-                onClick={this.props.removeAllClick}
-              >전부 삭제</KYButton>,
-            ]
+            ]) :
+            (
+              this.props.noInsert ?
+                [
+                  <KYButton
+                    key="refresh"
+                    bsStyle="primary"
+                    onClick={this.props.refresh}
+                  >새로 고침</KYButton>,
+                  <KYButton
+                    key="remove"
+                    bsStyle="danger"
+                    onClick={this.props.removeAllClick}
+                  >전부 삭제</KYButton>,
+                ] :
+                [
+                  <KYButton
+                    key="insert"
+                    bsStyle="success"
+                    onClick={this.props.insertClick}
+                  >고객 추가</KYButton>,
+                  <KYButton
+                    key="refresh"
+                    bsStyle="primary"
+                    onClick={this.props.refresh}
+                  >새로 고침</KYButton>,
+                  <KYButton
+                    key="remove"
+                    bsStyle="danger"
+                    onClick={this.props.removeAllClick}
+                  >전부 삭제</KYButton>,
+                ]
+            )
         }
       </KYTableD>
     );
