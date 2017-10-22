@@ -66,6 +66,7 @@ class CustomerMain extends React.Component{
   selectMode(mode) {
     this.setState({
       menuToggle: false,
+      cardIndex: 0,
       mode,
     });
   }
