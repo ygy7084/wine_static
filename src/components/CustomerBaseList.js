@@ -1,9 +1,6 @@
 import React from 'react';
 
-import {
-  KYTableD,
-  KYButton,
-} from './ky-table';
+import {KYButton, KYTableD,} from './ky-table';
 
 class CustomerBaseList extends React.Component {
   render() {

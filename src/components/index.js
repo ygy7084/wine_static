@@ -30,7 +30,6 @@ import CustomerBaseList from './CustomerBaseList';
 import CustomerBaseModal from './CustomerBaseModal';
 import CustomerSideCard from './CustomerSideCard';
 import CustomerSideMenu from './CustomerSideMenu';
-import AccountListForSelect from './AccountListForSelect';
 import SaleListForSelect from './SaleListForSelect';
 import VintageListForSelect from './VintageListForSelect';
 import SaleListForInput from './SaleListForInput';
@@ -90,7 +89,6 @@ export {
   KYList,
   KYFinder,
   KYTable,
-  AccountListForSelect,
   SaleListForSelect,
   VintageListForSelect,
   SaleListForInput,

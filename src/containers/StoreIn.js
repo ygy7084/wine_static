@@ -206,6 +206,7 @@ class StoreIn extends React.Component {
     return (
       <div>
         <CustomerList
+          onlyView={this.props.accountSession.account ? this.props.accountSession.account.level === '관리자' : true}
           mode="storeIn"
           list={this.props.customerGetList.list}
           structure={structures.customer}
@@ -225,13 +226,15 @@ class StoreIn extends React.Component {
         <Route
           path="/storein/salelist"
           render={props =>
-            this.state.selectedCustomer ?
+            this.state.selectedCustomer && this.state.selectedCustomer.shop ?
               <TableModal
                 close={() => this.props.changePage('/storein')}
               >
                 <SaleListForSelect
                   mode="storeIn"
-                  list={this.props.saleGetList.list}
+                  list={this.props.saleGetList.list.filter(item =>
+                    item.shop._id === this.state.selectedCustomer.shop._id
+                  )}
                   selectedItems={this.state.selectedSales}
                   rowClick={this.saleClick}
                   rowSelect={this.saleSelect}

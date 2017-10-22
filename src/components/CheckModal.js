@@ -53,7 +53,8 @@ class CheckModal extends React.Component {
       </div>
     );
   }
-};
+}
+
 CheckModal.propTyps = {
   bsStyle: PropTypes.oneOf(['success', 'warning', 'danger', 'info']).isRequired,
   title: PropTypes.string,

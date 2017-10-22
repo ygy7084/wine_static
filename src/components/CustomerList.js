@@ -20,6 +20,8 @@ class CustomerList extends React.Component {
       >
         {
           this.props.mode === 'storeIn' ?
+            this.props.onlyView ?
+              null:
             [
               <KYButton
                 key="insert"
