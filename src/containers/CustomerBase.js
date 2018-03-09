@@ -57,10 +57,10 @@ class CustomerBase extends React.Component {
     this.setState({
       customerBaseModalItem: customerBase,
     });
-    this.props.changePage('/customerbase/modal');
+    this.props.changePage(`${this.props.match.url}/modal`);
   }
   customerBaseInsertClick() {
-    this.props.changePage('/customerbase/insertmodal');
+    this.props.changePage(`${this.props.match.url}/insertmodal`);
   }
   customerBaseInsert(customerBase) {
     loader.on();
@@ -69,7 +69,7 @@ class CustomerBase extends React.Component {
         if (this.props.customerBaseInsert.status === 'SUCCESS') {
           loader.off();
           notify('생성 완료');
-          this.props.changePage('/customerbase');
+          this.props.changePage(this.props.match.url);
           this.customerBaseLoad();
         } else if (this.props.customerBaseInsert.status === 'FAILURE') {
           loader.off();
@@ -88,7 +88,7 @@ class CustomerBase extends React.Component {
         if (this.props.customerBaseModify.status === 'SUCCESS') {
           loader.off();
           notify('수정 완료');
-          this.props.changePage('/customerbase');
+          this.props.changePage(this.props.match.url);
           this.customerBaseLoad();
         } else if (this.props.customerBaseModify.status === 'FAILURE') {
           loader.off();
@@ -107,7 +107,7 @@ class CustomerBase extends React.Component {
         if (this.props.customerBaseRemove.status === 'SUCCESS') {
           loader.off();
           notify('삭제 완료');
-          this.props.changePage('/customerbase');
+          this.props.changePage(this.props.match.url);
           this.customerBaseLoad();
         } else if (this.props.customerBaseRemove.status === 'FAILURE') {
           loader.off();
@@ -131,7 +131,7 @@ class CustomerBase extends React.Component {
           if (this.props.customerBaseRemoveAll.status === 'SUCCESS') {
             loader.off();
             notify('삭제 완료');
-            this.props.changePage('/customerbase');
+            this.props.changePage(this.props.match.url);
             this.customerBaseLoad();
           } else if (this.props.customerBaseRemoveAll.status === 'FAILURE') {
             loader.off();
@@ -153,36 +153,36 @@ class CustomerBase extends React.Component {
           rowClick={this.customerBaseClick}
           insertClick={this.customerBaseInsertClick}
           refresh={this.customerBaseLoad}
-          removeAllClick={() => this.props.changePage('/customerbase/removeallmodal')}
+          removeAllClick={() => this.props.changePage(`${this.props.match.url}/removeallmodal`)}
           tableToExcel={this.tableToExcel}
         />
         <Route
-          path="/customerbase/modal"
+          path={`${this.props.match.url}/modal`}
           render={props =>
             this.state.customerBaseModalItem ?
               <CustomerBaseModal
                 title="고객 계정 정보"
                 mode="modify"
-                close={() => this.props.changePage('/customerbase')}
+                close={() => this.props.changePage(this.props.match.url)}
                 item={this.state.customerBaseModalItem}
                 modify={this.customerBaseModify}
                 remove={this.customerBaseRemove}
-              /> : <Redirect to="/customerbase" />
+              /> : <Redirect to={this.props.match.url} />
           }
         />
         <Route
-          path="/customerbase/insertmodal"
+          path={`${this.props.match.url}/insertmodal`}
           render={props =>
             <CustomerBaseModal
               title="고객 계정 추가"
               mode="insert"
-              close={() => this.props.changePage('/customerbase')}
+              close={() => this.props.changePage(this.props.match.url)}
               insert={this.customerBaseInsert}
             />
           }
         />
         <Route
-          path="/customerbase/removeallmodal"
+          path={`${this.props.match.url}/removeallmodal`}
           render={props =>
             <CheckModal
               checkPassword
@@ -190,7 +190,7 @@ class CustomerBase extends React.Component {
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="고객이 전부 삭제됩니다. 연결된 고객과 입출고 내역도 사라집니다."
               handleCheck={this.customerBaseRemoveAll}
-              handleClose={() => this.props.changePage('/customerbase')}
+              handleClose={() => this.props.changePage(this.props.match.url)}
             />
           }
         />

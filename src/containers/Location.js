@@ -79,7 +79,7 @@ class Location extends React.Component {
   }
   locationClick(location) {
     this.setState({ selectedLocation: location });
-    this.props.changePage('/wine/location/removemodal');
+    this.props.changePage(`${this.props.match.url}/removemodal`);
   }
   locationInsert(location) {
     loader.on();
@@ -88,7 +88,7 @@ class Location extends React.Component {
         if (this.props.locationInsert.status === 'SUCCESS') {
           loader.off();
           notify('생성 완료');
-          this.props.changePage('/wine/location');
+          this.props.changePage(this.props.match.url);
           this.locationLoad();
         } else if (this.props.locationInsert.status === 'FAILURE') {
           loader.off();
@@ -107,7 +107,7 @@ class Location extends React.Component {
         if (this.props.locationRemove.status === 'SUCCESS') {
           loader.off();
           notify('삭제 완료');
-          this.props.changePage('/wine/location');
+          this.props.changePage(this.props.match.url);
           this.locationLoad();
         } else if (this.props.locationRemove.status === 'FAILURE') {
           loader.off();
@@ -129,7 +129,7 @@ class Location extends React.Component {
           if (this.props.locationRemoveAll.status === 'SUCCESS') {
             loader.off();
             notify('삭제 완료');
-            this.props.changePage('/wine/location');
+            this.props.changePage(this.props.match.url);
             this.locationLoad();
           } else if (this.props.locationRemoveAll.status === 'FAILURE') {
             loader.off();
@@ -151,24 +151,24 @@ class Location extends React.Component {
           list={this.props.locationGetList.list}
           insert={this.locationInsert}
           refresh={this.locationLoad}
-          removeAllClick={() => this.props.changePage('/wine/location/removeallmodal')}
+          removeAllClick={() => this.props.changePage(`${this.props.match.url}/removeallmodal`)}
         />
 
         <Route
-          path="/wine/location/removemodal"
+          path={`${this.props.match.url}/removemodal`}
           render={props => (
             <CheckModal
               bsStyle="danger"
               title="주의! 선택한 리스트를 삭제합니다."
               subtitle="원산지 정보를 삭제합니다."
               handleCheck={this.locationRemove}
-              handleClose={() => this.props.changePage('/wine/location')}
+              handleClose={() => this.props.changePage(this.props.match.url)}
             />
           )
           }
         />
         <Route
-          path="/wine/location/removeallmodal"
+          path={`${this.props.match.url}/removeallmodal`}
           render={props => (
             <CheckModal
               checkPassword
@@ -176,7 +176,7 @@ class Location extends React.Component {
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="원산지 정보를 삭제합니다."
               handleCheck={this.locationRemoveAll}
-              handleClose={() => this.props.changePage('/wine/location')}
+              handleClose={() => this.props.changePage(this.props.match.url)}
             />
           )
           }

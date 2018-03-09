@@ -15,8 +15,8 @@ const App = function App() {
   return (
     <div>
       <Switch>
-        <Route path="/cside" component={CustomerEntry} />
-        <Route path="/" component={ManagerEntry} />
+        <Route path="/manager" component={ManagerEntry} />
+        <Route path="/" component={CustomerEntry} />
         <Route component={Page404} />
       </Switch>
     </div>

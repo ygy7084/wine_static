@@ -63,10 +63,10 @@ class Shop extends React.Component {
     this.setState({
       shopModalItem: shop,
     });
-    this.props.changePage('/shop/modal');
+    this.props.changePage(`${this.props.match.url}/modal`);
   }
   shopInsertClick() {
-    this.props.changePage('/shop/insertmodal');
+    this.props.changePage(`${this.props.match.url}/insertmodal`);
   }
   shopInsert(shop) {
     loader.on();
@@ -75,7 +75,7 @@ class Shop extends React.Component {
         if (this.props.shopInsert.status === 'SUCCESS') {
           loader.off();
           notify('생성 완료');
-          this.props.changePage('/shop');
+          this.props.changePage(this.props.match.url);
           this.shopLoad();
         } else if (this.props.shopInsert.status === 'FAILURE') {
           loader.off();
@@ -94,7 +94,7 @@ class Shop extends React.Component {
         if (this.props.shopModify.status === 'SUCCESS') {
           loader.off();
           notify('수정 완료');
-          this.props.changePage('/shop');
+          this.props.changePage(this.props.match.url);
           this.shopLoad();
         } else if (this.props.shopModify.status === 'FAILURE') {
           loader.off();
@@ -116,7 +116,7 @@ class Shop extends React.Component {
           if (this.props.shopRemove.status === 'SUCCESS') {
             loader.off();
             notify('삭제 완료');
-            this.props.changePage('/shop');
+            this.props.changePage(this.props.match.url);
             this.shopLoad();
           } else if (this.props.shopRemove.status === 'FAILURE') {
             loader.off();
@@ -139,7 +139,7 @@ class Shop extends React.Component {
           if (this.props.shopRemoveAll.status === 'SUCCESS') {
             loader.off();
             notify('삭제 완료');
-            this.props.changePage('/shop');
+            this.props.changePage(this.props.match.url);
             this.shopLoad();
           } else if (this.props.shopRemoveAll.status === 'FAILURE') {
             loader.off();
@@ -182,11 +182,11 @@ class Shop extends React.Component {
           rowClick={this.shopClick}
           insertClick={this.shopInsertClick}
           refresh={this.shopLoad}
-          removeAllClick={() => this.props.changePage('/shop/removeallmodal')}
+          removeAllClick={() => this.props.changePage(`${this.props.match.url}/removeallmodal`)}
           tableToExcel={this.tableToExcel}
         />
         <Route
-          path="/shop/modal"
+          path={`${this.props.match.url}/modal`}
           render={props =>
             this.state.shopModalItem ?
               <ShopModal
@@ -195,24 +195,24 @@ class Shop extends React.Component {
                 item={this.state.shopModalItem}
                 modify={this.shopModify}
                 remove={this.shopRemove}
-                close={() => this.props.changePage('/shop')}
-              /> : <Redirect to="/shop" />
+                close={() => this.props.changePage(this.props.match.url)}
+              /> : <Redirect to={this.props.match.url} />
           }
         />
         <Route
-          path="/shop/insertmodal"
+          path={`${this.props.match.url}/insertmodal`}
           render={props =>
             <ShopModal
               title="매장 추가"
               mode="insert"
               item={this.state.shopModalItem}
               insert={this.shopInsert}
-              close={() => this.props.changePage('/shop')}
+              close={() => this.props.changePage(this.props.match.url)}
             />
           }
         />
         <Route
-          path="/shop/removeallmodal"
+          path={`${this.props.match.url}/removeallmodal`}
           render={props =>
             <CheckModal
               checkPassword
@@ -220,7 +220,7 @@ class Shop extends React.Component {
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="매장이 전부 삭제됩니다. 연결된 상품도 사라집니다."
               handleCheck={this.shopRemoveAll}
-              handleClose={() => this.props.changePage('/shop')}
+              handleClose={() => this.props.changePage(this.props.match.url)}
             />
           }
         />

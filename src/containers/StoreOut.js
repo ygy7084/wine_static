@@ -112,7 +112,7 @@ class StoreOut extends React.Component {
     this.setState({
       saleModalItem: obj,
     });
-    this.props.changePage('/storeout/salemodal');
+    this.props.changePage(`${this.props.match.url}/salemodal`);
   }
   storeSelect(sale) {
     const found = this.state.selectedStores.findIndex(obj => obj._id === sale._id);
@@ -128,7 +128,7 @@ class StoreOut extends React.Component {
     const map = new Map();
     this.state.selectedStores.forEach(o => map.set(o.shop._id, o));
     if (map.size === 1) {
-      this.props.changePage('/storeout/insertmodal');
+      this.props.changePage(`${this.props.match.url}/insertmodal`);
     } else {
       errorHandler({ message: '매장이 선택되지 않았거나 동시에 여러 매장이 존재합니다.' });
     }
@@ -140,7 +140,7 @@ class StoreOut extends React.Component {
         if (this.props.storeBulkInsert.status === 'SUCCESS') {
           loader.off();
           notify('생성 완료');
-          this.props.changePage('/storeout');
+          this.props.changePage(this.props.match.url);
           this.storeLoad();
         } else if (this.props.storeBulkInsert.status === 'FAILURE') {
           loader.off();
@@ -208,20 +208,20 @@ class StoreOut extends React.Component {
           selectAll={this.selectAll}
         />
         <Route
-          path="/storeout/salemodal"
+          path={`${this.props.match.url}/salemodal`}
           render={props =>
             this.state.saleModalItem ?
               <SaleModal
                 onlyView
                 imageView
                 mode="modify"
-                close={() => this.props.changePage('/storeout')}
+                close={() => this.props.changePage(this.props.match.url)}
                 item={this.state.saleModalItem}
-              /> : <Redirect to="/storeout" />
+              /> : <Redirect to={this.props.match.url} />
           }
         />
         <Route
-          path="/storeout/insertmodal"
+          path={`${this.props.match.url}/insertmodal`}
           render={props =>
             this.props.accountSession.account ?
               <StoreOutModal
@@ -234,8 +234,8 @@ class StoreOut extends React.Component {
                 customerList={this.props.customerGetList.list}
                 insert={this.storeBulkInsert}
                 storeResult={this.state.selectedStores}
-                close={() => this.props.changePage('/storeout')}
-              /> : <Redirect to="/storeout" />
+                close={() => this.props.changePage(this.props.match.url)}
+              /> : <Redirect to={this.props.match.url} />
           }
         />
       </div>

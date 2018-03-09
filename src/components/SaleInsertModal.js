@@ -42,6 +42,7 @@ class SaleInsertModal extends React.Component {
           shopList={this.props.shopList}
           insert={this.props.insert}
           close={() => this.setState({ vintageModalOn: false })}
+          canConnectShop
         />
       </div>
     );

@@ -115,7 +115,7 @@ class StoreIn extends React.Component {
     this.setState({
       saleModalItem: sale,
     });
-    this.props.changePage('/storein/salemodal');
+    this.props.changePage(`${this.props.match.url}/salemodal`);
   }
   saleSelect(sale) {
     const found = this.state.selectedSales.findIndex(obj => obj._id === sale._id);
@@ -131,7 +131,7 @@ class StoreIn extends React.Component {
     const map = new Map();
     this.state.selectedSales.forEach(o => map.set(o.shop._id, o));
     if (map.size === 1) {
-      this.props.changePage('/storein/insertmodal');
+      this.props.changePage(`${this.props.match.url}/insertmodal`);
     } else {
       errorHandler({ message: '매장이 선택되지 않았거나 동시에 여러 매장이 존재합니다.' });
     }
@@ -143,7 +143,7 @@ class StoreIn extends React.Component {
         if (this.props.storeBulkInsert.status === 'SUCCESS') {
           loader.off();
           notify('생성 완료');
-          this.props.changePage('/storein');
+          this.props.changePage(this.props.match.url);
           this.storeLoad();
         } else if (this.props.storeBulkInsert.status === 'FAILURE') {
           loader.off();
@@ -212,7 +212,7 @@ class StoreIn extends React.Component {
           structure={structures.customer}
           rowClick={(customer) => {
             this.setState({ selectedCustomer: customer });
-            this.props.changePage('/storein/salelist');
+            this.props.changePage(`${this.props.match.url}/salelist`);
           }}
           insertClick={() => this.setState({ customerInsertModalOn: true})}
         />
@@ -224,11 +224,11 @@ class StoreIn extends React.Component {
           insert={this.customerInsert}
         />
         <Route
-          path="/storein/salelist"
+          path={`${this.props.match.url}/salelist`}
           render={props =>
             this.state.selectedCustomer && this.state.selectedCustomer.shop ?
               <TableModal
-                close={() => this.props.changePage('/storein')}
+                close={() => this.props.changePage(this.props.match.url)}
               >
                 <SaleListForSelect
                   mode="storeIn"
@@ -245,24 +245,24 @@ class StoreIn extends React.Component {
                   cancelSelected={() => this.setState({selectedSales: []})}
                   selectAll={this.selectAll}
                 />
-              </TableModal> : <Redirect to="/storein"/>
+              </TableModal> : <Redirect to={this.props.match.url}/>
           }
         />
         <Route
-          path="/storein/salemodal"
+          path={`${this.props.match.url}/salemodal`}
           render={props =>
             this.state.saleModalItem ?
               <SaleModal
                 onlyView
                 imageView
                 mode="modify"
-                close={() => this.props.changePage('/storein')}
+                close={() => this.props.changePage(this.props.match.url)}
                 item={this.state.saleModalItem}
-              /> : <Redirect to="/storein" />
+              /> : <Redirect to={this.props.match.url} />
           }
         />
         <Route
-          path="/storein/insertmodal"
+          path={`${this.props.match.url}/insertmodal`}
           render={props =>
             this.props.accountSession.account ?
               <StoreInModal
@@ -275,8 +275,8 @@ class StoreIn extends React.Component {
                 saleStructure={structures.sale}
                 insert={this.storeBulkInsert}
                 storeResult={this.props.storeGetList.result}
-                close={() => this.props.changePage('/storein')}
-              /> : <Redirect to="/storein" />
+                close={() => this.props.changePage(this.props.match.url)}
+              /> : <Redirect to={this.props.match.url} />
           }
         />
       </div>

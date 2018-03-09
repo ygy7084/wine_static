@@ -29,12 +29,13 @@ class ManagerEntry extends React.Component {
     this.sessionRequest(`${this.props.location.pathname}`);
   }
   loginRequest(accountInput) {
+    const { match } = this.props;
     loader.on();
     return this.props.accountLoginRequest(accountInput)
       .then(() => {
         if (this.props.accountLogin.status === 'SUCCESS') {
           loader.off();
-          this.sessionRequest('/');
+          this.sessionRequest(`${match.url}`);
         } else if (this.props.accountLogin.status === 'FAILURE') {
           loader.off();
           errorHandler({ message: '로그인에 실패하였습니다.' });
@@ -45,12 +46,14 @@ class ManagerEntry extends React.Component {
       });
   }
   logoutRequest() {
+    const { match } = this.props;
+    console.log(match);
     loader.on();
     return this.props.accountLogoutRequest()
       .then(() => {
         if (this.props.accountLogout.status === 'SUCCESS') {
           loader.off();
-          this.sessionRequest('/');
+          this.sessionRequest(`${match.url}`);
         } else if (this.props.accountLogoutRequest === 'FAILURE') {
           loader.off();
         }
@@ -75,12 +78,13 @@ class ManagerEntry extends React.Component {
       });
   }
   render() {
+    const { match } = this.props;
     let ManagerEntryPage = null;
     if (this.props.accountSession.status === 'SUCCESS') {
       ManagerEntryPage =
         <Switch>
           <Route
-            path="/"
+            path={`${match.url}`}
             render={props =>
               <Main logout={this.logoutRequest} {...props} />
             }
@@ -91,7 +95,7 @@ class ManagerEntry extends React.Component {
         <Switch>
           <Route
             exact
-            path="/"
+            path={`${match.url}`}
             render={props => (
               <Entry
                 loginRequest={this.loginRequest}
@@ -99,7 +103,7 @@ class ManagerEntry extends React.Component {
               />
             )}
           />
-          <Redirect to="/" />
+          <Redirect to={`${match.url}`} />
         </Switch>
       );
     }

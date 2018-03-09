@@ -60,7 +60,7 @@ class StoreHistory extends React.Component {
     this.setState({
       saleModalItem: obj,
     });
-    this.props.changePage('/store/salemodal');
+    this.props.changePage(`${this.props.match.url}/salemodal`);
   }
   storeRemoveAll(password) {
     if (password !== this.props.accountSession.account.password) {
@@ -72,7 +72,7 @@ class StoreHistory extends React.Component {
           if (this.props.storeRemoveAll.status === 'SUCCESS') {
             loader.off();
             notify('삭제 완료');
-            this.props.changePage('/store');
+            this.props.changePage(this.props.match.url);
             this.storeLoad();
           } else if (this.props.storeRemoveAll.status === 'FAILURE') {
             loader.off();
@@ -113,12 +113,12 @@ class StoreHistory extends React.Component {
           list={this.props.storeGetList.list}
           structure={structures.store}
           rowClick={this.storeClick}
-          removeAllClick={() => this.props.changePage('/store/removeallmodal')}
+          removeAllClick={() => this.props.changePage(`${this.props.match.url}/removeallmodal`)}
           refresh={() => this.storeLoad()}
           tableToExcel={this.tableToExcel}
         />
         <Route
-          path="/store/removeallmodal"
+          path={`${this.props.match.url}/removeallmodal`}
           render={props =>
             <CheckModal
               checkPassword
@@ -126,21 +126,21 @@ class StoreHistory extends React.Component {
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="입출고 데이터가 전부 삭제됩니다. "
               handleCheck={this.storeRemoveAll}
-              handleClose={() => this.props.changePage('/store')}
+              handleClose={() => this.props.changePage(this.props.match.url)}
             />
           }
         />
         <Route
-          path="/store/salemodal"
+          path={`${this.props.match.url}/salemodal`}
           render={props =>
             this.state.saleModalItem ?
               <SaleModal
                 onlyView
                 imageView
                 mode="modify"
-                close={() => this.props.changePage('/store')}
+                close={() => this.props.changePage(this.props.match.url)}
                 item={this.state.saleModalItem}
-              /> : <Redirect to="/store" />
+              /> : <Redirect to={this.props.match.url} />
           }
         />
       </div>

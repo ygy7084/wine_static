@@ -100,7 +100,7 @@ class Original extends React.Component {
     this.setState({
       originalModalItem: original,
     });
-    this.props.changePage('/wine/original/modal');
+    this.props.changePage(`${this.props.match.url}/modal`);
   }
   originalBulkInsert(bulk) {
     loader.on();
@@ -109,7 +109,7 @@ class Original extends React.Component {
         if (this.props.originalBulkInsert.status === 'SUCCESS') {
           loader.off();
           notify('생성 완료');
-          this.props.changePage('/wine/original');
+          this.props.changePage(this.props.match.url);
           this.originalLoad();
         } else if (this.props.originalBulkInsert.status === 'FAILURE') {
           throw data;
@@ -127,7 +127,7 @@ class Original extends React.Component {
         if (this.props.originalInsert.status === 'SUCCESS') {
           loader.off();
           notify('생성 완료');
-          this.props.changePage('/wine/original');
+          this.props.changePage(this.props.match.url);
           this.originalLoad();
         } else if (this.props.originalInsert.status === 'FAILURE') {
           throw data;
@@ -145,7 +145,7 @@ class Original extends React.Component {
         if (this.props.originalModify.status === 'SUCCESS') {
           loader.off();
           notify('수정 완료');
-          this.props.changePage('/wine/original');
+          this.props.changePage(this.props.match.url);
           this.originalLoad();
         } else if (this.props.originalModify.status === 'FAILURE') {
           throw data;
@@ -163,7 +163,7 @@ class Original extends React.Component {
         if (this.props.originalRemove.status === 'SUCCESS') {
           loader.off();
           notify('삭제 완료');
-          this.props.changePage('/wine/original');
+          this.props.changePage(this.props.match.url);
           this.originalLoad();
         } else if (this.props.originalRemove.status === 'FAILURE') {
           throw data;
@@ -184,7 +184,7 @@ class Original extends React.Component {
           if (this.props.originalRemoveAll.status === 'SUCCESS') {
             loader.off();
             notify('삭제 완료');
-            this.props.changePage('/wine/original');
+            this.props.changePage(this.props.match.url);
             this.originalLoad();
           } else if (this.props.originalRemoveAll.status === 'FAILURE') {
             loader.off();
@@ -235,7 +235,7 @@ class Original extends React.Component {
   }
   excelSampleDownload() {
     this.tableToExcel({
-     cols: ['영문줄임명', '한글줄임명', '영문풀네임', '한글풀네임'],
+      cols: ['영문줄임명', '한글줄임명', '영문풀네임', '한글풀네임'],
     });
   }
   insertTableFromExcel() {
@@ -254,8 +254,8 @@ class Original extends React.Component {
           structure={structures.original}
           rowClick={this.originalClick}
           refresh={this.originalLoad}
-          insertClick={() => this.props.changePage('/wine/original/insertmodal')}
-          removeAllClick={() => this.props.changePage('/wine/original/removeallmodal')}
+          insertClick={() => this.props.changePage(`${this.props.match.url}/insertmodal`)}
+          removeAllClick={() => this.props.changePage(`${this.props.match.url}/removeallmodal`)}
           tableToExcel={this.tableToExcel}
           excelToTable={this.excelToTable}
           tableFromExcel={this.state.tableFromExcel}
@@ -263,7 +263,7 @@ class Original extends React.Component {
           excelSampleDownload={this.excelSampleDownload}
         />
         <Route
-          path="/wine/original/modal"
+          path={`${this.props.match.url}/modal`}
           render={props =>
             this.state.originalModalItem ?
               <OriginalModal
@@ -274,13 +274,13 @@ class Original extends React.Component {
                 grapes={this.props.grapeGetList.list}
                 modify={this.originalModify}
                 remove={this.originalRemove}
-                close={() => this.props.changePage('/wine/original')}
+                close={() => this.props.changePage(this.props.match.url)}
                 {...props}
-              /> : <Redirect to="/wine/original" />
+              /> : <Redirect to={this.props.match.url} />
           }
         />
         <Route
-          path="/wine/original/insertmodal"
+          path={`${this.props.match.url}/insertmodal`}
           render={props =>
             this.props.locationGetList.options ?
               <OriginalModal
@@ -289,13 +289,13 @@ class Original extends React.Component {
                 locations={this.props.locationGetList.options}
                 grapes={this.props.grapeGetList.list}
                 insert={this.originalInsert}
-                close={() => this.props.changePage('/wine/original')}
+                close={() => this.props.changePage(this.props.match.url)}
                 {...props}
-              /> : <Redirect to="/wine/original" />
+              /> : <Redirect to={this.props.match.url} />
           }
         />
         <Route
-          path="/wine/original/removeallmodal"
+          path={`${this.props.match.url}/removeallmodal`}
           render={props =>
             <CheckModal
               checkPassword
@@ -303,7 +303,7 @@ class Original extends React.Component {
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="오리지날이 전부 삭제됩니다. 연관된 빈티지와 상품도 삭제됩니다."
               handleCheck={this.originalRemoveAll}
-              handleClose={() => this.props.changePage('/wine/original')}
+              handleClose={() => this.props.changePage(this.props.match.url)}
             />
           }
         />

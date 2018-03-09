@@ -78,7 +78,7 @@ class Vintage extends React.Component {
     this.setState({
       vintageModalItem: vintage,
     });
-    this.props.changePage('/wine/vintage/modal');
+    this.props.changePage(`${this.props.match.url}/modal`);
   }
   vintageInsert(vintage) {
     loader.on();
@@ -87,7 +87,7 @@ class Vintage extends React.Component {
         if (this.props.vintageInsert.status === 'SUCCESS') {
           loader.off();
           notify('생성 완료');
-          this.props.changePage('/wine/vintage');
+          this.props.changePage(this.props.match.url);
           this.vintageLoad();
         } else if (this.props.vintageInsert.status === 'FAILURE') {
           loader.off();
@@ -106,7 +106,7 @@ class Vintage extends React.Component {
         if (this.props.vintageModify.status === 'SUCCESS') {
           loader.off();
           notify('수정 완료');
-          this.props.changePage('/wine/vintage');
+          this.props.changePage(this.props.match.url);
           this.vintageLoad();
         } else if (this.props.vintageModify.status === 'FAILURE') {
           loader.off();
@@ -125,7 +125,7 @@ class Vintage extends React.Component {
         if (this.props.vintageRemove.status === 'SUCCESS') {
           loader.off();
           notify('삭제 완료');
-          this.props.changePage('/wine/vintage');
+          this.props.changePage(this.props.match.url);
           this.vintageLoad();
         } else if (this.props.vintageRemove.status === 'FAILURE') {
           loader.off();
@@ -147,7 +147,7 @@ class Vintage extends React.Component {
           if (this.props.vintageRemoveAll.status === 'SUCCESS') {
             loader.off();
             notify('삭제 완료');
-            this.props.changePage('/wine/vintage');
+            this.props.changePage(this.props.match.url);
             this.vintageLoad();
           } else if (this.props.vintageRemoveAll.status === 'FAILURE') {
             loader.off();
@@ -185,12 +185,12 @@ class Vintage extends React.Component {
           structure={structures.vintage}
           rowClick={this.vintageClick}
           refresh={this.vintageLoad}
-          removeAllClick={() => this.props.changePage('/wine/vintage/removeallmodal')}
-          insertClick={() => this.props.changePage('/wine/vintage/insert')}
+          removeAllClick={() => this.props.changePage(`${this.props.match.url}/removeallmodal`)}
+          insertClick={() => this.props.changePage(`${this.props.match.url}/insert`)}
           tableToExcel={this.tableToExcel}
         />
         <Route
-          path="/wine/vintage/modal"
+          path={`${this.props.match.url}/modal`}
           render={props =>
             this.state.vintageModalItem ?
               <VintageModal
@@ -200,12 +200,12 @@ class Vintage extends React.Component {
                 item={this.state.vintageModalItem}
                 modify={this.vintageModify}
                 remove={this.vintageRemove}
-                close={() => this.props.changePage('/wine/vintage')}
-              /> : <Redirect to="/wine/vintage" />
+                close={() => this.props.changePage(this.props.match.url)}
+              /> : <Redirect to={this.props.match.url} />
           }
         />
         <Route
-          path="/wine/vintage/insert"
+          path={`${this.props.match.url}/insert`}
           render={props => (
             <VintageInsertModal
               title="빈티지 추가"
@@ -213,12 +213,12 @@ class Vintage extends React.Component {
               originalStructure={structures.original}
               originalList={this.props.originalGetList.list}
               insert={this.vintageInsert}
-              close={() => this.props.changePage('/wine/vintage')}
+              close={() => this.props.changePage(this.props.match.url)}
             />
           )}
         />
         <Route
-          path="/wine/vintage/removeallmodal"
+          path={`${this.props.match.url}/removeallmodal`}
           render={props => (
             <CheckModal
               checkPassword
@@ -226,7 +226,7 @@ class Vintage extends React.Component {
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="빈티지가 전부 삭제됩니다. 이와 연관된 상품도 삭제됩니다."
               handleCheck={this.vintageRemoveAll}
-              handleClose={() => this.props.changePage('/wine/vintage')}
+              handleClose={() => this.props.changePage(this.props.match.url)}
             />
           )
           }

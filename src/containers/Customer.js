@@ -62,10 +62,10 @@ class Customer extends React.Component {
     this.setState({
       customerModalItem: customer,
     });
-    this.props.changePage('/customer/modal');
+    this.props.changePage(`${this.props.match.url}/modal`);
   }
   customerInsertClick() {
-    this.props.changePage('/customer/insertmodal');
+    this.props.changePage(`${this.props.match.url}/insertmodal`);
   }
   customerInsert(customer) {
     if (this.props.accountSession.account &&
@@ -78,7 +78,7 @@ class Customer extends React.Component {
           if (this.props.customerInsert.status === 'SUCCESS') {
             loader.off();
             notify('생성 완료');
-            this.props.changePage('/customer');
+            this.props.changePage(`${this.props.match.url}`);
             this.customerLoad();
           } else if (this.props.customerInsert.status === 'FAILURE') {
             loader.off();
@@ -100,7 +100,7 @@ class Customer extends React.Component {
         if (this.props.customerModify.status === 'SUCCESS') {
           loader.off();
           notify('수정 완료');
-          this.props.changePage('/customer');
+          this.props.changePage(`${this.props.match.url}`);
           this.customerLoad();
         } else if (this.props.customerModify.status === 'FAILURE') {
           loader.off();
@@ -119,7 +119,7 @@ class Customer extends React.Component {
         if (this.props.customerRemove.status === 'SUCCESS') {
           loader.off();
           notify('삭제 완료');
-          this.props.changePage('/customer');
+          this.props.changePage(`${this.props.match.url}`);
           this.customerLoad();
         } else if (this.props.customerRemove.status === 'FAILURE') {
           loader.off();
@@ -143,7 +143,7 @@ class Customer extends React.Component {
           if (this.props.customerRemoveAll.status === 'SUCCESS') {
             loader.off();
             notify('삭제 완료');
-            this.props.changePage('/customer');
+            this.props.changePage(`${this.props.match.url}`);
             this.customerLoad();
           } else if (this.props.customerRemoveAll.status === 'FAILURE') {
             loader.off();
@@ -184,37 +184,37 @@ class Customer extends React.Component {
           structure={structures.customer}
           rowClick={this.customerClick}
           insertClick={this.customerInsertClick}
-          removeAllClick={() => this.props.changePage('/customer/removeallmodal')}
+          removeAllClick={() => this.props.changePage(`${this.props.match.url}/removeallmodal`)}
           refresh={this.customerLoad}
           tableToExcel={this.tableToExcel}
         />
         <Route
-          path="/customer/modal"
+          path={`${this.props.match.url}/modal`}
           render={props =>
             this.state.customerModalItem ?
               <CustomerModal
                 title="고객 정보"
                 mode="modify"
-                close={() => this.props.changePage('/customer')}
+                close={() => this.props.changePage(`${this.props.match.url}`)}
                 item={this.state.customerModalItem}
                 modify={this.customerModify}
                 remove={this.customerRemove}
-              /> : <Redirect to="/customer" />
+              /> : <Redirect to={`${this.props.match.url}`} />
           }
         />
         <Route
-          path="/customer/insertmodal"
+          path={`${this.props.match.url}/insertmodal`}
           render={props =>
             <CustomerModal
               title="고객 추가"
               mode="insert"
-              close={() => this.props.changePage('/customer')}
+              close={() => this.props.changePage(this.props.match.url)}
               insert={this.customerInsert}
             />
           }
         />
         <Route
-          path="/customer/removeallmodal"
+          path={`${this.props.match.url}/removeallmodal`}
           render={props =>
             <CheckModal
               checkPassword
@@ -222,7 +222,7 @@ class Customer extends React.Component {
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="고객과 연결된 입출고 리스트가 전부 삭제됩니다.."
               handleCheck={this.customerRemoveAll}
-              handleClose={() => this.props.changePage('/customer')}
+              handleClose={() => this.props.changePage(this.props.match.url)}
             />
           }
         />

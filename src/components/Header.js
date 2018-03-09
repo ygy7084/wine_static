@@ -1,16 +1,6 @@
 import React from 'react';
 import Radium from 'radium';
-import IconAccount from 'react-icons/lib/ti/key';
-import IconWine from 'react-icons/lib/ti/wine';
-import IconShop from 'react-icons/lib/ti/home-outline';
-import IconCustomer from 'react-icons/lib/ti/user';
-import IconCustomerBase from 'react-icons/lib/go/key';
-import IconStore from 'react-icons/lib/ti/arrow-repeat-outline';
 import IconMenu from 'react-icons/lib/ti/th-menu';
-import IconSale from 'react-icons/lib/md/list';
-import IconStoreIn from 'react-icons/lib/ti/arrow-left-outline';
-import IconStoreOut from 'react-icons/lib/ti/arrow-right-outline';
-import IconConfiguration from 'react-icons/lib/md/settings';
 import {
   Route,
 } from 'react-router-dom';
@@ -109,49 +99,8 @@ const style = {
     },
   },
 };
-const sideListItems = [
-  { name: '계정',
-    path: '/account',
-    icon: IconAccount,
-    authority: ['관리자'] },
-  { name: '와인',
-    path: '/wine',
-    icon: IconWine,
-    authority: ['관리자'] },
-  { name: '상품',
-    path: '/sale',
-    icon: IconSale,
-    authority: ['매장'] },
-  { name: '매장',
-    path: '/shop',
-    icon: IconShop,
-    authority: ['관리자', '매장'] },
-  { name: '고객',
-    path: '/customer',
-    icon: IconCustomer,
-    authority: ['관리자', '매장'] },
-  { name: '고객 계정',
-    path: '/customerbase',
-    icon: IconCustomerBase,
-    authority: ['관리자'] },
-  { name: '입고',
-    path: '/storein',
-    icon: IconStoreIn,
-    authority: ['관리자', '매장'] },
-  { name: '출고',
-    path: '/storeout',
-    icon: IconStoreOut,
-    authority: ['관리자', '매장'] },
-  { name: '입출고 내역',
-    path: '/store',
-    icon: IconStore,
-    authority: ['관리자', '매장'] },
-  { name: '설정',
-    path: '/configuration',
-    icon: IconConfiguration,
-    authority: ['관리자']},
-];
 const Header = function Header(props) {
+  const sideListItems = props.sideListItems;
   const sideBarStyle = [style.sideBar.base];
   if (props.menuClose) {
     sideBarStyle.push(style.sideBar.close);

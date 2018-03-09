@@ -96,7 +96,7 @@ class Sale extends React.Component {
     this.setState({
       saleModalItem: sale,
     });
-    this.props.changePage('/wine/sale/modal');
+    this.props.changePage(`${this.props.match.url}/modal`);
   }
   saleInsert(sale) {
     loader.on();
@@ -105,7 +105,7 @@ class Sale extends React.Component {
         if (this.props.saleInsert.status === 'SUCCESS') {
           loader.off();
           notify('생성 완료');
-          this.props.changePage('/wine/sale');
+          this.props.changePage(this.props.match.url);
           this.saleLoad();
         } else if (this.props.saleInsert.status === 'FAILURE') {
           loader.off();
@@ -124,7 +124,7 @@ class Sale extends React.Component {
         if (this.props.saleModify.status === 'SUCCESS') {
           loader.off();
           notify('수정 완료');
-          this.props.changePage('/wine/sale');
+          this.props.changePage(this.props.match.url);
           this.saleLoad();
         } else if (this.props.saleModify.status === 'FAILURE') {
           loader.off();
@@ -143,7 +143,7 @@ class Sale extends React.Component {
         if (this.props.saleRemove.status === 'SUCCESS') {
           loader.off();
           notify('삭제 완료');
-          this.props.changePage('/wine/sale');
+          this.props.changePage(this.props.match.url);
           this.saleLoad();
         } else if (this.props.saleRemove.status === 'FAILURE') {
           loader.off();
@@ -165,7 +165,7 @@ class Sale extends React.Component {
           if (this.props.saleRemoveAll.status === 'SUCCESS') {
             loader.off();
             notify('삭제 완료');
-            this.props.changePage('/wine/sale');
+            this.props.changePage(this.props.match.url);
             this.saleLoad();
           } else if (this.props.saleRemoveAll.status === 'FAILURE') {
             loader.off();
@@ -202,13 +202,13 @@ class Sale extends React.Component {
           list={this.props.saleGetList.list}
           structure={structures.sale}
           rowClick={this.saleClick}
-          removeAllClick={() => this.props.changePage('/wine/sale/removeallmodal')}
-          insertClick={() => this.props.changePage('/wine/sale/insert')}
+          removeAllClick={() => this.props.changePage(`${this.props.match.url}/removeallmodal`)}
+          insertClick={() => this.props.changePage(`${this.props.match.url}/insert`)}
           refresh={this.saleLoad}
           tableToExcel={this.tableToExcel}
         />
         <Route
-          path="/wine/sale/modal"
+          path={`${this.props.match.url}/modal`}
           render={props =>
             this.state.saleModalItem ?
               <SaleModal
@@ -220,12 +220,13 @@ class Sale extends React.Component {
                 remove={this.saleRemove}
                 shopList={this.props.shopGetList.list}
                 shopStructure={structures.shop}
-                close={() => this.props.changePage('/wine/sale')}
-              /> : <Redirect to="/wine/sale" />
+                close={() => this.props.changePage(this.props.match.url)}
+                canConnectShop
+              /> : <Redirect to={this.props.match.url} />
           }
         />
         <Route
-          path="/wine/sale/insert"
+          path={`${this.props.match.url}/insert`}
           render={props => (
             <SaleInsertModal
               title="상품 추가"
@@ -235,12 +236,12 @@ class Sale extends React.Component {
               shopStructure={structures.shop}
               shopList={this.props.shopGetList.list}
               insert={this.saleInsert}
-              close={() => this.props.changePage('/wine/sale')}
+              close={() => this.props.changePage(this.props.match.url)}
             />
           )}
         />
         <Route
-          path="/wine/sale/removeallmodal"
+          path={`${this.props.match.url}/removeallmodal`}
           render={props =>
             <CheckModal
               checkPassword
@@ -248,7 +249,7 @@ class Sale extends React.Component {
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="상품이 전부 삭제됩니다. "
               handleCheck={this.saleRemoveAll}
-              handleClose={() => this.props.changePage('/wine/sale')}
+              handleClose={() => this.props.changePage(this.props.match.url)}
             />
           }
         />

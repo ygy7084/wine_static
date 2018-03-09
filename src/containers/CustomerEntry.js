@@ -45,7 +45,7 @@ class CustomerEntry extends React.Component {
       .then(() => {
         if (this.props.customerAccountLogin.status === 'SUCCESS') {
           loader.off();
-          window.location = '/cside';
+          window.location = '/';
         } else if (this.props.customerAccountLogin.status === 'FAILURE') {
           loader.off();
           errorHandler({ message: '로그인에 실패하였습니다.' });
@@ -61,7 +61,7 @@ class CustomerEntry extends React.Component {
       .then(() => {
         if (this.props.customerAccountLogout.status === 'SUCCESS') {
           loader.off();
-          window.location = '/cside';
+          window.location = '/';
         } else if (this.props.customerAccountLogoutRequest === 'FAILURE') {
           loader.off();
         }
@@ -153,12 +153,13 @@ class CustomerEntry extends React.Component {
       CustomerEntryPage = (
         <Switch>
           <Route
-            path="/cside"
+            path="/"
             render={props =>
               <CustomerMain
                 logout={this.logoutRequest}
                 sessionRequest={this.sessionRequest}
-                {...props} />
+                {...props}
+              />
             }
           />
         </Switch>
@@ -168,7 +169,7 @@ class CustomerEntry extends React.Component {
         <Switch>
           <Route
             exact
-            path="/cside"
+            path="/"
             render={props => (
               <CustomerSideEntry
                 loginRequest={this.loginRequest}

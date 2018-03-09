@@ -2,6 +2,7 @@
   "name": "wine_static",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:8080",
   "dependencies": {
     "async": "^2.5.0",
     "babel-polyfill": "^6.26.0",
@@ -28,7 +29,7 @@
     "react-swipeable-views": "^0.12.8",
     "react-swipeable-views-utils": "^0.12.8",
     "react-text-truncate": "^0.11.2",
-    "react-toastify": "^2.0.0-rc.3",
+    "react-toastify": "^3.3.5",
     "react-transition-group": "^2.2.0",
     "reactstrap": "^4.8.0",
     "redux": "^3.7.2",

@@ -79,13 +79,13 @@ class Account extends React.Component {
     this.setState({
       accountModalItem: account,
     });
-    this.props.changePage('/account/modal');
+    this.props.changePage(`${this.props.match.url}/modal`);
   }
   accountInsertClick() {
-    this.props.changePage('/account/insertmodal');
+    this.props.changePage(`${this.props.match.url}/insertmodal`);
   }
   accountRemoveAllClick() {
-    this.props.changePage('/account/removeallmodal');
+    this.props.changePage(`${this.props.match.url}/removeallmodal`);
   }
   accountInsert(account) {
     loader.on();
@@ -94,7 +94,7 @@ class Account extends React.Component {
         if (this.props.accountInsert.status === 'SUCCESS') {
           loader.off();
           notify('생성 완료');
-          this.props.changePage('/account');
+          this.props.changePage(`${this.props.match.url}`);
           this.accountLoad();
         } else if (this.props.accountInsert.status === 'FAILURE') {
           loader.off();
@@ -113,7 +113,7 @@ class Account extends React.Component {
         if (this.props.accountModify.status === 'SUCCESS') {
           loader.off();
           notify('수정 완료');
-          this.props.changePage('/account');
+          this.props.changePage(`${this.props.match.url}`);
           this.accountLoad();
         } else if (this.props.accountModify.status === 'FAILURE') {
           loader.off();
@@ -132,7 +132,7 @@ class Account extends React.Component {
         if (this.props.accountRemove.status === 'SUCCESS') {
           loader.off();
           notify('삭제 완료');
-          this.props.changePage('/account');
+          this.props.changePage(`${this.props.match.url}`);
           this.accountLoad();
         } else if (this.props.accountRemove.status === 'FAILURE') {
           loader.off();
@@ -154,7 +154,7 @@ class Account extends React.Component {
           if (this.props.accountRemoveAll.status === 'SUCCESS') {
             loader.off();
             notify('삭제 완료');
-            this.props.changePage('/account');
+            this.props.changePage(`${this.props.match.url}`);
             this.accountLoad();
           } else if (this.props.accountRemoveAll.status === 'FAILURE') {
             loader.off();
@@ -185,6 +185,7 @@ class Account extends React.Component {
       });
   }
   render() {
+    const { match } = this.props;
     return (
       <div>
         <AccountList
@@ -197,28 +198,28 @@ class Account extends React.Component {
           tableToExcel={this.tableToExcel}
         />
         <Route
-          path="/account/modal"
+          path={`${match.url}/modal`}
           render={props =>
             this.state.accountModalItem ?
               <AccountModal
                 title="계정 정보"
                 mode="modify"
-                close={() => this.props.changePage('/account')}
+                close={() => this.props.changePage(match.url)}
                 item={this.state.accountModalItem}
                 modify={this.accountModify}
                 remove={this.accountRemove}
                 shopList={this.props.shopGetList.list}
                 shopStructure={structures.shop}
-              /> : <Redirect to="/account" />
+              /> : <Redirect to={match.url} />
           }
         />
         <Route
-          path="/account/insertmodal"
+          path={`${match.url}/insertmodal`}
           render={props =>
             (<AccountModal
               title="계정 추가"
               mode="insert"
-              close={() => this.props.changePage('/account')}
+              close={() => this.props.changePage(match.url)}
               insert={this.accountInsert}
               shopList={this.props.shopGetList.list}
               shopStructure={structures.shop}
@@ -226,7 +227,7 @@ class Account extends React.Component {
           }
         />
         <Route
-          path="/account/removeallmodal"
+          path={`${match.url}/removeallmodal`}
           render={props => (
             <CheckModal
               checkPassword
@@ -234,7 +235,7 @@ class Account extends React.Component {
               title="주의! 리스트를 전부 삭제합니다."
               subtitle="계정이 전부 삭제됩니다. 초기화 계정(ID: 0, PASSWORD: 0)이 다시 생성됩니다."
               handleCheck={this.accountRemoveAll}
-              handleClose={() => this.props.changePage('/account')}
+              handleClose={() => this.props.changePage(match.url)}
             />
           )
           }

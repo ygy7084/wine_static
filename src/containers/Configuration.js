@@ -52,7 +52,7 @@ class Configuration extends React.Component {
         if (this.props.configurationModify.status === 'SUCCESS') {
           loader.off();
           notify('수정 완료');
-          this.props.changePage('/configuration');
+          this.props.changePage(`${this.props.match.url}/configuration`);
           this.configurationLoad();
         } else if (this.props.configurationModify.status === 'FAILURE') {
           loader.off();
@@ -68,13 +68,13 @@ class Configuration extends React.Component {
     loader.on();
     this.props.customerBaseFindPasswordRequest({
       to,
-      phone: 'thisistestphonenumber'
+      phone: 'thisistestphonenumber',
     })
       .then((data) => {
         if (this.props.customerBaseFindPassword.status === 'SUCCESS') {
           loader.off();
           notify('전송 완료');
-          this.props.changePage('/configuration');
+          this.props.changePage(`${this.props.match.url}/configuration`);
         } else if (this.props.customerBaseFindPassword.status === 'FAILURE') {
           loader.off();
           throw data;
@@ -92,7 +92,7 @@ class Configuration extends React.Component {
           this.props.configurationGet.configuration ?
             <EmailConfiguration
               configuration={this.props.configurationGet.configuration.email}
-              modify={(obj) => this.configurationModify(obj, 'email')}
+              modify={obj => this.configurationModify(obj, 'email')}
               test={this.findPasswordTest}
             /> : null
         }

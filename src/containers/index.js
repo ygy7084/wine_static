@@ -12,7 +12,7 @@ import Original from './Original';
 import Vintage from './Vintage';
 import SaleForShop from './SaleForShop';
 import Sale from './Sale';
-import Grape from './CheckModal';
+import Grape from './Grape';
 import Location from './Location';
 import CustomerMain from './CustomerMain';
 import StoreIn from './StoreIn';

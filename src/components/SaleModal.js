@@ -114,6 +114,7 @@ class SaleModal extends React.Component {
     if (!original) {
       return null;
     }
+    const { canConnectShop } = this.props;
     return (
       <div>
         <Modal
@@ -201,11 +202,14 @@ class SaleModal extends React.Component {
                   disabled
                 />
               </FormGroup>
-              <Button
-                bsStyle="success"
-                onClick={() => this.setState({ shopModalOn: true })}
-                disabled={!this.state.modifyMode && this.props.mode === 'modify'}
-              >상품에 매장 연결</Button>
+              {
+                !!canConnectShop ?
+                  <Button
+                    bsStyle="success"
+                    onClick={() => this.setState({ shopModalOn: true })}
+                    disabled={!this.state.modifyMode && this.props.mode === 'modify'}
+                  >상품에 매장 연결</Button> : null
+              }
               {
                 this.props.imageView ?
                   <Image
